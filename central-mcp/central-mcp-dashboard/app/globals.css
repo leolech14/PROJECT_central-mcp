@@ -1,10 +1,13 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 
   /* OKLCH Color System - Scaffold Layers */
+  --scaffold-0: oklch(1.00 0.000 0);
   --scaffold-1: oklch(0.98 0.005 270);
   --scaffold-2: oklch(0.95 0.005 270);
   --scaffold-3: oklch(0.92 0.005 270);
@@ -52,10 +55,10 @@
   --color-border-default: var(--border-default);
 
   /* Status Colors */
-  --color-success: var(--color-success);
-  --color-warning: var(--color-warning);
-  --color-error: var(--color-error);
-  --color-info: var(--color-info);
+  --color-success: oklch(0.65 0.18 145);
+  --color-warning: oklch(0.75 0.15 90);
+  --color-error: oklch(0.65 0.22 25);
+  --color-info: oklch(0.70 0.15 240);
 
   /* Metric Colors */
   --color-metric-cpu: var(--metric-cpu);
@@ -102,7 +105,7 @@ body {
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(0.625rem);
   }
   to {
     opacity: 1;
@@ -122,7 +125,7 @@ body {
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(20px);
+    transform: translateX(1.25rem);
   }
   to {
     opacity: 1;
@@ -133,7 +136,7 @@ body {
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translateX(-1.25rem);
   }
   to {
     opacity: 1;
@@ -182,20 +185,20 @@ body {
 /* Custom Scrollbar for Dashboard */
 .custom-scrollbar::-webkit-scrollbar,
 .scrollbar-thin::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 0.25rem;
+  height: 0.25rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track,
 .scrollbar-thin::-webkit-scrollbar-track {
   background: var(--scaffold-2);
-  border-radius: 2px;
+  border-radius: 0.125rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb,
 .scrollbar-thin::-webkit-scrollbar-thumb {
   background: var(--border-default);
-  border-radius: 2px;
+  border-radius: 0.125rem;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover,
@@ -228,7 +231,7 @@ body {
     opacity: 1;
   }
   50% {
-    box-shadow: 0 0 15px 3px var(--accent-primary);
+    box-shadow: 0 0 0.9375rem 0.1875rem var(--accent-primary);
     opacity: 0.9;
   }
 }
@@ -237,25 +240,25 @@ body {
   animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-/* Smooth Transitions */
-* {
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
-}
+/* Smooth Transitions - REMOVED GLOBAL SELECTOR
+ * Applying transitions to * (all elements) can break fixed positioning
+ * and cause layout issues. Instead, transitions are applied per-component.
+ */
 
 /* Focus Visible for Keyboard Navigation - WCAG 2.2 AA Compliant */
 *:focus-visible {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline: 0.125rem solid var(--accent-primary);
+  outline-offset: 0.125rem;
+  border-radius: 0.25rem;
 }
 
 /* Loading Shimmer Effect */
 @keyframes shimmer {
   0% {
-    background-position: -1000px 0;
+    background-position: -62.5rem 0;
   }
   100% {
-    background-position: 1000px 0;
+    background-position: 62.5rem 0;
   }
 }
 
@@ -265,7 +268,7 @@ body {
     var(--scaffold-1) 0%,
     var(--scaffold-2) 50%,
     var(--scaffold-1) 100%);
-  background-size: 1000px 100%;
+  background-size: 62.5rem 100%;
 }
 
 /* Hover Lift Effect */
@@ -274,6 +277,6 @@ body {
 }
 
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
 }

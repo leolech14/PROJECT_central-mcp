@@ -4,7 +4,7 @@ import Database from 'better-sqlite3';
 // Force Node.js runtime for better-sqlite3 support
 export const runtime = 'nodejs';
 
-const DB_PATH = '/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/data/registry.db';
+const DB_PATH = process.env.DATABASE_PATH || '/opt/central-mcp/data/registry.db';
 
 /**
  * GET /api/agents
@@ -72,7 +72,7 @@ export async function GET() {
     `).all();
 
     // Group metrics by agent
-    const metricsByAgent = metrics.reduce((acc: any, m: any) => {
+    const metricsByAgent: Record<string, any[]> = metrics.reduce((acc: Record<string, any[]>, m: any) => {
       if (!acc[m.agent_letter]) {
         acc[m.agent_letter] = [];
       }
@@ -81,7 +81,7 @@ export async function GET() {
     }, {});
 
     // Group activity by agent
-    const activityByAgent = activity.reduce((acc: any, a: any) => {
+    const activityByAgent: Record<string, any[]> = activity.reduce((acc: Record<string, any[]>, a: any) => {
       if (!acc[a.agent_letter]) {
         acc[a.agent_letter] = [];
       }

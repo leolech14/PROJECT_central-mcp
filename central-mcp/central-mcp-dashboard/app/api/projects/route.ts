@@ -4,7 +4,7 @@ import Database from 'better-sqlite3';
 // Force Node.js runtime for better-sqlite3 support
 export const runtime = 'nodejs';
 
-const DB_PATH = '/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/data/registry.db';
+const DB_PATH = process.env.DATABASE_PATH || '/opt/central-mcp/data/registry.db';
 
 /**
  * GET /api/projects
@@ -35,8 +35,24 @@ export async function GET() {
       ORDER BY last_activity DESC, name
     `).all();
 
-    // Get task counts (tasks table doesn't have FK to projects, defaulting to 0)
-    const taskCounts: any[] = [];
+    // Get task counts per project (if tasks table has project reference)
+    let taskCounts: any[] = [];
+    try {
+      taskCounts = db.prepare(`
+        SELECT
+          project_id,
+          COUNT(*) as total_tasks,
+          COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_tasks,
+          COUNT(CASE WHEN status = 'in_progress' THEN 1 END) as in_progress_tasks,
+          COUNT(CASE WHEN status = 'blocked' THEN 1 END) as blocked_tasks
+        FROM tasks
+        WHERE project_id IS NOT NULL
+        GROUP BY project_id
+      `).all();
+    } catch (e) {
+      // Tasks table might not have project_id column or might not exist
+      console.log('Could not query tasks by project:', e);
+    }
 
     // Build task map
     const taskMap = taskCounts.reduce((acc: any, count: any) => {
@@ -44,8 +60,21 @@ export async function GET() {
       return acc;
     }, {});
 
-    // Get spec counts (specs table doesn't have FK to projects, defaulting to 0)
-    const specCounts: any[] = [];
+    // Get spec counts per project (if specs table exists)
+    let specCounts: any[] = [];
+    try {
+      specCounts = db.prepare(`
+        SELECT
+          project_id,
+          COUNT(*) as total_specs
+        FROM specs
+        WHERE project_id IS NOT NULL
+        GROUP BY project_id
+      `).all();
+    } catch (e) {
+      // Specs table might not have project_id column or might not exist
+      console.log('Could not query specs by project:', e);
+    }
 
     // Build spec map
     const specMap = specCounts.reduce((acc: any, count: any) => {

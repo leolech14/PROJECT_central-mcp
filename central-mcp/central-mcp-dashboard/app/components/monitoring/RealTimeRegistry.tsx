@@ -1,10 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SystemWidget from '../widgets/SystemWidget';
 import HeroMetrics from './HeroMetrics';
 import SettingsPage from '../settings/SettingsPage';
-import TerminalViewer from '../terminals/TerminalViewer';
+import dynamic from 'next/dynamic';
+
+const TerminalViewer = dynamic(() => import('../terminals/TerminalViewer'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full flex items-center justify-center bg-scaffold-0">
+      <div className="text-text-secondary">Loading terminal...</div>
+    </div>
+  ),
+});
+
+const QuickLaunch = dynamic(() => import('../widgets/QuickLaunch'), {
+  ssr: false,
+});
+
+const FileExplorer = dynamic(() => import('../files/FileExplorer'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full flex items-center justify-center bg-scaffold-0">
+      <div className="text-text-secondary">Loading files...</div>
+    </div>
+  ),
+});
+
+const LLMIntelligenceWidget = dynamic(() => import('../widgets/LLMIntelligenceWidget'), {
+  ssr: false,
+});
+
 import { AgentActivityPanel, TaskAnalytics, ProjectsOverview, LoopStatusPanel } from '../ui';
 import type { Agent, TaskStats, Project as UIProject, LoopStatus } from '../ui';
 
@@ -40,7 +67,7 @@ interface CentralMCPData {
     warnings: number;
     errors: number;
     health: string;
-    list: Project[];
+    list: OldProject[];
     latest?: Array<{
       name: string;
       progress: number;
@@ -62,6 +89,7 @@ interface CentralMCPData {
   metrics: {
     totalExecutions: number;
     uptime: string;
+    uptimePercentage?: string;
     responseTime: number;
     apiResponseTime?: number;
   };
@@ -76,8 +104,16 @@ export default function RealTimeRegistry() {
   const [data, setData] = useState<CentralMCPData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Debug: Check if component actually mounts
+  useEffect(() => {
+    console.log('[RealTimeRegistry] Component mounted!');
+    setMounted(true);
+    return () => console.log('[RealTimeRegistry] Component unmounted');
+  }, []);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals' | 'files'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -88,9 +124,16 @@ export default function RealTimeRegistry() {
   const [detailedProjects, setDetailedProjects] = useState<UIProject[]>([]);
   const [detailedLoops, setDetailedLoops] = useState<LoopStatus[]>([]);
 
+  // Terminal launch from QuickLaunch
+  const [pendingTerminalLaunch, setPendingTerminalLaunch] = useState<{ projectPath: string; agent: string } | null>(null);
+  const terminalViewerRef = useRef<any>(null);
+
   useEffect(() => {
+    console.log('[RealTimeRegistry] Fetch useEffect triggered, retryCount:', retryCount);
+
     const fetchData = async () => {
       if (!loading) setIsUpdating(true);
+      console.log('[RealTimeRegistry] Starting fetch...');
 
       try {
         // Fetch all APIs in parallel
@@ -111,6 +154,7 @@ export default function RealTimeRegistry() {
         if (!mainRes.ok) throw new Error(`HTTP ${mainRes.status}`);
 
         const mainData = await mainRes.json();
+        console.log('[RealTimeRegistry] Data fetched successfully:', mainData.status);
         setData(mainData);
 
         // Parse new API data if successful
@@ -217,6 +261,7 @@ export default function RealTimeRegistry() {
         setRetryCount(0);
         setLastUpdate(new Date());
       } catch (err: any) {
+        console.error('[RealTimeRegistry] Fetch error:', err);
         setError(err.message);
 
         // Exponential backoff retry (max 3 retries)
@@ -224,6 +269,7 @@ export default function RealTimeRegistry() {
           setTimeout(() => setRetryCount(prev => prev + 1), Math.pow(2, retryCount) * 1000);
         }
       } finally {
+        console.log('[RealTimeRegistry] Fetch complete, setting loading=false');
         setLoading(false);
         setIsUpdating(false);
       }
@@ -234,7 +280,7 @@ export default function RealTimeRegistry() {
     return () => clearInterval(interval);
   }, [retryCount]);
 
-  // Keyboard navigation for views (Ctrl+1/2/3/4)
+  // Keyboard navigation for views (Ctrl+1/2/3/4/5/6/7)
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.ctrlKey || e.metaKey) {
@@ -245,6 +291,7 @@ export default function RealTimeRegistry() {
           case '4': setActiveView('agents'); e.preventDefault(); break;
           case '5': setActiveView('settings'); e.preventDefault(); break;
           case '6': setActiveView('terminals'); e.preventDefault(); break;
+          case '7': setActiveView('files'); e.preventDefault(); break;
         }
       }
     };
@@ -252,16 +299,28 @@ export default function RealTimeRegistry() {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, []);
 
+  // Handle QuickLaunch terminal creation
+  const handleQuickLaunch = (projectPath: string, agent: string) => {
+    // Switch to terminals view
+    setActiveView('terminals');
+    // Set pending launch so TerminalViewer can create it
+    setPendingTerminalLaunch({ projectPath, agent });
+  };
+
   // Filter projects by search query
-  const filteredProjects = data?.projects.list.filter((project: Project) =>
+  const filteredProjects = data?.projects.list.filter((project: OldProject) =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     project.project_type.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
+  console.log('[RealTimeRegistry] Render - loading:', loading, 'mounted:', mounted, 'error:', error, 'data:', !!data);
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-scaffold-0 flex items-center justify-center">
+      <div className="min-h-screen bg-scaffold-0 flex items-center justify-center flex-col gap-4">
         <div className="text-accent-primary text-lg animate-pulse">⚡ Connecting to Central-MCP...</div>
+        {mounted && <div className="text-text-tertiary text-sm">Component mounted: {mounted ? 'Yes' : 'No'}</div>}
+        <div className="text-text-tertiary text-xs">Check browser console for logs (F12)</div>
       </div>
     );
   }
@@ -467,6 +526,23 @@ export default function RealTimeRegistry() {
               <span className="text-xs opacity-50">⌘6</span>
             </div>
           </button>
+
+          <button
+            onClick={() => setActiveView('files')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeView === 'files'
+                ? 'bg-accent-primary/20 text-accent-primary font-medium'
+                : 'text-text-secondary hover:bg-scaffold-2'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">📁</span>
+                <span className="text-sm">File Explorer</span>
+              </div>
+              <span className="text-xs opacity-50">⌘7</span>
+            </div>
+          </button>
         </nav>
 
         {/* Sidebar Footer: Quick Stats */}
@@ -493,15 +569,16 @@ export default function RealTimeRegistry() {
       </aside>
 
       {/* MAIN CONTENT - With proper margins for fixed header/sidebar */}
-      <main className="ml-64 mt-16 p-8">
-        <div className="max-w-[1400px] mx-auto">
+      <main className="ml-64 mt-16 p-3">
+        <div className="max-w-[90vw] mx-auto">
 
           {/* OVERVIEW VIEW */}
           {activeView === 'overview' && (
-            <div className="space-y-6">
+            <div className="space-y-2">
               {/* HERO METRICS - KEY INFORMATION FIRST! */}
               <HeroMetrics
                 vmUptime={data.metrics.uptime}
+                vmUptimePercentage={data.metrics.uptimePercentage || '100.00'}
                 centralMCPUptime={parseFloat(data.projects.health)}
                 totalProjects={data.projects.total}
                 activeLoops={data.loops.active}
@@ -514,7 +591,7 @@ export default function RealTimeRegistry() {
               />
 
               {/* System Monitoring Widgets - 12+ Variables Each */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {/* VM Infrastructure Widget */}
                 <SystemWidget
                   title="VM Infrastructure"
@@ -640,67 +717,70 @@ export default function RealTimeRegistry() {
                     { label: 'Status', value: data.rag?.chunks && data.rag.chunks > 0 ? 'Operational' : 'Empty', status: data.rag?.chunks && data.rag.chunks > 0 ? 'success' : 'warning' }
                   ]}
                 />
+
+                {/* LLM Intelligence Widget - NEW! */}
+                <LLMIntelligenceWidget />
               </div>
 
               {/* Original Metrics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-scaffold-1 rounded-lg p-6 border border-border-subtle">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-text-tertiary">Projects</span>
-                    <span className="text-2xl">📦</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+                <div className="bg-scaffold-1 rounded p-2 border border-border-subtle">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-tertiary">Projects</span>
+                    <span className="text-sm">📦</span>
                   </div>
-                  <div className="text-3xl font-bold text-accent-primary mb-1">{data.projects.total}</div>
-                  <div className="text-xs text-color-success">✓ {data.projects.healthy} healthy</div>
+                  <div className="text-xl font-bold text-accent-primary mb-0.5">{data.projects.total}</div>
+                  <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-color-success">✓ {data.projects.healthy} healthy</div>
                 </div>
 
-                <div className="bg-scaffold-1 rounded-lg p-6 border border-border-subtle">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-text-tertiary">Active Loops</span>
-                    <span className="text-2xl">🔄</span>
+                <div className="bg-scaffold-1 rounded p-2 border border-border-subtle">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-tertiary">Active Loops</span>
+                    <span className="text-sm">🔄</span>
                   </div>
-                  <div className="text-3xl font-bold text-color-success mb-1">{data.loops.active}/{data.loops.total}</div>
-                  <div className="text-xs text-text-secondary">{data.loops.performance.toFixed(0)}% performance</div>
+                  <div className="text-xl font-bold text-color-success mb-0.5">{data.loops.active}/{data.loops.total}</div>
+                  <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-secondary">{data.loops.performance.toFixed(0)}% performance</div>
                 </div>
 
-                <div className="bg-scaffold-1 rounded-lg p-6 border border-border-subtle">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-text-tertiary">Agents</span>
-                    <span className="text-2xl">🤖</span>
+                <div className="bg-scaffold-1 rounded p-2 border border-border-subtle">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-tertiary">Agents</span>
+                    <span className="text-sm">🤖</span>
                   </div>
-                  <div className="text-3xl font-bold text-accent-primary mb-1">{data.agents.total}</div>
-                  <div className="text-xs text-color-success">● {data.agents.active} active</div>
+                  <div className="text-xl font-bold text-accent-primary mb-0.5">{data.agents.total}</div>
+                  <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-color-success">● {data.agents.active} active</div>
                 </div>
 
-                <div className="bg-scaffold-1 rounded-lg p-6 border border-border-subtle">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-text-tertiary">Tasks</span>
-                    <span className="text-2xl">✓</span>
+                <div className="bg-scaffold-1 rounded p-2 border border-border-subtle">
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-tertiary">Tasks</span>
+                    <span className="text-sm">✓</span>
                   </div>
-                  <div className="text-3xl font-bold text-accent-primary mb-1">{data.tasks.total}</div>
-                  <div className="text-xs text-color-success">{data.tasks.completion}% complete</div>
+                  <div className="text-xl font-bold text-accent-primary mb-0.5">{data.tasks.total}</div>
+                  <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-color-success">{data.tasks.completion}% complete</div>
                 </div>
               </div>
 
               {/* Loop Status Grid */}
-              <div className="bg-scaffold-1 rounded-lg p-6 border border-border-subtle">
-                <h2 className="text-lg font-bold mb-4">Auto-Proactive Loops Status</h2>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="bg-scaffold-1 rounded-lg p-3 border border-border-subtle">
+                <h2 className="text-sm font-bold mb-2">Auto-Proactive Loops Status</h2>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-1.5">
                   {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((loopId) => {
                     const loop = data.loops.status.find((l: any) => l.loop_id === loopId);
                     const isActive = loop?.status === 'active';
                     return (
                       <div
                         key={loopId}
-                        className={`rounded-lg p-4 text-center ${
+                        className={`rounded p-2 text-center ${
                           isActive ? 'bg-color-success/20 border border-color-success' : 'bg-scaffold-2'
                         }`}
                       >
-                        <div className={`text-2xl mb-2 ${isActive ? 'text-color-success' : 'text-text-tertiary'}`}>
+                        <div className={`text-base mb-0.5 ${isActive ? 'text-color-success' : 'text-text-tertiary'}`}>
                           {isActive ? '●' : '○'}
                         </div>
-                        <div className="text-xs font-bold text-text-primary">Loop {loopId}</div>
+                        <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="font-bold text-text-primary">Loop {loopId}</div>
                         {isActive && loop && (
-                          <div className="text-xs text-text-tertiary mt-1">{loop.execution_count}x</div>
+                          <div style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} className="text-text-tertiary mt-0.5">{loop.execution_count}x</div>
                         )}
                       </div>
                     );
@@ -709,7 +789,7 @@ export default function RealTimeRegistry() {
               </div>
 
               {/* NEW: Fancy UI Components with Real Data */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                 {/* Task Analytics */}
                 {taskStats && (
                   <TaskAnalytics stats={taskStats} />
@@ -793,12 +873,33 @@ export default function RealTimeRegistry() {
                 </p>
               </div>
               <div className="h-[calc(100vh-16rem)]">
-                <TerminalViewer />
+                <TerminalViewer
+                  pendingLaunch={pendingTerminalLaunch}
+                  onLaunchComplete={() => setPendingTerminalLaunch(null)}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* FILES VIEW */}
+          {activeView === 'files' && (
+            <div className="space-y-6">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-text-primary mb-2">File Explorer</h2>
+                <p className="text-text-secondary">
+                  Browse project directories and view file contents
+                </p>
+              </div>
+              <div className="h-[calc(100vh-16rem)]">
+                <FileExplorer />
               </div>
             </div>
           )}
         </div>
       </main>
+
+      {/* QuickLaunch Floating Button - Available from all views */}
+      <QuickLaunch onLaunch={handleQuickLaunch} />
     </div>
   );
 }

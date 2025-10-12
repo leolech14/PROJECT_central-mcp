@@ -64,11 +64,11 @@ export default function SystemWidget({ title, icon, metrics, health }: SystemWid
                       style={{ width: `${health}%` }}
                     />
                   </div>
-                  <span className={`text-[10px] font-medium ${
+                  <span className={`font-medium ${
                     health >= 95 ? 'text-color-success' :
                     health >= 80 ? 'text-color-warning' :
                     'text-color-error'
-                  }`}>
+                  }`} style={{ fontSize: 'clamp(0.5625rem, 1vw, 0.6875rem)' }}>
                     {health.toFixed(0)}%
                   </span>
                 </div>
@@ -87,18 +87,18 @@ export default function SystemWidget({ title, icon, metrics, health }: SystemWid
               className="flex flex-col px-1.5 py-1 rounded bg-scaffold-0/40 hover:bg-scaffold-0/60 transition-colors duration-150"
             >
               {/* Label */}
-              <div className="text-[9px] text-text-tertiary leading-tight truncate" title={metric.label}>
+              <div className="text-text-tertiary leading-tight truncate" style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }} title={metric.label}>
                 {metric.label}
               </div>
               {/* Value + Trend */}
-              <div className={`font-medium text-[11px] ${getStatusColor(metric.status)} flex items-center gap-0.5`}>
+              <div className={`font-medium ${getStatusColor(metric.status)} flex items-center gap-0.5`} style={{ fontSize: 'clamp(0.625rem, 1.2vw, 0.75rem)' }}>
                 <span className="truncate" title={`${metric.value}${metric.unit || ''}`}>
                   {metric.value}{metric.unit && (
-                    <span className="text-[9px] opacity-70">{metric.unit}</span>
+                    <span className="opacity-70" style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }}>{metric.unit}</span>
                   )}
                 </span>
                 {metric.trend && (
-                  <span className={`text-[9px] ${getTrendColor(metric.trend)} ml-auto`}>
+                  <span className={`${getTrendColor(metric.trend)} ml-auto`} style={{ fontSize: 'clamp(0.5rem, 0.8vw, 0.625rem)' }}>
                     {getTrendIcon(metric.trend)}
                   </span>
                 )}

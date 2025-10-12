@@ -217,7 +217,7 @@ export default function SettingsPage() {
                             onChange={(e) => updateConfig(['loops', key, 'enabled'], e.target.checked)}
                             className="sr-only peer"
                           />
-                          <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                          <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                         </label>
                         <div>
                           <div className="font-bold text-text-primary">{loop.name}</div>
@@ -454,7 +454,7 @@ export default function SettingsPage() {
                           onChange={(e) => updateConfig(['projects', 'autoRegister'], e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                       </label>
                       <span className="text-sm text-text-primary">
                         {config.projects.autoRegister ? 'Enabled' : 'Disabled'}
@@ -545,7 +545,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['agents', 'autoAssignment'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
 
@@ -561,7 +561,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['agents', 'skillMatching'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
 
@@ -577,7 +577,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['agents', 'loadBalancing'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['tasks', 'autoAssignment'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
 
@@ -624,7 +624,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['tasks', 'dependencyResolution'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
                 </div>
@@ -818,7 +818,7 @@ export default function SettingsPage() {
                       onChange={(e) => updateConfig(['rag', 'ftsEnabled'], e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                    <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                   </label>
                 </div>
 
@@ -919,7 +919,7 @@ export default function SettingsPage() {
                       onChange={(e) => updateConfig(['api', 'enableCORS'], e.target.checked)}
                       className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                    <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                   </label>
                 </div>
               </div>
@@ -1033,7 +1033,7 @@ export default function SettingsPage() {
                           onChange={(e) => updateConfig(['monitoring', 'notificationChannels', 'email'], e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                       </label>
                     </div>
 
@@ -1049,7 +1049,7 @@ export default function SettingsPage() {
                           onChange={(e) => updateConfig(['monitoring', 'notificationChannels', 'slack'], e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                       </label>
                     </div>
 
@@ -1065,7 +1065,7 @@ export default function SettingsPage() {
                           onChange={(e) => updateConfig(['monitoring', 'notificationChannels', 'discord'], e.target.checked)}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                        <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                       </label>
                     </div>
                   </div>
@@ -1096,7 +1096,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['git', 'autoVersioning'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
 
@@ -1112,7 +1112,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['git', 'pushMonitoring'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
                 </div>
@@ -1213,7 +1213,7 @@ export default function SettingsPage() {
                         onChange={(e) => updateConfig(['systems', key, 'enabled'], e.target.checked)}
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
+                      <div className="w-11 h-6 bg-scaffold-2 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-accent-primary rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[0.125rem] after:left-[0.125rem] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-primary"></div>
                     </label>
                   </div>
                 ))}

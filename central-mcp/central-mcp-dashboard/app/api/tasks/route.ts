@@ -4,7 +4,7 @@ import Database from 'better-sqlite3';
 // Force Node.js runtime for better-sqlite3 support
 export const runtime = 'nodejs';
 
-const DB_PATH = '/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/data/registry.db';
+const DB_PATH = process.env.DATABASE_PATH || '/opt/central-mcp/data/registry.db';
 
 /**
  * GET /api/tasks

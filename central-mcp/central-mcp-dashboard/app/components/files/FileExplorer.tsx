@@ -33,10 +33,10 @@ export default function FileExplorer() {
   const [error, setError] = useState<string | null>(null);
   const [projectRoot, setProjectRoot] = useState<string>('');
 
-  // Initialize with PROJECTS_all directory
+  // Initialize with Central-MCP projects directory on VM
   useEffect(() => {
-    const home = typeof window !== 'undefined' ? '' : '';
-    const defaultPath = `/Users/lech/PROJECTS_all`;
+    // Default to Central-MCP projects directory on VM
+    const defaultPath = `/opt/central-mcp/projects`;
     setProjectRoot(defaultPath);
     setCurrentPath(defaultPath);
   }, []);

@@ -3,9 +3,42 @@
 ## 🎯 PROJECT OVERVIEW
 
 **Project:** PROJECT_central-mcp (Project 0 - Foundation)
-**Type:** Infrastructure / Auto-Proactive Intelligence System
+**Type:** Commercial Application Generation Platform
+**Domain:** 🌐 **centralmcp.net** (OFFICIAL URL)
 **Status:** ✅ **PERFECT 9/9 LOOPS ACTIVE** - System Health: 100%
-**Vision:** System that builds itself through 9 auto-proactive loops
+**Vision:** Minimum specification → Full commercial application with legal income stream
+
+### 🌟 THE GRAND VISION
+
+**Centro MCP transforms minimal user input into complete, revenue-generating commercial applications through automated workflows and intelligent orchestration.**
+
+**The Complete Pipeline:**
+```
+User Idea (5-10 sentences)
+    ↓
+Centro MCP Core LLM (structured protocols)
+    ↓
+Auto-Proactive Intelligence (9 loops)
+    ↓
+Predetermined Development Pipeline
+    ↓
+Legal & Compliance Layer
+    ↓
+Deployment & Monitoring
+    ↓
+Revenue-Generating Commercial Application
+```
+
+**Key Components:**
+- 🧠 **Centro MCP Core LLM**: Operates through terminal with structured step-by-step protocols
+- 🔄 **Auto-Proactive Intelligence**: 9 loops that analyze, plan, and execute
+- 📦 **Provider Ecosystem**: All hosting, payments, email, storage pre-integrated
+- 📚 **Code Snippet Library**: Every common pattern pre-built
+- 🎯 **Predetermined Workflows**: From auth to deployment, all steps mapped
+- ⚖️ **Legal Templates**: Terms, privacy, compliance auto-generated
+- 💰 **Monetization Patterns**: Subscriptions, marketplace, SaaS pre-configured
+
+**See**: `CENTRALMCP_NET_VISION.md` for complete strategic documentation
 
 **🧠 Core Emergent Principle:** MINIMUM USER INPUT → FULL-STACK APPLICATIONS
 Central-MCP transforms minimal user messages into complete production applications using intelligent abstraction layers:
@@ -16,6 +49,36 @@ Central-MCP transforms minimal user messages into complete production applicatio
 - 🚀 **Zero-Config Deployment** → Instant production deployment
 
 *See: [CENTRAL_MCP_EMERGENT_PRINCIPLES.md](./CENTRAL_MCP_EMERGENT_PRINCIPLES.md)*
+
+---
+
+## 🚨 CRITICAL: VM DEPLOYMENT WORKFLOW
+
+**NEVER FORGET:** When developing Central-MCP, you MUST deploy backend changes to VM BEFORE deploying dashboards!
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  THE GOLDEN RULE:                                            │
+│  1. Deploy Central-MCP backend FIRST                         │
+│  2. Verify it's running (check logs, database, loops)        │
+│  3. THEN deploy dashboards                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Quick Deploy:**
+```bash
+# Step 1: Deploy Central-MCP (REQUIRED!)
+./scripts/deploy-central-mcp-to-vm.sh
+
+# Step 2: Verify deployment
+gcloud compute ssh central-mcp-server --zone=us-central1-a \
+  --command='sudo journalctl -u central-mcp -f'
+
+# Step 3: Deploy dashboards
+./scripts/deploy-dashboard-to-vm.sh
+```
+
+**See:** `VM_DEPLOYMENT_CHECKLIST.md` for complete workflow
 
 ---
 
@@ -42,11 +105,16 @@ Central-MCP transforms minimal user messages into complete production applicatio
 - Loop 8 (120s): ✅ Task Auto-Assignment - Who does what
 
 **Infrastructure:**
-- VM: http://34.41.115.199:3000 (GCP us-central1-a)
-- Dashboard: http://localhost:3001/dashboard.html
-- Database: 34 tables, 44 projects registered
+- 🌐 **Live Dashboard:** http://centralmcp.net (requires login)
+- VM: http://136.112.123.243:3002 (GCP us-central1-a, central-mcp-server)
+- VM IP: 136.112.123.243
+- Dashboard Port: 3002 (PM2: nextjs-dashboard)
+- Database: 34 tables, 44 projects registered, 15,885+ loop executions
 - **Backend Connections Registry:** `/api/registry/connections` (19 endpoints mapped)
-- Cost: $0/month (free tier)
+- Cost: $0/month (e2-micro free tier)
+- 🔐 **Authentication:** Session-based with SHA-256 hashed passwords
+- 📋 **Default Login:** admin / centralmcp2025 (⚠️ CHANGE THIS!)
+- 📄 **See:** `CENTRALMCP_NET_CONFIGURATION.md` for full DNS & security setup
 
 **🔧 Backend Connections Registry Features:**
 - Real-time component discovery and mapping

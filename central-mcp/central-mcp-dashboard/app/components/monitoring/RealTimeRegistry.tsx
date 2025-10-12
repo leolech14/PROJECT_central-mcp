@@ -15,6 +15,15 @@ const TerminalViewer = dynamic(() => import('../terminals/TerminalViewer'), {
   ),
 });
 
+const KnowledgeSpace = dynamic(() => import('../../knowledge/page'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full flex items-center justify-center bg-scaffold-0">
+      <div className="text-text-secondary">Loading Knowledge Space...</div>
+    </div>
+  ),
+});
+
 const QuickLaunch = dynamic(() => import('../widgets/QuickLaunch'), {
   ssr: false,
 });
@@ -24,6 +33,24 @@ const FileExplorer = dynamic(() => import('../files/FileExplorer'), {
   loading: () => (
     <div className="h-full flex items-center justify-center bg-scaffold-0">
       <div className="text-text-secondary">Loading files...</div>
+    </div>
+  ),
+});
+
+const GitGraphWidget = dynamic(() => import('../widgets/GitGraphWidget'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-scaffold-1 border border-border-subtle rounded-xl p-6">
+      <div className="text-text-secondary animate-pulse">Loading git graph...</div>
+    </div>
+  ),
+});
+
+const DeploymentTrackerWidget = dynamic(() => import('../widgets/DeploymentTrackerWidget'), {
+  ssr: false,
+  loading: () => (
+    <div className="bg-scaffold-1 border border-border-subtle rounded-xl p-6">
+      <div className="text-text-secondary animate-pulse">Loading deployment history...</div>
     </div>
   ),
 });
@@ -113,7 +140,7 @@ export default function RealTimeRegistry() {
     return () => console.log('[RealTimeRegistry] Component unmounted');
   }, []);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals' | 'files'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals' | 'files' | 'knowledge'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -292,6 +319,7 @@ export default function RealTimeRegistry() {
           case '5': setActiveView('settings'); e.preventDefault(); break;
           case '6': setActiveView('terminals'); e.preventDefault(); break;
           case '7': setActiveView('files'); e.preventDefault(); break;
+          case '8': setActiveView('knowledge'); e.preventDefault(); break;
         }
       }
     };
@@ -543,6 +571,23 @@ export default function RealTimeRegistry() {
               <span className="text-xs opacity-50">⌘7</span>
             </div>
           </button>
+
+          <button
+            onClick={() => setActiveView('knowledge')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeView === 'knowledge'
+                ? 'bg-accent-primary/20 text-accent-primary font-medium'
+                : 'text-text-secondary hover:bg-scaffold-2'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">🏛️</span>
+                <span className="text-sm">Knowledge Space</span>
+              </div>
+              <span className="text-xs opacity-50">⌘8</span>
+            </div>
+          </button>
         </nav>
 
         {/* Sidebar Footer: Quick Stats */}
@@ -720,6 +765,12 @@ export default function RealTimeRegistry() {
 
                 {/* LLM Intelligence Widget - NEW! */}
                 <LLMIntelligenceWidget />
+
+                {/* Git History Visualization Widget */}
+                <GitGraphWidget />
+
+                {/* Deployment Change Tracker Widget */}
+                <DeploymentTrackerWidget />
               </div>
 
               {/* Original Metrics Grid */}
@@ -893,6 +944,12 @@ export default function RealTimeRegistry() {
               <div className="h-[calc(100vh-16rem)]">
                 <FileExplorer />
               </div>
+            </div>
+          )}
+
+          {activeView === 'knowledge' && (
+            <div className="space-y-6">
+              <KnowledgeSpace />
             </div>
           )}
         </div>

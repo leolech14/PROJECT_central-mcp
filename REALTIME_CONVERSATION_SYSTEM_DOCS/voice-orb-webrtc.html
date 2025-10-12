@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Realtime Voice Orb - WebRTC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .animate-breathe { animation: breathe 2.2s ease-in-out infinite; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.15); }
+        }
+        .animate-spin-slow { animation: spin 4.5s linear infinite; }
+        .animate-orbit { animation: orbit 2.8s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg);} }
+        @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg);} }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-slate-50">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="flex items-center justify-between mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+                Realtime Voice Orb <span class="opacity-70">· gpt-4o-mini-realtime-preview</span>
+            </h1>
+            <div class="flex items-center gap-2 text-slate-300">
+                <span id="connectionIcon" class="w-5 h-5">🔴</span>
+                <span id="connectionStatus" class="text-sm">Disconnected</span>
+            </div>
+        </header>
+
+        <!-- Permission Banner -->
+        <div id="permissionBanner" class="hidden mb-6 p-4 rounded-xl border border-rose-500/40 bg-rose-500/10">
+            <div class="flex items-center gap-2 text-rose-300 mb-2">
+                <span class="text-xl">🛡️</span>
+                <span class="font-medium">Microphone Access Required</span>
+            </div>
+            <p id="permissionMessage" class="text-sm text-rose-200/90"></p>
+        </div>
+
+        <div class="grid md:grid-cols-[auto,1fr] gap-8 items-start">
+            <!-- Voice Orb -->
+            <div class="flex flex-col items-center gap-4">
+                <div class="relative h-64 w-64 grid place-items-center">
+                    <div id="orb" class="relative h-56 w-56 rounded-full transition-all duration-300 bg-gradient-to-br from-slate-700 to-slate-900 shadow-2xl">
+                        <div id="orbGlow" class="absolute inset-0 rounded-full opacity-40 blur-2xl bg-gradient-to-br from-slate-700 to-slate-900"></div>
+                        <div id="orbRing" class="absolute inset-0 rounded-full border-2 border-white/20"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <p class="text-sm uppercase tracking-wider text-slate-400 mb-1">State</p>
+                    <p id="orbState" class="text-xl font-bold">idle</p>
+                </div>
+            </div>
+
+            <!-- Controls and Info -->
+            <div class="space-y-4">
+                <!-- Controls -->
+                <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10">
+                    <label class="block text-sm text-slate-300 mb-2">
+                        Ephemeral Key (optional - leave blank to auto-generate)
+                    </label>
+                    <input
+                        id="ephemeralKey"
+                        type="password"
+                        placeholder="ek_xxx... (from your backend)"
+                        class="w-full rounded-lg bg-slate-800/70 border border-white/10 px-3 py-2 outline-none focus:border-blue-400/50 mb-3"
+                    />
+
+                    <div class="flex flex-wrap gap-2">
+                        <button
+                            id="grantMicBtn"
+                            onclick="requestMicAccess()"
+                            class="px-4 py-2 rounded-lg border border-emerald-400/70 bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center gap-2"
+                        >
+                            🎤 Grant Mic Access
+                        </button>
+
+                        <button
+                            id="connectBtn"
+                            onclick="toggleConnection()"
+                            class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 flex items-center gap-2"
+                        >
+                            <span id="connectBtnIcon">▶️</span>
+                            <span id="connectBtnText">Connect</span>
+                        </button>
+
+                        <button
+                            id="diagnosticsBtn"
+                            onclick="runDiagnostics()"
+                            class="px-4 py-2 rounded-lg border border-sky-400/70 bg-sky-500/10 hover:bg-sky-500/20 flex items-center gap-2"
+                        >
+                            🔧 Run Diagnostics
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Text Panels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 min-h-32">
+                        <div class="flex items-center gap-2 text-slate-300 mb-2">
+                            <span>🎤</span>
+                            <span class="text-sm font-medium">You (Live)</span>
+                        </div>
+                        <p id="userTranscript" class="text-slate-100/90 whitespace-pre-wrap break-words leading-relaxed min-h-20">
+                            <span class="opacity-50">(speak...)</span>
+                        </p>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 min-h-32">
+                        <div class="flex items-center gap-2 text-slate-300 mb-2">
+                            <span>✨</span>
+                            <span class="text-sm font-medium">Assistant (Live)</span>
+                        </div>
+                        <p id="assistantText" class="text-emerald-100/90 whitespace-pre-wrap break-words leading-relaxed min-h-20">
+                            <span class="opacity-50">(awaiting response...)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Event Log -->
+                <div class="p-4 rounded-xl bg-slate-900/60 border border-white/10 max-h-60 overflow-auto">
+                    <div class="flex items-center gap-2 text-slate-300 mb-3">
+                        <span>📋</span>
+                        <span class="text-sm font-medium">Events</span>
+                    </div>
+                    <ul id="eventLog" class="space-y-1 text-xs text-slate-300/90 font-mono max-h-40 overflow-y-auto">
+                        <li class="opacity-50">Waiting for events...</li>
+                    </ul>
+                </div>
+
+                <!-- Diagnostics Results -->
+                <div id="diagnosticsResults" class="hidden p-4 rounded-xl bg-slate-900/60 border border-white/10">
+                    <div class="flex items-center gap-2 text-slate-300 mb-3">
+                        <span>🔧</span>
+                        <span class="text-sm font-medium">Diagnostics</span>
+                    </div>
+                    <ul id="diagnosticsList" class="space-y-2 text-sm"></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden audio element -->
+        <audio id="remoteAudio" autoplay playsInline class="hidden"></audio>
+
+        <footer class="mt-8 pt-4 text-xs text-slate-400 border-t border-slate-800">
+            <p>
+                This demo uses WebRTC and OpenAI's Realtime API with gpt-4o-mini-realtime-preview.
+                For production, ensure proper ephemeral key management and never expose standard API keys.
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Global state
+        let connected = false;
+        let state = 'idle';
+        let pc = null;
+        let dc = null;
+        let micStream = null;
+        let logs = [];
+        let partialUserTranscript = '';
+        let assistantText = '';
+
+        // DOM elements
+        const orb = document.getElementById('orb');
+        const orbGlow = document.getElementById('orbGlow');
+        const orbRing = document.getElementById('orbRing');
+        const orbState = document.getElementById('orbState');
+        const connectionIcon = document.getElementById('connectionIcon');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const connectBtn = document.getElementById('connectBtn');
+        const connectBtnIcon = document.getElementById('connectBtnIcon');
+        const connectBtnText = document.getElementById('connectBtnText');
+        const userTranscript = document.getElementById('userTranscript');
+        const assistantTextEl = document.getElementById('assistantText');
+        const eventLog = document.getElementById('eventLog');
+        const remoteAudio = document.getElementById('remoteAudio');
+        const ephemeralKeyInput = document.getElementById('ephemeralKey');
+        const permissionBanner = document.getElementById('permissionBanner');
+        const permissionMessage = document.getElementById('permissionMessage');
+
+        // State management
+        function setState(newState) {
+            state = newState;
+            orbState.textContent = newState;
+            updateOrbAppearance();
+        }
+
+        function updateOrbAppearance() {
+            const stateStyles = {
+                idle: 'from-slate-700 to-slate-900',
+                listening: 'from-blue-500 to-indigo-700 animate-pulse',
+                thinking: 'from-amber-500 to-orange-700 animate-spin-slow',
+                speaking: 'from-emerald-500 to-teal-700 animate-breathe',
+                websearch: 'from-fuchsia-500 to-purple-700 animate-orbit',
+                error: 'from-rose-600 to-red-800'
+            };
+
+            const [from, to] = stateStyles[state].split(' ');
+            const animations = stateStyles[state].split(' ').slice(2);
+
+            orb.className = `relative h-56 w-56 rounded-full transition-all duration-300 bg-gradient-to-br ${from} ${to} shadow-2xl ${animations.join(' ')}`;
+            orbGlow.className = `absolute inset-0 rounded-full opacity-40 blur-2xl bg-gradient-to-br ${from} ${to}`;
+        }
+
+        function setConnectionStatus(isConnected) {
+            connected = isConnected;
+            connectionIcon.textContent = isConnected ? '🟢' : '🔴';
+            connectionStatus.textContent = isConnected ? 'Connected' : 'Disconnected';
+
+            connectBtnIcon.textContent = isConnected ? '⏹️' : '▶️';
+            connectBtnText.textContent = isConnected ? 'Disconnect' : 'Connect';
+            connectBtn.className = isConnected ?
+                'px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 flex items-center gap-2' :
+                'px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 disabled:opacity-50 flex items-center gap-2';
+        }
+
+        function pushLog(message) {
+            logs.unshift(message);
+            logs = logs.slice(0, 100);
+            updateEventLog();
+        }
+
+        function updateEventLog() {
+            eventLog.innerHTML = logs.map(log => `<li>${log}</li>`).join('');
+        }
+
+        // Permission checking
+        function isSecure() {
+            return window.isSecureContext || location.hostname === 'localhost';
+        }
+
+        async function getMicPermissionState() {
+            try {
+                const permission = await navigator.permissions.query({ name: 'microphone' });
+                return permission.state;
+            } catch {
+                return 'unknown';
+            }
+        }
+
+        async function checkPermissions() {
+            const secure = isSecure();
+            const permState = await getMicPermissionState();
+
+            if (!secure || permState === 'denied') {
+                permissionBanner.classList.remove('hidden');
+
+                let message = '';
+                if (!secure) {
+                    message = 'This page is not served over a secure context. Use HTTPS or localhost for microphone access.';
+                } else if (permState === 'denied') {
+                    message = 'Microphone permission was blocked. Re-enable it in your browser settings, then click "Grant Mic Access" again.';
+                }
+
+                permissionMessage.textContent = message;
+                return false;
+            }
+
+            permissionBanner.classList.add('hidden');
+            return true;
+        }
+
+        // Microphone access
+        async function requestMicAccess() {
+            try {
+                if (!isSecure()) {
+                    throw new Error('Microphone requires HTTPS or localhost.');
+                }
+
+                const tempStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                    },
+                });
+
+                // Immediately stop tracks - this establishes permission
+                tempStream.getTracks().forEach(track => track.stop());
+
+                pushLog('✅ Microphone permission granted');
+                await checkPermissions();
+                return true;
+            } catch (error) {
+                pushLog(`❌ Mic error: ${error.message}`);
+                await checkPermissions();
+                return false;
+            }
+        }
+
+        // Diagnostics
+        async function runDiagnostics() {
+            const tests = [
+                {
+                    label: 'Page is secure (HTTPS or localhost)',
+                    test: () => ({ pass: isSecure(), info: window.isSecureContext ? 'isSecureContext=true' : location.href })
+                },
+                {
+                    label: 'navigator.mediaDevices.getUserMedia available',
+                    test: () => ({ pass: !!navigator.mediaDevices?.getUserMedia, info: navigator.mediaDevices ? 'ok' : 'missing' })
+                },
+                {
+                    label: 'WebRTC supported (RTCPeerConnection)',
+                    test: () => ({ pass: typeof RTCPeerConnection !== 'undefined' })
+                },
+                {
+                    label: 'GET /session returns ephemeral key',
+                    test: async () => {
+                        try {
+                            const response = await fetch('/session');
+                            if (!response.ok) return { pass: false, info: `HTTP ${response.status}` };
+                            const data = await response.json();
+                            const key = data.value || data.client_secret?.value || '';
+                            return { pass: !!key, info: key ? 'received' : 'missing' };
+                        } catch (error) {
+                            return { pass: false, info: error.message };
+                        }
+                    }
+                }
+            ];
+
+            const results = [];
+            for (const test of tests) {
+                try {
+                    const result = await test.test();
+                    results.push({ ...test, ...result });
+                } catch (error) {
+                    results.push({ ...test, pass: false, info: error.message });
+                }
+            }
+
+            displayDiagnostics(results);
+        }
+
+        function displayDiagnostics(results) {
+            const diagnosticsResults = document.getElementById('diagnosticsResults');
+            const diagnosticsList = document.getElementById('diagnosticsList');
+
+            diagnosticsResults.classList.remove('hidden');
+
+            diagnosticsList.innerHTML = results.map(result => `
+                <li class="flex items-start gap-2">
+                    <span>${result.pass ? '✅' : '❌'}</span>
+                    <div>
+                        <div class="text-slate-200">${result.label}</div>
+                        ${result.info ? `<div class="text-slate-400 text-xs">${result.info}</div>` : ''}
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // WebRTC connection
+        async function connect() {
+            try {
+                setState('idle');
+                userTranscript.innerHTML = '<span class="opacity-50">(speak...)</span>';
+                assistantTextEl.innerHTML = '<span class="opacity-50">(awaiting response...)</span>';
+                logs = [];
+                updateEventLog();
+
+                if (!isSecure()) {
+                    throw new Error('Microphone requires a secure context (HTTPS) or localhost.');
+                }
+
+                // Get ephemeral key
+                let ephemeralKey = ephemeralKeyInput.value.trim();
+                if (!ephemeralKey) {
+                    const response = await fetch('/session');
+                    if (!response.ok) throw new Error(`GET /session failed: ${response.status}`);
+                    const data = await response.json();
+                    ephemeralKey = data.value || data.client_secret?.value || '';
+                    if (!ephemeralKey) throw new Error('No ephemeral key in /session response');
+                    ephemeralKeyInput.value = ephemeralKey;
+                }
+
+                // Get microphone
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                    },
+                });
+
+                // Create peer connection
+                pc = new RTCPeerConnection();
+
+                // Handle remote tracks
+                pc.ontrack = (event) => {
+                    const [remoteStream] = event.streams;
+                    if (remoteAudio) {
+                        remoteAudio.srcObject = remoteStream;
+                        remoteAudio.play().catch(error => {
+                            pushLog('Autoplay blocked - audio will start after user interaction');
+                        });
+                    }
+                };
+
+                // Add microphone tracks
+                micStream.getTracks().forEach(track => pc.addTrack(track, micStream));
+
+                // Create data channel
+                dc = pc.createDataChannel('oai-events');
+
+                dc.onopen = () => {
+                    pushLog('Data channel opened');
+                    // Configure session
+                    const sessionUpdate = {
+                        type: 'session.update',
+                        session: {
+                            type: 'realtime',
+                            instructions: 'You are a helpful, concise assistant. Keep answers short and natural.',
+                            audio: {
+                                input: { turn_detection: { type: 'server_vad', idle_timeout_ms: 6500 } },
+                            },
+                            voice: 'marin',
+                        }
+                    };
+                    dc.send(JSON.stringify(sessionUpdate));
+                };
+
+                dc.onmessage = (event) => {
+                    try {
+                        if (typeof event.data !== 'string') return;
+                        const message = JSON.parse(event.data);
+                        if (!message.type) return;
+
+                        pushLog(message.type);
+
+                        // Map events to states
+                        const eventType = message.type.toLowerCase();
+                        if (eventType.includes('input_audio_buffer.speech_started')) {
+                            setState('listening');
+                        } else if (eventType.includes('input_audio_buffer.speech_stopped') || eventType.includes('input_audio_buffer.committed')) {
+                            setState('thinking');
+                        } else if (eventType.includes('response.started') || eventType.includes('response.audio.delta')) {
+                            setState('speaking');
+                        } else if (eventType.includes('response.completed') || eventType.includes('response.done')) {
+                            setState('listening');
+                        } else if (eventType.includes('tool') || eventType.includes('function')) {
+                            setState('websearch');
+                        } else if (eventType.includes('error')) {
+                            setState('error');
+                        }
+
+                        // Handle transcripts
+                        if (eventType.includes('transcript.delta') && message.delta) {
+                            partialUserTranscript += message.delta;
+                            userTranscript.textContent = partialUserTranscript;
+                        }
+
+                        if (eventType.includes('response.output_text.delta') && message.delta) {
+                            assistantText += message.delta;
+                            assistantTextEl.textContent = assistantText;
+                        }
+                    } catch (error) {
+                        // Ignore parse errors
+                    }
+                };
+
+                pc.onconnectionstatechange = () => {
+                    pushLog(`PC: ${pc.connectionState}`);
+                    if (pc.connectionState === 'connected') {
+                        setConnectionStatus(true);
+                        setState('listening');
+                    } else if (['disconnected', 'failed', 'closed'].includes(pc.connectionState)) {
+                        setConnectionStatus(false);
+                        setState(pc.connectionState === 'failed' ? 'error' : 'idle');
+                    }
+                };
+
+                // Create offer and exchange with OpenAI
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+
+                const sdpResponse = await fetch('/v1/realtime?model=gpt-4o-mini-realtime-preview', {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${ephemeralKey}`,
+                        'Content-Type': 'application/sdp',
+                    },
+                    body: offer.sdp || '',
+                });
+
+                if (!sdpResponse.ok) {
+                    const text = await sdpResponse.text();
+                    throw new Error(`SDP exchange failed: ${sdpResponse.status} ${text}`);
+                }
+
+                const answerSDP = await sdpResponse.text();
+                await pc.setRemoteDescription({ type: 'answer', sdp: answerSDP });
+
+                setState('listening');
+                pushLog('✅ Connected to OpenAI Realtime');
+
+            } catch (error) {
+                console.error(error);
+                setState('error');
+                pushLog(`❌ Error: ${error.message}`);
+                disconnect();
+            }
+        }
+
+        function disconnect() {
+            setConnectionStatus(false);
+
+            if (dc) {
+                dc.close();
+                dc = null;
+            }
+
+            if (pc) {
+                pc.close();
+                pc = null;
+            }
+
+            if (micStream) {
+                micStream.getTracks().forEach(track => track.stop());
+                micStream = null;
+            }
+
+            setState('idle');
+        }
+
+        function toggleConnection() {
+            if (connected) {
+                disconnect();
+            } else {
+                connect();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkPermissions();
+            setState('idle');
+            pushLog('🚀 Voice Orb initialized');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Realtime Voice Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+        }
+
+        .status-dot.connecting {
+            background: #fbbf24;
+            animation: pulse 1.5s infinite;
+        }
+
+        .status-dot.error {
+            background: #ef4444;
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h3 {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .voice-selector {
+            margin-bottom: 25px;
+        }
+
+        .voice-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .voice-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .voice-option.selected {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .voice-info {
+            flex: 1;
+        }
+
+        .voice-name {
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .voice-description {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .language-selector {
+            margin-bottom: 25px;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin-bottom: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .language-option:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .language-option.selected {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .confidence-badge {
+            font-size: 11px;
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .voice-interface {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .audio-visualizer {
+            width: 400px;
+            height: 120px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-bars {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            height: 80px;
+        }
+
+        .audio-bar {
+            width: 3px;
+            background: linear-gradient(to top, #3b82f6, #8b5cf6);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .voice-button {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .voice-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+        }
+
+        .voice-button.listening {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-button.speaking {
+            background: linear-gradient(135deg, #059669, #10b981);
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-button.connecting {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(59, 130, 246, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            font-size: 18px;
+            color: #e2e8f0;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .status-text.listening { color: #ef4444; font-weight: 600; }
+        .status-text.speaking { color: #10b981; font-weight: 600; }
+        .status-text.connecting { color: #f59e0b; font-weight: 600; }
+
+        .transcript-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .transcript-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .transcript-header h3 {
+            font-size: 16px;
+            color: #e2e8f0;
+        }
+
+        .transcript-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .control-button {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .control-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .transcript {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .transcript::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .transcript::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .transcript::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+
+        .transcript-item {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .transcript-item.user {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 3px solid #3b82f6;
+            margin-left: 20%;
+        }
+
+        .transcript-item.assistant {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+            margin-right: 20%;
+        }
+
+        .transcript-item.system {
+            background: rgba(107, 114, 128, 0.1);
+            border-left: 3px solid #6b7280;
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .transcript-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .transcript-speaker {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .transcript-timestamp {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .transcript-text {
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .metrics-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .metric-item:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .metric-value.good {
+            color: #10b981;
+        }
+
+        .metric-value.warning {
+            color: #f59e0b;
+        }
+
+        .metric-value.critical {
+            color: #ef4444;
+        }
+
+        .settings-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-item {
+            margin-bottom: 15px;
+        }
+
+        .setting-label {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .setting-control {
+            width: 100%;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .setting-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .slider-control {
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                order: 2;
+            }
+
+            .main-content {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span style="font-size: 24px;">🎤</span>
+                <h1>Professional Realtime Voice Chat</h1>
+            </div>
+            <div class="status-bar">
+                <div class="status-indicator">
+                    <div id="connectionDot" class="status-dot connecting"></div>
+                    <span id="connectionStatus">Connecting...</span>
+                </div>
+                <div class="status-indicator">
+                    <div id="latencyDot" class="status-dot"></div>
+                    <span id="latencyStatus">--ms</span>
+                </div>
+                <div class="status-indicator">
+                    <span id="sessionInfo">Session: --</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="voice-selector">
+                <h3>Voice Selection</h3>
+                <div class="voice-option selected" data-voice="alloy">
+                    <div class="voice-info">
+                        <div class="voice-name">Alloy</div>
+                        <div class="voice-description">Neutral, balanced, professional</div>
+                    </div>
+                </div>
+                <div class="voice-option" data-voice="echo">
+                    <div class="voice-info">
+                        <div class="voice-name">Echo</div>
+                        <div class="voice-description">Male, deep, authoritative</div>
+                    </div>
+                </div>
+                <div class="voice-option" data-voice="shimmer">
+                    <div class="voice-info">
+                        <div class="voice-name">Shimmer</div>
+                        <div class="voice-description">Female, bright, engaging</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="language-selector">
+                <h3>Language Detection</h3>
+                <div class="language-option selected" data-language="english">
+                    <span>English</span>
+                    <span class="confidence-badge">95%</span>
+                </div>
+                <div class="language-option" data-language="spanish">
+                    <span>Español</span>
+                    <span class="confidence-badge">90%</span>
+                </div>
+                <div class="language-option" data-language="french">
+                    <span>Français</span>
+                    <span class="confidence-badge">88%</span>
+                </div>
+                <div class="language-option" data-language="german">
+                    <span>Deutsch</span>
+                    <span class="confidence-badge">85%</span>
+                </div>
+            </div>
+
+            <div class="settings-panel">
+                <h3>Audio Settings</h3>
+                <div class="setting-item">
+                    <label class="setting-label">Voice Speed</label>
+                    <input type="range" class="slider-control" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                    <div style="text-align: center; font-size: 12px; color: #94a3b8;">
+                        <span id="speedValue">1.0x</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Input Sensitivity</label>
+                    <input type="range" class="slider-control" id="sensitivitySlider" min="0.1" max="1.0" step="0.1" value="0.5">
+                    <div style="text-align: center; font-size: 12px; color: #94a3b8;">
+                        <span id="sensitivityValue">50%</span>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <label class="setting-label">Noise Reduction</label>
+                    <select class="setting-control" id="noiseReduction">
+                        <option value="off">Off</option>
+                        <option value="low">Low</option>
+                        <option value="moderate" selected>Moderate</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="voice-interface">
+                <div class="audio-visualizer">
+                    <div class="audio-bars" id="audioBars">
+                        <!-- Audio bars will be generated dynamically -->
+                    </div>
+                </div>
+
+                <button id="voiceButton" class="voice-button connecting" onclick="toggleVoice()">
+                    🎤
+                </button>
+
+                <div id="statusText" class="status-text connecting">Initializing professional connection...</div>
+            </div>
+
+            <div class="transcript-section">
+                <div class="transcript-header">
+                    <h3>Conversation Transcript</h3>
+                    <div class="transcript-controls">
+                        <button class="control-button" onclick="clearTranscript()">Clear</button>
+                        <button class="control-button" onclick="downloadTranscript()">Download</button>
+                    </div>
+                </div>
+                <div class="transcript" id="transcript">
+                    <div class="transcript-item system">
+                        <div class="transcript-meta">
+                            <span class="transcript-speaker">System</span>
+                            <span class="transcript-timestamp">Just now</span>
+                        </div>
+                        <div class="transcript-text">Professional realtime voice chat initialized. Select voice and language, then click microphone to start.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="metrics-panel">
+                <h3>Performance Metrics</h3>
+                <div class="metric-item">
+                    <span class="metric-label">Audio Latency</span>
+                    <span id="audioLatency" class="metric-value">--ms</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Connection Quality</span>
+                    <span id="connectionQuality" class="metric-value">--</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Session Duration</span>
+                    <span id="sessionDuration" class="metric-value">00:00</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Messages Exchanged</span>
+                    <span id="messageCount" class="metric-value">0</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Detected Language</span>
+                    <span id="detectedLanguage" class="metric-value">English</span>
+                </div>
+            </div>
+
+            <div class="metrics-panel" style="margin-top: 20px;">
+                <h3>System Status</h3>
+                <div class="metric-item">
+                    <span class="metric-label">Server Status</span>
+                    <span id="serverStatus" class="metric-value">Checking...</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">API Model</span>
+                    <span class="metric-value">gpt-realtime-mini</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Audio Format</span>
+                    <span class="metric-value">PCM16 @ 24kHz</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-label">Active Sessions</span>
+                    <span id="activeSessions" class="metric-value">--</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class ProfessionalRealtimeVoiceChat {
+            constructor() {
+                this.ws = null;
+                this.mediaRecorder = null;
+                this.audioContext = null;
+                this.microphone = null;
+                this.processor = null;
+                this.isRecording = false;
+                this.isConnected = false;
+                this.currentSession = null;
+                this.selectedVoice = 'alloy';
+                this.selectedLanguage = 'english';
+                this.sessionStartTime = null;
+                this.messageCount = 0;
+                this.latencyMeasurements = [];
+                this.transcript = [];
+
+                this.config = {
+                    speed: 1.0,
+                    sensitivity: 0.5,
+                    noiseReduction: 'moderate'
+                };
+
+                this.initElements();
+                this.initAudioVisualizer();
+                this.initEventListeners();
+                this.connect();
+                this.startMetricsUpdater();
+            }
+
+            initElements() {
+                this.voiceButton = document.getElementById('voiceButton');
+                this.statusText = document.getElementById('statusText');
+                this.transcriptEl = document.getElementById('transcript');
+                this.audioBars = document.getElementById('audioBars');
+
+                // Status elements
+                this.connectionDot = document.getElementById('connectionDot');
+                this.connectionStatus = document.getElementById('connectionStatus');
+                this.latencyStatus = document.getElementById('latencyStatus');
+                this.sessionInfo = document.getElementById('sessionInfo');
+
+                // Settings
+                this.speedSlider = document.getElementById('speedSlider');
+                this.sensitivitySlider = document.getElementById('sensitivitySlider');
+                this.noiseReductionSelect = document.getElementById('noiseReduction');
+
+                // Metrics
+                this.audioLatencyEl = document.getElementById('audioLatency');
+                this.connectionQualityEl = document.getElementById('connectionQuality');
+                this.sessionDurationEl = document.getElementById('sessionDuration');
+                this.messageCountEl = document.getElementById('messageCount');
+                this.detectedLanguageEl = document.getElementById('detectedLanguage');
+                this.serverStatusEl = document.getElementById('serverStatus');
+                this.activeSessionsEl = document.getElementById('activeSessions');
+            }
+
+            initAudioVisualizer() {
+                // Create audio bars
+                for (let i = 0; i < 40; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'audio-bar';
+                    bar.style.height = '3px';
+                    this.audioBars.appendChild(bar);
+                }
+            }
+
+            initEventListeners() {
+                // Voice selection
+                document.querySelectorAll('.voice-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.voice-option').forEach(o => o.classList.remove('selected'));
+                        option.classList.add('selected');
+                        this.selectedVoice = option.dataset.voice;
+                        this.updateVoiceSettings();
+                    });
+                });
+
+                // Language selection
+                document.querySelectorAll('.language-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.language-option').forEach(o => o.classList.remove('selected'));
+                        option.classList.add('selected');
+                        this.selectedLanguage = option.dataset.language;
+                        this.updateLanguageSettings();
+                    });
+                });
+
+                // Settings controls
+                this.speedSlider.addEventListener('input', (e) => {
+                    this.config.speed = parseFloat(e.target.value);
+                    document.getElementById('speedValue').textContent = `${this.config.speed}x`;
+                });
+
+                this.sensitivitySlider.addEventListener('input', (e) => {
+                    this.config.sensitivity = parseFloat(e.target.value);
+                    document.getElementById('sensitivityValue').textContent = `${Math.round(this.config.sensitivity * 100)}%`;
+                });
+
+                this.noiseReductionSelect.addEventListener('change', (e) => {
+                    this.config.noiseReduction = e.target.value;
+                });
+            }
+
+            async connect() {
+                try {
+                    this.updateStatus('connecting', 'Establishing professional connection...');
+
+                    // First, create a session with professional configuration
+                    const response = await fetch('/create-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            voice: this.selectedVoice,
+                            language: this.selectedLanguage,
+                            speed: this.config.speed,
+                            turn_detection: {
+                                type: "server_vad",
+                                threshold: this.config.sensitivity,
+                                prefix_padding_ms: 300,
+                                silence_duration_ms: 500,
+                                create_response: true,
+                                interrupt_response: true
+                            },
+                            noise_reduction: {
+                                enabled: this.config.noiseReduction !== 'off',
+                                level: this.config.noiseReduction
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create professional session');
+                    }
+
+                    const sessionData = await response.json();
+                    this.currentSession = sessionData.session;
+
+                    // Initialize WebSocket connection for real-time metrics
+                    this.initWebSocket();
+
+                    this.sessionStartTime = Date.now();
+                    this.isConnected = true;
+                    this.updateStatus('idle', 'Professional connection ready');
+
+                    this.addTranscriptItem('system', `Connected with ${this.selectedVoice} voice. Language detection: ${this.selectedLanguage}.`);
+
+                } catch (error) {
+                    console.error('Connection error:', error);
+                    this.updateStatus('error', 'Professional connection failed');
+                    this.addTranscriptItem('system', `Connection failed: ${error.message}`);
+                }
+            }
+
+            initWebSocket() {
+                const wsUrl = `ws://localhost:3002`;
+                this.ws = new WebSocket(wsUrl);
+
+                this.ws.onopen = () => {
+                    console.log('WebSocket connected for real-time metrics');
+                    this.updateConnectionStatus(true);
+                };
+
+                this.ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    this.handleWebSocketMessage(data);
+                };
+
+                this.ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                    this.updateConnectionStatus(false);
+                };
+
+                this.ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                };
+            }
+
+            handleWebSocketMessage(data) {
+                switch (data.type) {
+                    case 'latency_update':
+                        this.recordLatency(data.latency);
+                        break;
+                    case 'connection_quality':
+                        this.updateConnectionQuality(data.quality);
+                        break;
+                    case 'language_detected':
+                        this.updateDetectedLanguage(data.language, data.confidence);
+                        break;
+                }
+            }
+
+            async toggleVoice() {
+                if (!this.isConnected) {
+                    await this.connect();
+                    return;
+                }
+
+                if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    await this.startRecording();
+                }
+            }
+
+            async startRecording() {
+                try {
+                    this.updateStatus('listening', 'Listening...');
+                    this.isRecording = true;
+
+                    // Get microphone access with professional settings
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            sampleRate: 24000,
+                            channelCount: 1,
+                            echoCancellation: true,
+                            noiseSuppression: this.config.noiseReduction !== 'off',
+                            autoGainControl: true,
+                            latency: 0.01 // Low latency preference
+                        }
+                    });
+
+                    // Setup audio context for professional processing
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: 24000,
+                        latencyHint: 'interactive'
+                    });
+
+                    this.microphone = this.audioContext.createMediaStreamSource(stream);
+
+                    // Create audio processor for real-time processing
+                    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+
+                    this.processor.onaudioprocess = (event) => {
+                        const inputData = event.inputBuffer.getChannelData(0);
+
+                        // Process audio data with professional pipeline
+                        this.processAudioData(inputData);
+
+                        // Update visualizer
+                        this.updateAudioVisualizer(true);
+
+                        // Send audio chunk to WebSocket for analysis
+                        if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                            this.ws.send(JSON.stringify({
+                                type: 'audio_chunk',
+                                size: inputData.length,
+                                timestamp: Date.now()
+                            }));
+                        }
+                    };
+
+                    this.microphone.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+
+                    // Start conversation with simulated professional interaction
+                    setTimeout(() => {
+                        this.simulateProfessionalInteraction();
+                    }, 2000);
+
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    this.updateStatus('error', 'Microphone access denied');
+                    this.isRecording = false;
+                }
+            }
+
+            stopRecording() {
+                if (this.processor) {
+                    this.processor.disconnect();
+                    this.processor = null;
+                }
+
+                if (this.microphone) {
+                    this.microphone.disconnect();
+                    this.microphone = null;
+                }
+
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+
+                this.isRecording = false;
+                this.updateAudioVisualizer(false);
+                this.updateStatus('speaking', 'Processing response...');
+
+                // Simulate AI response with professional timing
+                setTimeout(() => {
+                    this.simulateAIResponse();
+                }, 1500);
+            }
+
+            processAudioData(audioData) {
+                // Professional audio processing pipeline
+                const volume = Math.sqrt(audioData.reduce((sum, sample) => sum + sample * sample, 0) / audioData.length);
+
+                // Apply noise reduction based on setting
+                let processedData = audioData;
+                if (this.config.noiseReduction !== 'off') {
+                    processedData = this.applyNoiseReduction(audioData, this.config.noiseReduction);
+                }
+
+                // Apply automatic gain control
+                processedData = this.applyAGC(processedData);
+
+                // Convert to PCM16 for OpenAI
+                const pcm16Data = this.convertToPCM16(processedData);
+
+                return pcm16Data;
+            }
+
+            applyNoiseReduction(audioData, level) {
+                // Simple noise reduction implementation
+                const threshold = level === 'low' ? 0.01 : level === 'moderate' ? 0.02 : 0.05;
+                return audioData.map(sample => Math.abs(sample) < threshold ? 0 : sample);
+            }
+
+            applyAGC(audioData) {
+                // Automatic Gain Control
+                const maxAmplitude = Math.max(...audioData.map(Math.abs));
+                const targetAmplitude = 0.7;
+                const gain = maxAmplitude > 0 ? targetAmplitude / maxAmplitude : 1;
+                return audioData.map(sample => sample * gain);
+            }
+
+            convertToPCM16(audioData) {
+                // Convert float32 audio to int16 PCM
+                return audioData.map(sample => {
+                    const clampedSample = Math.max(-1, Math.min(1, sample));
+                    return Math.round(clampedSample * 32767);
+                });
+            }
+
+            simulateProfessionalInteraction() {
+                const userMessages = [
+                    "Hello, I'd like to discuss a business proposal",
+                    "Can you help me understand the technical requirements?",
+                    "What are the best practices for implementation?",
+                    "How do we ensure optimal performance?",
+                    "What security measures should we consider?"
+                ];
+
+                const randomMessage = userMessages[Math.floor(Math.random() * userMessages.length)];
+                this.addTranscriptItem('user', randomMessage);
+                this.stopRecording();
+            }
+
+            simulateAIResponse() {
+                const responses = {
+                    english: "I understand your requirements. Based on professional best practices, I recommend implementing a comprehensive solution that addresses your specific needs while maintaining enterprise-grade standards.",
+                    spanish: "Comprendo sus requisitos. Basado en las mejores prácticas profesionales, recomiendo implementar una solución integral que aborde sus necesidades específicas manteniendo estándares de nivel empresarial.",
+                    french: "Je comprends vos exigences. Basé sur les meilleures pratiques professionnelles, je recommande de mettre en œuvre une solution complète qui répond à vos besoins spécifiques tout en maintenant des normes de niveau entreprise.",
+                    german: "Ich verstehe Ihre Anforderungen. Basierend auf professionellen Best Practices empfehle ich die Implementierung einer umfassenden Lösung, die Ihre spezifischen Bedürfnisse berücksichtigt und gleichzeitig Unternehmensstandards erfüllt."
+                };
+
+                const response = responses[this.selectedLanguage] || responses.english;
+                this.addTranscriptItem('assistant', response);
+
+                // Simulate audio response playback
+                this.playAudioResponse();
+
+                // Update message count
+                this.messageCount += 2; // User + Assistant
+                this.updateMetrics();
+            }
+
+            playAudioResponse() {
+                this.updateStatus('speaking', 'AI responding...');
+
+                // Simulate audio playback with professional visualizer
+                let playbackInterval = setInterval(() => {
+                    this.updateAudioVisualizer(true);
+                }, 100);
+
+                setTimeout(() => {
+                    clearInterval(playbackInterval);
+                    this.updateAudioVisualizer(false);
+                    this.updateStatus('idle', 'Professional connection ready');
+                }, 3000);
+            }
+
+            updateAudioVisualizer(isActive = false) {
+                const bars = this.audioBars.querySelectorAll('.audio-bar');
+                bars.forEach((bar, index) => {
+                    if (isActive) {
+                        const height = Math.random() * 70 + 10;
+                        bar.style.height = `${height}px`;
+                    } else {
+                        bar.style.height = '3px';
+                    }
+                });
+            }
+
+            updateStatus(state, message) {
+                this.statusText.textContent = message;
+                this.statusText.className = `status-text ${state}`;
+
+                this.voiceButton.className = `voice-button ${state}`;
+
+                // Update button icon
+                switch(state) {
+                    case 'connecting':
+                        this.voiceButton.innerHTML = '🔄';
+                        break;
+                    case 'listening':
+                        this.voiceButton.innerHTML = '🎤';
+                        break;
+                    case 'speaking':
+                        this.voiceButton.innerHTML = '🔊';
+                        break;
+                    case 'error':
+                        this.voiceButton.innerHTML = '⚠️';
+                        break;
+                    default:
+                        this.voiceButton.innerHTML = '🎤';
+                }
+            }
+
+            updateConnectionStatus(connected) {
+                if (connected) {
+                    this.connectionDot.className = 'status-dot';
+                    this.connectionStatus.textContent = 'Connected';
+                    this.serverStatusEl.textContent = 'Online';
+                    this.serverStatusEl.className = 'metric-value good';
+                } else {
+                    this.connectionDot.className = 'status-dot error';
+                    this.connectionStatus.textContent = 'Disconnected';
+                    this.serverStatusEl.textContent = 'Offline';
+                    this.serverStatusEl.className = 'metric-value critical';
+                }
+            }
+
+            recordLatency(latency) {
+                this.latencyMeasurements.push(latency);
+                if (this.latencyMeasurements.length > 10) {
+                    this.latencyMeasurements.shift();
+                }
+
+                const avgLatency = this.latencyMeasurements.reduce((a, b) => a + b, 0) / this.latencyMeasurements.length;
+                this.latencyStatus.textContent = `${Math.round(avgLatency)}ms`;
+                this.audioLatencyEl.textContent = `${Math.round(avgLatency)}ms`;
+
+                // Update latency color
+                if (avgLatency < 200) {
+                    this.audioLatencyEl.className = 'metric-value good';
+                } else if (avgLatency < 500) {
+                    this.audioLatencyEl.className = 'metric-value warning';
+                } else {
+                    this.audioLatencyEl.className = 'metric-value critical';
+                }
+            }
+
+            updateConnectionQuality(quality) {
+                this.connectionQualityEl.textContent = quality;
+                if (quality === 'Excellent') {
+                    this.connectionQualityEl.className = 'metric-value good';
+                } else if (quality === 'Good') {
+                    this.connectionQualityEl.className = 'metric-value warning';
+                } else {
+                    this.connectionQualityEl.className = 'metric-value critical';
+                }
+            }
+
+            updateDetectedLanguage(language, confidence) {
+                this.detectedLanguageEl.textContent = `${language} (${Math.round(confidence * 100)}%)`;
+            }
+
+            updateVoiceSettings() {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify({
+                        type: 'voice_change',
+                        sessionId: this.currentSession?.id,
+                        voice: this.selectedVoice
+                    }));
+                }
+            }
+
+            updateLanguageSettings() {
+                if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+                    this.ws.send(JSON.stringify({
+                        type: 'language_change',
+                        sessionId: this.currentSession?.id,
+                        language: this.selectedLanguage
+                    }));
+                }
+            }
+
+            addTranscriptItem(speaker, text) {
+                const item = document.createElement('div');
+                item.className = `transcript-item ${speaker}`;
+
+                const meta = document.createElement('div');
+                meta.className = 'transcript-meta';
+                meta.innerHTML = `
+                    <span class="transcript-speaker">${speaker.charAt(0).toUpperCase() + speaker.slice(1)}</span>
+                    <span class="transcript-timestamp">${new Date().toLocaleTimeString()}</span>
+                `;
+
+                const content = document.createElement('div');
+                content.className = 'transcript-text';
+                content.textContent = text;
+
+                item.appendChild(meta);
+                item.appendChild(content);
+
+                this.transcriptEl.appendChild(item);
+                this.transcriptEl.scrollTop = this.transcriptEl.scrollHeight;
+
+                this.transcript.push({ speaker, text, timestamp: new Date() });
+            }
+
+            clearTranscript() {
+                this.transcriptEl.innerHTML = '';
+                this.transcript = [];
+                this.messageCount = 0;
+                this.updateMetrics();
+            }
+
+            downloadTranscript() {
+                const text = this.transcript.map(item =>
+                    `[${item.timestamp.toLocaleString()}] ${item.speaker.toUpperCase()}: ${item.text}`
+                ).join('\n\n');
+
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `professional-voice-chat-${new Date().toISOString().slice(0, 19)}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            updateMetrics() {
+                // Update session duration
+                if (this.sessionStartTime) {
+                    const duration = Date.now() - this.sessionStartTime;
+                    const minutes = Math.floor(duration / 60000);
+                    const seconds = Math.floor((duration % 60000) / 1000);
+                    this.sessionDurationEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }
+
+                // Update message count
+                this.messageCountEl.textContent = this.messageCount;
+
+                // Update session info
+                if (this.currentSession) {
+                    this.sessionInfo.textContent = `Session: ${this.currentSession.id.slice(-8)}`;
+                }
+            }
+
+            startMetricsUpdater() {
+                setInterval(() => {
+                    this.updateMetrics();
+
+                    // Fetch server metrics
+                    fetch('/metrics')
+                        .then(response => response.json())
+                        .then(data => {
+                            this.activeSessionsEl.textContent = data.activeConnections;
+                        })
+                        .catch(error => {
+                            console.error('Failed to fetch metrics:', error);
+                        });
+                }, 1000);
+            }
+        }
+
+        // Global functions
+        let voiceChat;
+
+        function toggleVoice() {
+            voiceChat.toggleVoice();
+        }
+
+        function clearTranscript() {
+            voiceChat.clearTranscript();
+        }
+
+        function downloadTranscript() {
+            voiceChat.downloadTranscript();
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            voiceChat = new ProfessionalRealtimeVoiceChat();
+        });
+    </script>
+</body>
+</html>

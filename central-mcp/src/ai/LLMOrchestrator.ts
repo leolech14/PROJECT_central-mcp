@@ -47,6 +47,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { ModelRegistry, ModelSelection, ModelUsage } from './ModelRegistry.js';
 import { logger } from '../utils/logger.js';
 import Database from 'better-sqlite3';
@@ -87,6 +88,7 @@ export class LLMOrchestrator {
   private modelRegistry: ModelRegistry;
   private db: Database.Database;
   private anthropic?: Anthropic;
+  private openai?: OpenAI;
   private rateLimitTracker: Map<string, number[]>; // modelId → timestamps
 
   constructor(db: Database.Database) {
@@ -95,12 +97,22 @@ export class LLMOrchestrator {
     this.rateLimitTracker = new Map();
 
     // Initialize Anthropic client
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (apiKey) {
-      this.anthropic = new Anthropic({ apiKey });
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    if (anthropicKey) {
+      this.anthropic = new Anthropic({ apiKey: anthropicKey });
       logger.info(`🧠 LLM Orchestrator initialized with Anthropic`);
-    } else {
-      logger.warn(`⚠️  ANTHROPIC_API_KEY not found - LLM features disabled`);
+    }
+
+    // Initialize OpenAI client
+    const openaiKey = process.env.OPENAI_API_KEY;
+    if (openaiKey) {
+      this.openai = new OpenAI({ apiKey: openaiKey });
+      logger.info(`🧠 LLM Orchestrator initialized with OpenAI`);
+    }
+
+    if (!anthropicKey && !openaiKey) {
+      logger.warn(`⚠️  No API keys found - LLM features disabled`);
+      logger.warn(`   Set ANTHROPIC_API_KEY or OPENAI_API_KEY to enable`);
     }
   }
 
@@ -315,8 +327,46 @@ export class LLMOrchestrator {
    * Call OpenAI API
    */
   private async callOpenAI(request: LLMRequest, selection: ModelSelection): Promise<LLMResponse> {
-    // TODO: Implement OpenAI integration
-    throw new Error('OpenAI integration not yet implemented');
+    if (!this.openai) {
+      throw new Error('OpenAI client not initialized');
+    }
+
+    const startTime = Date.now();
+
+    const response = await this.openai.chat.completions.create({
+      model: selection.selectedModel.modelId,
+      max_tokens: request.maxTokens || 8192,
+      temperature: request.temperature || 0.7,
+      messages: [
+        {
+          role: 'system',
+          content: request.systemPrompt
+        },
+        {
+          role: 'user',
+          content: request.userPrompt
+        }
+      ]
+    });
+
+    const latency = Date.now() - startTime;
+
+    // Extract text content
+    const textContent = response.choices[0]?.message?.content || '';
+
+    return {
+      content: textContent,
+      modelUsed: selection.selectedModel.displayName,
+      promptTokens: response.usage?.prompt_tokens || 0,
+      completionTokens: response.usage?.completion_tokens || 0,
+      totalTokens: response.usage?.total_tokens || 0,
+      latencyMs: latency,
+      cost: this.calculateCost(
+        selection.selectedModel.id,
+        response.usage?.prompt_tokens || 0,
+        response.usage?.completion_tokens || 0
+      )
+    };
   }
 
   /**

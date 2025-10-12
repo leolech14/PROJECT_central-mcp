@@ -1,0 +1,456 @@
+#!/usr/bin/env node
+
+const https = require('https');
+const http = require('http');
+const { spawn } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+const PORT = 3002;
+
+// Professional configuration from guide
+const AUDIO_CONFIG = {
+  format: "pcm16",
+  sampleRate: 24000,
+  inputChunkSize: 1024,
+  outputChunkSize: 2048,
+  totalBuffer: 4096,
+  channels: 1
+};
+
+const TURN_DETECTION_CONFIG = {
+  type: "server_vad",
+  threshold: 0.5,
+  prefix_padding_ms: 300,
+  silence_duration_ms: 500,
+  create_response: true,
+  interrupt_response: true
+};
+
+const VOICE_OPTIONS = {
+  alloy: { name: "Alloy", gender: "neutral", characteristics: "balanced, professional" },
+  echo: { name: "Echo", gender: "male", characteristics: "deep, calm, authoritative" },
+  shimmer: { name: "Shimmer", gender: "female", characteristics: "bright, friendly, engaging" }
+};
+
+const LANGUAGE_SUPPORT = {
+  english: { confidence: 0.95, code: "en", name: "English" },
+  spanish: { confidence: 0.90, code: "es", name: "Español" },
+  french: { confidence: 0.88, code: "fr", name: "Français" },
+  german: { confidence: 0.85, code: "de", name: "Deutsch" },
+  japanese: { confidence: 0.82, code: "ja", name: "日本語" },
+  chinese: { confidence: 0.80, code: "zh", name: "中文" },
+  portuguese: { confidence: 0.78, code: "pt", name: "Português" },
+  russian: { confidence: 0.75, code: "ru", name: "Русский" }
+};
+
+// Store active sessions
+const sessions = new Map();
+const metrics = {
+  activeConnections: 0,
+  totalSessions: 0,
+  audioLatency: [],
+  errorCount: 0,
+  lastReset: Date.now()
+};
+
+async function getApiKeyFromDoppler() {
+  return new Promise((resolve, reject) => {
+    const doppler = spawn('doppler', ['secrets', 'get', '--project', 'ai-tools', '--config', 'dev', 'OPENAI_API_KEY', '--plain']);
+
+    let output = '';
+    doppler.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    doppler.stderr.on('data', (data) => {
+      console.error('Doppler error:', data.toString());
+    });
+
+    doppler.on('close', (code) => {
+      if (code === 0) {
+        resolve(output.trim());
+      } else {
+        reject(new Error(`Doppler exited with code ${code}`));
+      }
+    });
+  });
+}
+
+function createOptimizedSession(config = {}) {
+  return new Promise((resolve, reject) => {
+    const sessionConfig = {
+      model: "gpt-realtime-mini",
+      voice: config.voice || "alloy",
+      modalities: ["text", "audio"],
+      instructions: buildSystemPrompt(config.language || "english", config.personality || "professional"),
+      input_audio_format: AUDIO_CONFIG.format,
+      output_audio_format: AUDIO_CONFIG.format,
+      input_audio_transcription: {
+        model: "whisper-1"
+      },
+      turn_detection: TURN_DETECTION_CONFIG,
+      tool_choice: "auto",
+      temperature: 0.8,
+      max_response_output_tokens: 4096,
+      ...config
+    };
+
+    const data = JSON.stringify(sessionConfig);
+
+    const options = {
+      hostname: 'api.openai.com',
+      port: 443,
+      path: '/v1/realtime/sessions',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length,
+        'Authorization': `Bearer ${config.apiKey}`
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let responseData = '';
+
+      res.on('data', (chunk) => {
+        responseData += chunk;
+      });
+
+      res.on('end', () => {
+        try {
+          const parsedData = JSON.parse(responseData);
+          resolve(parsedData);
+        } catch (error) {
+          reject(new Error(`Failed to parse response: ${error.message}`));
+        }
+      });
+    });
+
+    req.on('error', (error) => {
+      reject(error);
+    });
+
+    req.write(data);
+    req.end();
+  });
+}
+
+function buildSystemPrompt(language, personality) {
+  const languagePrompts = {
+    english: "You are a helpful AI assistant. Respond naturally and conversationally in English.",
+    spanish: "Eres un asistente de IA útil. Responde de manera natural y conversacional en español.",
+    french: "Vous êtes un assistant IA utile. Répondez de manière naturelle et conversationnelle en français.",
+    german: "Sie sind ein hilfreicher KI-Assistent. Antworten Sie natürlich und unterhaltsam auf Deutsch.",
+    japanese: "あなたは有用なAIアシスタントです。日本語で自然で会話的に応答してください。",
+    chinese: "你是一个有用的AI助手。请用中文自然对话地回应。",
+    portuguese: "Você é um assistente de IA útil. Responda de forma natural e conversacional em português.",
+    russian: "Вы полезный AI-помощник. Отвечайте естественно и разговорно на русском."
+  };
+
+  const personalityPrompts = {
+    professional: "Maintain a professional, courteous tone.",
+    friendly: "Be warm, friendly, and engaging.",
+    casual: "Use a casual, relaxed conversational style.",
+    formal: "Maintain formal, respectful communication."
+  };
+
+  return `${languagePrompts[language] || languagePrompts.english} ${personalityPrompts[personality] || personalityPrompts.professional}`;
+}
+
+function detectLanguage(transcript) {
+  // Simple language detection based on common words/phrases
+  const patterns = {
+    spanish: /\b(hola|gracias|por favor|buenos días)\b/i,
+    french: /\b(bonjour|merci|s'il vous plaît|bonne journée)\b/i,
+    german: /\b(hallo|danke|bitte|guten tag)\b/i,
+    japanese: /\b(こんにちは|ありがとう|お願いします|おはよう)\b/i,
+    chinese: /\b(你好|谢谢|请|早上好)\b/i,
+    portuguese: /\b(olá|obrigado|por favor|bom dia)\b/i,
+    russian: /\b(здравствуйте|спасибо|пожалуйста|доброе утро)\b/i
+  };
+
+  for (const [lang, pattern] of Object.entries(patterns)) {
+    if (pattern.test(transcript)) {
+      return lang;
+    }
+  }
+
+  return 'english'; // Default fallback
+}
+
+function recordMetric(name, value) {
+  if (!metrics[name]) {
+    metrics[name] = [];
+  }
+  metrics[name].push({ value, timestamp: Date.now() });
+
+  // Keep only last 100 entries
+  if (metrics[name].length > 100) {
+    metrics[name] = metrics[name].slice(-100);
+  }
+
+  // Check for critical thresholds
+  if (name === 'audioLatency' && value > 500) {
+    console.warn(`🚨 CRITICAL: Audio latency ${value}ms exceeds 500ms threshold`);
+  }
+}
+
+const server = http.createServer(async (req, res) => {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
+  const url = new URL(req.url, `http://localhost:${PORT}`);
+  const pathname = url.pathname;
+
+  try {
+    if (pathname === '/') {
+      // Serve the professional voice chat interface
+      const htmlPath = path.join(__dirname, 'professional-voice-chat.html');
+      if (fs.existsSync(htmlPath)) {
+        const html = fs.readFileSync(htmlPath, 'utf8');
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.end(html);
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Professional voice chat interface not found');
+      }
+
+    } else if (pathname === '/create-session' && req.method === 'POST') {
+      // Create optimized session with advanced configuration
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+
+      req.on('end', async () => {
+        try {
+          const config = JSON.parse(body);
+          const apiKey = await getApiKeyFromDoppler();
+
+          const sessionData = await createOptimizedSession({
+            ...config,
+            apiKey
+          });
+
+          // Store session with metadata
+          const sessionId = sessionData.id;
+          sessions.set(sessionId, {
+            ...sessionData,
+            createdAt: new Date(),
+            config,
+            messages: [],
+            metrics: {
+              audioLatency: [],
+              messageCount: 0,
+              language: config.language || 'english'
+            }
+          });
+
+          metrics.totalSessions++;
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: true,
+            session: sessionData,
+            config: {
+              audio: AUDIO_CONFIG,
+              turnDetection: TURN_DETECTION_CONFIG,
+              voiceOptions: VOICE_OPTIONS,
+              languageSupport: LANGUAGE_SUPPORT
+            }
+          }));
+
+        } catch (error) {
+          metrics.errorCount++;
+          console.error('Session creation error:', error);
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: false,
+            error: error.message
+          }));
+        }
+      });
+
+    } else if (pathname === '/detect-language' && req.method === 'POST') {
+      // Language detection endpoint
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk.toString();
+      });
+
+      req.on('end', () => {
+        try {
+          const { transcript } = JSON.parse(body);
+          const detectedLanguage = detectLanguage(transcript);
+          const confidence = LANGUAGE_SUPPORT[detectedLanguage]?.confidence || 0.5;
+
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            language: detectedLanguage,
+            confidence,
+            supported: confidence >= 0.7
+          }));
+
+        } catch (error) {
+          res.writeHead(500, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify({
+            success: false,
+            error: error.message
+          }));
+        }
+      });
+
+    } else if (pathname === '/metrics') {
+      // Return performance metrics
+      const avgLatency = metrics.audioLatency.length > 0
+        ? metrics.audioLatency.reduce((a, b) => a + b.value, 0) / metrics.audioLatency.length
+        : 0;
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        activeConnections: metrics.activeConnections,
+        totalSessions: metrics.totalSessions,
+        averageAudioLatency: Math.round(avgLatency),
+        errorCount: metrics.errorCount,
+        uptime: Date.now() - metrics.lastReset,
+        sessions: Array.from(sessions.entries()).map(([id, session]) => ({
+          id,
+          createdAt: session.createdAt,
+          messageCount: session.metrics.messageCount,
+          language: session.metrics.language
+        }))
+      }));
+
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Not found' }));
+    }
+
+  } catch (error) {
+    console.error('Server error:', error);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      success: false,
+      error: error.message
+    }));
+  }
+});
+
+// Create WebSocket server for real-time communication
+const wss = new WebSocketServer({ noServer: true });
+
+wss.on('connection', (ws, request, clientId) => {
+  console.log(`WebSocket client connected: ${clientId}`);
+  metrics.activeConnections++;
+  wsConnections.set(clientId, ws);
+
+  ws.on('message', async (message) => {
+    try {
+      const data = JSON.parse(message);
+
+      switch (data.type) {
+        case 'audio_chunk':
+          // Process audio chunk for real-time analysis
+          recordMetric('audioChunkSize', data.size || 0);
+          break;
+
+        case 'latency_measurement':
+          // Record audio latency
+          recordMetric('audioLatency', data.latency || 0);
+          break;
+
+        case 'language_change':
+          // Handle dynamic language switching
+          if (sessions.has(data.sessionId)) {
+            sessions.get(data.sessionId).metrics.language = data.language;
+          }
+          break;
+
+        case 'voice_change':
+          // Handle voice switching
+          if (sessions.has(data.sessionId)) {
+            sessions.get(data.sessionId).config.voice = data.voice;
+          }
+          break;
+      }
+
+    } catch (error) {
+      console.error('WebSocket message error:', error);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log(`WebSocket client disconnected: ${clientId}`);
+    metrics.activeConnections--;
+    wsConnections.delete(clientId);
+  });
+
+  ws.on('error', (error) => {
+    console.error(`WebSocket error for ${clientId}:`, error);
+    metrics.errorCount++;
+  });
+});
+
+// Handle WebSocket upgrade
+server.on('upgrade', (request, socket, head) => {
+  const clientId = `client_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  wss.handleUpgrade(request, socket, head, (ws) => {
+    wss.emit('connection', ws, request, clientId);
+  });
+});
+
+// Start the server
+server.listen(PORT, () => {
+  console.log(`🚀 Professional Realtime Voice Server running at:`);
+  console.log(`   http://localhost:${PORT}`);
+  console.log(`   http://127.0.0.1:${PORT}`);
+  console.log('');
+  console.log(`✅ Professional configuration loaded:`);
+  console.log(`   🎤 Audio: ${AUDIO_CONFIG.sampleRate}Hz PCM16`);
+  console.log(`   🌍 Languages: ${Object.keys(LANGUAGE_SUPPORT).length} supported`);
+  console.log(`   🔊 Voices: ${Object.keys(VOICE_OPTIONS).length} available`);
+  console.log(`   📊 Metrics: Real-time monitoring enabled`);
+  console.log(`   🔌 WebSocket: Ready for real-time communication`);
+  console.log('');
+  console.log('Press Ctrl+C to stop the server');
+});
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n🔴 Shutting down professional server...');
+
+  // Close all WebSocket connections
+  wsConnections.forEach((ws, clientId) => {
+    ws.close();
+    console.log(`Closed connection: ${clientId}`);
+  });
+
+  server.close(() => {
+    console.log('✅ Professional server stopped');
+    process.exit(0);
+  });
+});
+
+// Metrics cleanup every 5 minutes
+setInterval(() => {
+  // Clean old metrics
+  const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+
+  Object.keys(metrics).forEach(key => {
+    if (Array.isArray(metrics[key])) {
+      metrics[key] = metrics[key].filter(entry => entry.timestamp > fiveMinutesAgo);
+    }
+  });
+
+  console.log(`📊 Metrics cleanup completed. Active connections: ${metrics.activeConnections}`);
+}, 5 * 60 * 1000);

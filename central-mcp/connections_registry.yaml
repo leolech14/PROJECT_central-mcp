@@ -1,0 +1,351 @@
+version: '1.0'
+project: profilepro-nextjs
+generated_at: '2025-10-12T16:03:04.329997'
+environment: production
+backend_connections:
+- id: s3-prod
+  category: storage
+  provider: aws-s3
+  environment: production
+  owner: null
+  endpoints: {}
+  secrets_ref: null
+  health_probes: []
+  slo:
+    availability_percentage: 99.0
+    latency_p95_ms: 500
+    latency_p99_ms: 1000
+    error_rate_percentage: 1.0
+    error_budget_policy: alert_only
+  quotas: null
+  discovered_at: '2025-10-12T16:03:02.231668'
+  discovered_in_files:
+  - src/app/images/page.tsx
+  - src/app/api/s3/list/route.ts
+  - src/app/api/s3/upload/route.ts
+  - src/app/api/analysis/route.ts
+  - src/app/api/images/generate-enhanced/route.ts
+  - src/app/api/images/generate-suggestion/route.ts
+  - src/app/api/images/generate/route.ts
+  - src/app/api/gallery/user-images/route.ts
+  - src/lib/unified-integration.ts
+  - src/lib/s3.ts
+  - src/lib/imageProvider/gemini.ts
+  - src/lib/ai/generation.ts
+  usage_patterns: []
+- id: postgres-prod
+  category: database
+  provider: postgresql
+  environment: production
+  owner: null
+  endpoints: {}
+  secrets_ref: null
+  health_probes:
+  - type: sql
+    target: SELECT 1
+    interval_seconds: 60
+    timeout_ms: 1000
+    expected_response: null
+    auth_required: false
+  slo:
+    availability_percentage: 99.9
+    latency_p95_ms: 50
+    latency_p99_ms: 100
+    error_rate_percentage: 0.1
+    error_budget_policy: alert_only
+  quotas: null
+  discovered_at: '2025-10-12T16:03:02.231706'
+  discovered_in_files:
+  - src/lib/prisma.ts
+  - src/lib/database-singleton.ts
+  - src/lib/database/production-setup.ts
+  usage_patterns:
+  - read
+  - write
+  - migrate
+- id: redis-prod
+  category: cache
+  provider: redis
+  environment: production
+  owner: null
+  endpoints: {}
+  secrets_ref: null
+  health_probes:
+  - type: redis
+    target: PING
+    interval_seconds: 30
+    timeout_ms: 500
+    expected_response: null
+    auth_required: false
+  slo:
+    availability_percentage: 99.5
+    latency_p95_ms: 10
+    latency_p99_ms: 50
+    error_rate_percentage: 0.5
+    error_budget_policy: alert_only
+  quotas: null
+  discovered_at: '2025-10-12T16:03:02.231723'
+  discovered_in_files:
+  - src/lib/vertebrae/complete-vertebrae-registry.ts
+  usage_patterns: []
+external_apis:
+- id: stripe-prod
+  category: payments
+  provider: stripe
+  environment: production
+  owner: null
+  endpoints: {}
+  auth_type: api_key
+  secrets_ref: null
+  quotas: null
+  cost: null
+  health_probes:
+  - type: http
+    target: health_check_endpoint
+    interval_seconds: 300
+    timeout_ms: 5000
+    expected_response: null
+    auth_required: true
+  slo:
+    availability_percentage: 99.9
+    latency_p95_ms: 300
+    latency_p99_ms: 1000
+    error_rate_percentage: 0.1
+    error_budget_policy: alert_only
+  compliance:
+  - PCI-DSS
+  - SOC2
+  total_requests: 0
+  last_used: null
+  top_consumers: {}
+  discovered_at: '2025-10-12T16:03:02.962404'
+  discovered_in_files:
+  - setup-stripe-products.js
+  - archive/MONEY_CONSOLIDATION_20250912/unified-money-manager.ts
+  - src/middleware.ts
+  - src/app/api/admin/health/route.ts
+  - src/app/api/health-simple/route.ts
+  - src/app/api/checkout/route.ts
+  - src/app/api/system/health/route.ts
+  - src/app/api/webhooks/stripe-streaming/route.ts
+  - src/app/api/webhooks/stripe/route.ts
+  - src/components/admin/settings/APIKeysManager.tsx
+  - src/lib/stripe.ts
+  - src/lib/streaming-payment.ts
+  - src/lib/stripeFix.ts
+  - src/lib/vertebrae/vertebrae-registry.ts
+  - src/lib/vertebrae/complete-vertebrae-registry.ts
+  - src/lib/testing/comprehensiveValidation.ts
+  - src/lib/ai/claude-chat-context.ts
+  api_patterns: []
+- id: anthropic-prod
+  category: llm
+  provider: anthropic
+  environment: production
+  owner: null
+  endpoints: {}
+  auth_type: api_key
+  secrets_ref: null
+  quotas: null
+  cost:
+    model: per_token
+    currency: USD
+    pricing:
+      input_per_1k: 0.008
+      output_per_1k: 0.024
+    budget_monthly: 1000.0
+    current_spend: null
+    projected_monthly: null
+  health_probes:
+  - type: http
+    target: health_check_endpoint
+    interval_seconds: 300
+    timeout_ms: 5000
+    expected_response: null
+    auth_required: true
+  slo:
+    availability_percentage: 99.5
+    latency_p95_ms: 1200
+    latency_p99_ms: 3000
+    error_rate_percentage: 2.0
+    error_budget_policy: alert_only
+  compliance: []
+  total_requests: 0
+  last_used: null
+  top_consumers: {}
+  discovered_at: '2025-10-12T16:03:02.962428'
+  discovered_in_files:
+  - archive/EXPERIMENTAL_20250912/ai-consciousness/real-time-consciousness-stream.ts
+  - src/app/admin/master-control/ai-chat/page.tsx
+  - src/app/api/chat/sonnet-1m/route.ts
+  - src/app/api/admin/claude-control/route.ts
+  - src/app/api/admin/claude-chat/route.ts
+  - src/app/api/ai-consciousness-chat/route.ts
+  - src/lib/vertebrae/complete-vertebrae-registry.ts
+  - src/lib/intelligence/claudeSystemOrchestrator.ts
+  - src/lib/intelligence/UnifiedIntelligenceCore.ts
+  - src/lib/atomic/AtomicMeaningExtractor.ts
+  - src/lib/_archived/prompts/modular-system-prompt-controller.ts
+  - src/lib/ai/context-engineering-core.ts
+  - src/lib/ai/claude-image-analysis.ts
+  - src/lib/ai/claude-sonnet4-system-manager.ts
+  - src/lib/ai/claude-chat-context.ts
+  - src/lib/ai/userAIAgent.ts
+  - src/lib/ai/unified-intelligence.ts
+  - src/lib/ai/claude-email-manager.ts
+  api_patterns: []
+- id: resend-prod
+  category: email
+  provider: resend
+  environment: production
+  owner: null
+  endpoints: {}
+  auth_type: api_key
+  secrets_ref: null
+  quotas: null
+  cost: null
+  health_probes:
+  - type: http
+    target: health_check_endpoint
+    interval_seconds: 300
+    timeout_ms: 5000
+    expected_response: null
+    auth_required: true
+  slo:
+    availability_percentage: 99.5
+    latency_p95_ms: 500
+    latency_p99_ms: 2000
+    error_rate_percentage: 1.0
+    error_budget_policy: alert_only
+  compliance: []
+  total_requests: 0
+  last_used: null
+  top_consumers: {}
+  discovered_at: '2025-10-12T16:03:02.962437'
+  discovered_in_files:
+  - src/app/api/email/automation/route.ts
+  - src/lib/ai/claude-email-manager.ts
+  api_patterns: []
+- id: sendgrid-prod
+  category: email
+  provider: sendgrid
+  environment: production
+  owner: null
+  endpoints: {}
+  auth_type: api_key
+  secrets_ref: null
+  quotas: null
+  cost: null
+  health_probes:
+  - type: http
+    target: health_check_endpoint
+    interval_seconds: 300
+    timeout_ms: 5000
+    expected_response: null
+    auth_required: true
+  slo:
+    availability_percentage: 99.5
+    latency_p95_ms: 500
+    latency_p99_ms: 2000
+    error_rate_percentage: 1.0
+    error_budget_policy: alert_only
+  compliance: []
+  total_requests: 0
+  last_used: null
+  top_consumers: {}
+  discovered_at: '2025-10-12T16:03:02.962440'
+  discovered_in_files:
+  - src/components/admin/settings/APIKeysManager.tsx
+  - src/lib/vertebrae/complete-vertebrae-registry.ts
+  api_patterns: []
+- id: openai-prod
+  category: llm
+  provider: openai
+  environment: production
+  owner: null
+  endpoints: {}
+  auth_type: api_key
+  secrets_ref: null
+  quotas: null
+  cost:
+    model: per_token
+    currency: USD
+    pricing:
+      input_per_1k: 0.01
+      output_per_1k: 0.03
+    budget_monthly: 1000.0
+    current_spend: null
+    projected_monthly: null
+  health_probes:
+  - type: http
+    target: health_check_endpoint
+    interval_seconds: 300
+    timeout_ms: 5000
+    expected_response: null
+    auth_required: true
+  slo:
+    availability_percentage: 99.5
+    latency_p95_ms: 1200
+    latency_p99_ms: 3000
+    error_rate_percentage: 2.0
+    error_budget_policy: alert_only
+  compliance:
+  - SOC2
+  - GDPR
+  total_requests: 0
+  last_used: null
+  top_consumers: {}
+  discovered_at: '2025-10-12T16:03:02.962444'
+  discovered_in_files:
+  - src/lib/providers/multiProviderRouter.ts
+  api_patterns: []
+commercial_readiness:
+  overall_score: 9
+  max_score: 13
+  completion_percentage: 69.23076923076923
+  identity:
+    name: Identity & Auth
+    score: 2
+    max_score: 4
+    items:
+      oauth2: true
+      mfa: false
+      session_mgmt: true
+      password_recovery: false
+    blockers:
+    - identity.password_recovery
+  payments:
+    name: Payments
+    score: 4
+    max_score: 4
+    items:
+      provider: true
+      plans: true
+      trial: true
+      webhooks: true
+    blockers: []
+  email:
+    name: Email Infrastructure
+    score: 1
+    max_score: 3
+    items:
+      transactional: true
+      spf: false
+      dkim: false
+    blockers: []
+  support: null
+  legal: null
+  security:
+    name: Security
+    score: 2
+    max_score: 2
+    items:
+      secrets_vault: true
+      ssl: true
+    blockers: []
+  observability: null
+  infrastructure: null
+  ux: null
+  analytics: null
+  blocking_layers:
+  - identity.password_recovery

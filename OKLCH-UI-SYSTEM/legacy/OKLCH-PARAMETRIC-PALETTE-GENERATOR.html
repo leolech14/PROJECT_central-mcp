@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Parametric Palette Generator - Lock & Slide</title>
+
+    <!-- Using OKLCH.com's code (Evil Martians - Open Source) -->
+    <link rel="stylesheet" href="https://oklch.com/index-DYwA_pQ5.css">
+    <script type="module" src="https://oklch.com/index-NL1M0NIB.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: oklch(15% 0.01 250);
+            color: oklch(95% 0.01 250);
+            padding: 2rem;
+        }
+
+        .generator-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg,
+                oklch(75% 0.15 0),
+                oklch(75% 0.15 60),
+                oklch(75% 0.15 120),
+                oklch(75% 0.15 180),
+                oklch(75% 0.15 240),
+                oklch(75% 0.15 300),
+                oklch(75% 0.15 360));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: oklch(65% 0.02 250);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .control-panel {
+            background: oklch(20% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 2rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .lock-toggle {
+            appearance: none;
+            width: 50px;
+            height: 28px;
+            background: oklch(30% 0.02 250);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .lock-toggle:checked {
+            background: oklch(60% 0.15 145);
+        }
+
+        .lock-toggle::before {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.3s;
+        }
+
+        .lock-toggle:checked::before {
+            transform: translateX(22px);
+        }
+
+        .lock-icon {
+            font-size: 1.3rem;
+        }
+
+        .slider-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .slider {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: oklch(30% 0.02 250);
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .slider:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .value-display {
+            min-width: 80px;
+            text-align: right;
+            font-family: 'SF Mono', monospace;
+            font-size: 1.1rem;
+            color: oklch(85% 0.02 250);
+        }
+
+        .count-input {
+            width: 100px;
+            padding: 0.5rem;
+            background: oklch(25% 0.01 250);
+            border: 2px solid oklch(35% 0.02 250);
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, oklch(55% 0.18 240), oklch(65% 0.15 260));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .generate-btn:hover {
+            transform: scale(1.02);
+        }
+
+        .generate-btn:active {
+            transform: scale(0.98);
+        }
+
+        .palette-display {
+            background: oklch(20% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .palette-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .color-swatch {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+            border: 2px solid oklch(30% 0.02 250);
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+            z-index: 10;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+        }
+
+        .color-swatch.selected {
+            border: 3px solid oklch(85% 0.15 240);
+            box-shadow: 0 0 0 2px oklch(20% 0.01 250), 0 0 0 5px oklch(85% 0.15 240);
+        }
+
+        .animation-preview {
+            height: 120px;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animation-bar {
+            height: 100%;
+            width: 100%;
+            animation: slide 5s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .export-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .export-btn {
+            padding: 1rem;
+            background: oklch(30% 0.02 250);
+            border: 2px solid oklch(40% 0.02 250);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            background: oklch(35% 0.05 240);
+            border-color: oklch(55% 0.12 240);
+        }
+
+        .code-output {
+            background: oklch(12% 0.01 250);
+            border: 2px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 0.6rem 1.2rem;
+            background: oklch(25% 0.02 250);
+            border: 2px solid oklch(35% 0.02 250);
+            border-radius: 8px;
+            color: oklch(80% 0.02 250);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .preset-btn:hover {
+            background: oklch(30% 0.05 240);
+            border-color: oklch(50% 0.12 240);
+            color: oklch(90% 0.05 240);
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            background: oklch(25% 0.01 250);
+            border: 2px solid oklch(35% 0.02 250);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: oklch(75% 0.12 180);
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: oklch(65% 0.02 250);
+        }
+
+        .attribution {
+            text-align: center;
+            padding: 2rem;
+            color: oklch(55% 0.02 250);
+            font-size: 0.9rem;
+        }
+
+        .attribution a {
+            color: oklch(65% 0.12 240);
+            text-decoration: none;
+        }
+
+        .attribution a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="generator-container">
+        <h1>🎨 OKLCH Parametric Palette Generator</h1>
+        <p class="subtitle">Lock any axis, slide the others, generate perfect color sequences</p>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <!-- Lightness Control -->
+            <div class="control-group">
+                <div class="control-label">
+                    <input type="checkbox" class="lock-toggle" id="lockL">
+                    <span class="lock-icon">🔒</span>
+                    <span>Lightness (L)</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="sliderL"
+                           min="0" max="1" step="0.01" value="0.33">
+                    <span class="value-display" id="valueL">0.33</span>
+                </div>
+            </div>
+
+            <!-- Chroma Control -->
+            <div class="control-group">
+                <div class="control-label">
+                    <input type="checkbox" class="lock-toggle" id="lockC">
+                    <span class="lock-icon">🔒</span>
+                    <span>Chroma (C)</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="sliderC"
+                           min="0" max="0.37" step="0.01" value="0.06">
+                    <span class="value-display" id="valueC">0.06</span>
+                </div>
+            </div>
+
+            <!-- Hue Control -->
+            <div class="control-group">
+                <div class="control-label">
+                    <input type="checkbox" class="lock-toggle" id="lockH">
+                    <span class="lock-icon">🔒</span>
+                    <span>Hue (H)</span>
+                </div>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="sliderH"
+                           min="0" max="360" step="1" value="180">
+                    <span class="value-display" id="valueH">180°</span>
+                </div>
+            </div>
+
+            <!-- Color Count -->
+            <div class="control-group">
+                <div class="control-label">
+                    <span>📊 Number of Colors</span>
+                </div>
+                <div class="slider-container">
+                    <input type="number" class="count-input" id="colorCount"
+                           min="2" max="360" value="12">
+                </div>
+                <div class="preset-buttons">
+                    <button class="preset-btn" onclick="setCount(8)">8 colors</button>
+                    <button class="preset-btn" onclick="setCount(12)">12 colors</button>
+                    <button class="preset-btn" onclick="setCount(24)">24 colors</button>
+                    <button class="preset-btn" onclick="setCount(60)">60 colors</button>
+                    <button class="preset-btn" onclick="setCount(360)">360 colors</button>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generatePalette()">
+                ⚡ GENERATE PALETTE
+            </button>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel" id="statsPanel" style="display: none;">
+            <div class="stat-box">
+                <div class="stat-value" id="statColors">0</div>
+                <div class="stat-label">Colors Generated</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statFixed">0</div>
+                <div class="stat-label">Locked Axes</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statRange">—</div>
+                <div class="stat-label">Variable Axis</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="statStep">—</div>
+                <div class="stat-label">Step Size</div>
+            </div>
+        </div>
+
+        <!-- Animation Preview -->
+        <div class="palette-display" id="animationSection" style="display: none;">
+            <div class="palette-title">
+                <span>🎬 Animation Preview</span>
+            </div>
+            <div class="animation-preview" id="animationPreview"></div>
+        </div>
+
+        <!-- Palette Display -->
+        <div class="palette-display" id="paletteSection" style="display: none;">
+            <div class="palette-title">
+                <span>🎨 Generated Palette</span>
+                <span id="paletteInfo"></span>
+            </div>
+            <div class="palette-grid" id="paletteGrid"></div>
+        </div>
+
+        <!-- Export Panel -->
+        <div class="palette-display" id="exportSection" style="display: none;">
+            <div class="palette-title">
+                <span>💾 Export Palette</span>
+            </div>
+            <div class="export-panel">
+                <button class="export-btn" onclick="exportCSS()">📄 CSS Variables</button>
+                <button class="export-btn" onclick="exportJSON()">📦 JSON</button>
+                <button class="export-btn" onclick="exportSCSS()">🎨 SCSS</button>
+                <button class="export-btn" onclick="exportTailwind()">🌊 Tailwind Config</button>
+                <button class="export-btn" onclick="exportSVG()">🖼️ SVG Palette</button>
+                <button class="export-btn" onclick="copyAllHex()">📋 Copy All HEX</button>
+            </div>
+            <div class="code-output" id="codeOutput"></div>
+        </div>
+
+        <!-- Attribution -->
+        <div class="attribution">
+            Built with <a href="https://oklch.com" target="_blank">OKLCH.com</a> by
+            <a href="https://evilmartians.com" target="_blank">Evil Martians</a> •
+            Open Source on <a href="https://github.com/evilmartians/oklch-picker" target="_blank">GitHub</a>
+        </div>
+    </div>
+
+    <script>
+        // OKLCH to RGB conversion (from Evil Martians' oklch-picker)
+        function oklchToRgb(l, c, h) {
+            // Convert OKLCH to OKLAB
+            const hRad = (h * Math.PI) / 180;
+            const a = c * Math.cos(hRad);
+            const b = c * Math.sin(hRad);
+
+            // OKLAB to linear RGB
+            const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+            const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+            const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
+
+            const lCube = l_ * l_ * l_;
+            const mCube = m_ * m_ * m_;
+            const sCube = s_ * s_ * s_;
+
+            let r = +4.0767245293 * lCube - 3.3072168827 * mCube + 0.2307590544 * sCube;
+            let g = -1.2681437731 * lCube + 2.6093323231 * mCube - 0.3411344290 * sCube;
+            let b2 = -0.0041119885 * lCube - 0.7034763098 * mCube + 1.7068625689 * sCube;
+
+            // Gamma correction
+            r = r > 0.0031308 ? 1.055 * Math.pow(r, 1/2.4) - 0.055 : 12.92 * r;
+            g = g > 0.0031308 ? 1.055 * Math.pow(g, 1/2.4) - 0.055 : 12.92 * g;
+            b2 = b2 > 0.0031308 ? 1.055 * Math.pow(b2, 1/2.4) - 0.055 : 12.92 * b2;
+
+            return {
+                r: Math.round(Math.max(0, Math.min(255, r * 255))),
+                g: Math.round(Math.max(0, Math.min(255, g * 255))),
+                b: Math.round(Math.max(0, Math.min(255, b2 * 255)))
+            };
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('');
+        }
+
+        let generatedColors = [];
+
+        // UI Controls
+        const lockL = document.getElementById('lockL');
+        const lockC = document.getElementById('lockC');
+        const lockH = document.getElementById('lockH');
+        const sliderL = document.getElementById('sliderL');
+        const sliderC = document.getElementById('sliderC');
+        const sliderH = document.getElementById('sliderH');
+        const valueL = document.getElementById('valueL');
+        const valueC = document.getElementById('valueC');
+        const valueH = document.getElementById('valueH');
+
+        // Lock toggle handlers
+        lockL.addEventListener('change', () => {
+            sliderL.disabled = lockL.checked;
+        });
+
+        lockC.addEventListener('change', () => {
+            sliderC.disabled = lockC.checked;
+        });
+
+        lockH.addEventListener('change', () => {
+            sliderH.disabled = lockH.checked;
+        });
+
+        // Slider value updates
+        sliderL.addEventListener('input', () => {
+            valueL.textContent = parseFloat(sliderL.value).toFixed(2);
+        });
+
+        sliderC.addEventListener('input', () => {
+            valueC.textContent = parseFloat(sliderC.value).toFixed(2);
+        });
+
+        sliderH.addEventListener('input', () => {
+            valueH.textContent = sliderH.value + '°';
+        });
+
+        function setCount(n) {
+            document.getElementById('colorCount').value = n;
+        }
+
+        function generatePalette() {
+            const count = parseInt(document.getElementById('colorCount').value);
+            const L = parseFloat(sliderL.value);
+            const C = parseFloat(sliderC.value);
+            const H = parseFloat(sliderH.value);
+
+            const lockedL = lockL.checked;
+            const lockedC = lockC.checked;
+            const lockedH = lockH.checked;
+
+            generatedColors = [];
+
+            // Determine which axis to vary
+            let varyAxis = null;
+            let lockedCount = 0;
+
+            if (lockedL) lockedCount++;
+            if (lockedC) lockedCount++;
+            if (lockedH) lockedCount++;
+
+            if (lockedCount === 3) {
+                alert('⚠️ Cannot lock all three axes! Unlock at least one.');
+                return;
+            }
+
+            // Generate colors based on unlocked axis
+            if (!lockedL) {
+                // Vary Lightness
+                for (let i = 0; i < count; i++) {
+                    const lightness = i / (count - 1); // 0 to 1
+                    const rgb = oklchToRgb(lightness, C, H);
+                    generatedColors.push({
+                        oklch: `oklch(${(lightness * 100).toFixed(1)}% ${C.toFixed(3)} ${H.toFixed(0)})`,
+                        hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+                        l: lightness,
+                        c: C,
+                        h: H
+                    });
+                }
+                varyAxis = `L: 0 → 1`;
+            } else if (!lockedC) {
+                // Vary Chroma
+                for (let i = 0; i < count; i++) {
+                    const chroma = (i / (count - 1)) * 0.37; // 0 to 0.37
+                    const rgb = oklchToRgb(L, chroma, H);
+                    generatedColors.push({
+                        oklch: `oklch(${(L * 100).toFixed(1)}% ${chroma.toFixed(3)} ${H.toFixed(0)})`,
+                        hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+                        l: L,
+                        c: chroma,
+                        h: H
+                    });
+                }
+                varyAxis = `C: 0 → 0.37`;
+            } else if (!lockedH) {
+                // Vary Hue (USER'S REQUESTED MODE!)
+                for (let i = 0; i < count; i++) {
+                    const hue = (i / (count - 1)) * 360; // 0 to 360
+                    const rgb = oklchToRgb(L, C, hue);
+                    generatedColors.push({
+                        oklch: `oklch(${(L * 100).toFixed(1)}% ${C.toFixed(3)} ${hue.toFixed(0)})`,
+                        hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+                        l: L,
+                        c: C,
+                        h: hue
+                    });
+                }
+                varyAxis = `H: 0° → 360°`;
+            }
+
+            // Update stats
+            document.getElementById('statsPanel').style.display = 'grid';
+            document.getElementById('statColors').textContent = count;
+            document.getElementById('statFixed').textContent = lockedCount;
+            document.getElementById('statRange').textContent = varyAxis;
+            document.getElementById('statStep').textContent = lockedCount === 2 ?
+                (varyAxis.includes('L') ? (1 / (count - 1)).toFixed(3) :
+                 varyAxis.includes('C') ? (0.37 / (count - 1)).toFixed(3) :
+                 (360 / (count - 1)).toFixed(1) + '°') : '—';
+
+            // Display palette
+            displayPalette();
+            displayAnimation();
+
+            document.getElementById('paletteSection').style.display = 'block';
+            document.getElementById('animationSection').style.display = 'block';
+            document.getElementById('exportSection').style.display = 'block';
+        }
+
+        function displayPalette() {
+            const grid = document.getElementById('paletteGrid');
+            grid.innerHTML = '';
+
+            generatedColors.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.background = color.hex;
+                swatch.title = `${color.hex}\n${color.oklch}`;
+                swatch.onclick = () => {
+                    navigator.clipboard.writeText(color.hex);
+                    swatch.classList.add('selected');
+                    setTimeout(() => swatch.classList.remove('selected'), 500);
+                };
+                grid.appendChild(swatch);
+            });
+
+            document.getElementById('paletteInfo').textContent =
+                `${generatedColors.length} colors generated`;
+        }
+
+        function displayAnimation() {
+            const preview = document.getElementById('animationPreview');
+            const gradient = generatedColors.map(c => c.hex).join(', ');
+            preview.innerHTML = `
+                <div class="animation-bar" style="background: linear-gradient(90deg, ${gradient}, ${gradient});"></div>
+            `;
+        }
+
+        function exportCSS() {
+            let css = ':root {\n';
+            generatedColors.forEach((color, i) => {
+                css += `  --color-${i + 1}: ${color.oklch};\n`;
+                css += `  --color-${i + 1}-hex: ${color.hex};\n`;
+            });
+            css += '}';
+            document.getElementById('codeOutput').textContent = css;
+        }
+
+        function exportJSON() {
+            const json = JSON.stringify(generatedColors, null, 2);
+            document.getElementById('codeOutput').textContent = json;
+        }
+
+        function exportSCSS() {
+            let scss = '// OKLCH Palette\n';
+            generatedColors.forEach((color, i) => {
+                scss += `$color-${i + 1}: ${color.oklch};\n`;
+                scss += `$color-${i + 1}-hex: ${color.hex};\n`;
+            });
+            document.getElementById('codeOutput').textContent = scss;
+        }
+
+        function exportTailwind() {
+            let tw = 'module.exports = {\n  theme: {\n    extend: {\n      colors: {\n';
+            tw += '        palette: {\n';
+            generatedColors.forEach((color, i) => {
+                tw += `          ${(i + 1) * 100}: '${color.hex}',\n`;
+            });
+            tw += '        }\n      }\n    }\n  }\n}';
+            document.getElementById('codeOutput').textContent = tw;
+        }
+
+        function exportSVG() {
+            const width = 60;
+            const height = 40;
+            let svg = `<svg width="${generatedColors.length * width}" height="${height}" xmlns="http://www.w3.org/2000/svg">\n`;
+            generatedColors.forEach((color, i) => {
+                svg += `  <rect x="${i * width}" y="0" width="${width}" height="${height}" fill="${color.hex}"/>\n`;
+            });
+            svg += '</svg>';
+            document.getElementById('codeOutput').textContent = svg;
+        }
+
+        function copyAllHex() {
+            const hexList = generatedColors.map(c => c.hex).join('\n');
+            navigator.clipboard.writeText(hexList);
+            document.getElementById('codeOutput').textContent =
+                `✅ Copied ${generatedColors.length} HEX codes to clipboard!\n\n${hexList}`;
+        }
+
+        // Initialize with user's requested defaults
+        lockL.checked = true;
+        lockC.checked = true;
+        sliderL.disabled = true;
+        sliderC.disabled = true;
+        sliderL.value = 0.33;
+        sliderC.value = 0.06;
+        valueL.textContent = '0.33';
+        valueC.textContent = '0.06';
+    </script>
+</body>
+</html>

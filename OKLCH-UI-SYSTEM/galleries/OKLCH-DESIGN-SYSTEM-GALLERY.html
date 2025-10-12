@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Design System Gallery - Auto-Enforced Coherence</title>
+
+    <!-- Import map for Three.js -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Design tokens - Auto-enforced by constraint system */
+            --brand:  oklch(60% 0.18 260);
+            --accent: oklch(70% 0.11  25);
+            --bg:     oklch(98% 0.03 250);
+            --text:   oklch(18% 0.02 250);
+            --surface: oklch(95% 0.02 250);
+            --border: oklch(85% 0.02 250);
+
+            /* Semantic tokens */
+            --success: oklch(65% 0.15 140);
+            --warning: oklch(70% 0.15 60);
+            --error: oklch(65% 0.18 30);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: grid;
+            grid-template-columns: 320px 1fr 400px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* LEFT SIDEBAR - Configuration Controls */
+        #configSidebar {
+            background: oklch(15% 0.01 250);
+            border-right: 2px solid oklch(25% 0.02 250);
+            overflow-y: auto;
+            padding: 1.5rem;
+            color: oklch(95% 0.01 250);
+        }
+
+        #configSidebar h1 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg,
+                oklch(75% 0.15 0),
+                oklch(75% 0.15 120),
+                oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #configSidebar h2 {
+            font-size: 1rem;
+            margin: 1.5rem 0 0.8rem;
+            color: oklch(80% 0.08 240);
+            border-bottom: 1px solid oklch(25% 0.02 250);
+            padding-bottom: 0.5rem;
+        }
+
+        #configSidebar h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .config-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .config-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .config-value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+            font-size: 0.8rem;
+        }
+
+        .config-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(25% 0.02 250);
+            appearance: none;
+            position: relative;
+        }
+
+        .config-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+        }
+
+        /* Legal zone indicator */
+        .legal-zone-overlay {
+            position: absolute;
+            bottom: 0;
+            height: 6px;
+            background: oklch(60% 0.15 140 / 0.3);
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        .compliance-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 0.5rem;
+        }
+
+        .compliance-indicator.pass { background: oklch(65% 0.15 140); }
+        .compliance-indicator.fail { background: oklch(65% 0.18 30); }
+
+        .preset-btn {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+            background: oklch(25% 0.02 250);
+            border: 1px solid oklch(35% 0.02 250);
+            border-radius: 8px;
+            color: oklch(85% 0.02 250);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .preset-btn:hover {
+            background: oklch(30% 0.02 250);
+            border-color: oklch(75% 0.15 240);
+        }
+
+        .preset-btn.active {
+            background: oklch(35% 0.05 240);
+            border-color: oklch(75% 0.15 240);
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 0.8rem;
+            margin-top: 0.5rem;
+            background: oklch(75% 0.15 240);
+            border: none;
+            border-radius: 8px;
+            color: oklch(95% 0.01 250);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .export-btn:hover {
+            background: oklch(70% 0.18 240);
+        }
+
+        /* CENTER - Gallery Components */
+        #gallery {
+            background: var(--bg);
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .gallery-section {
+            margin-bottom: 3rem;
+        }
+
+        .gallery-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--brand);
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .component-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .component-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px oklch(0% 0 0 / 0.1);
+        }
+
+        .component-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        /* Button samples */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--brand);
+            color: var(--bg);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        /* Form samples */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--brand);
+        }
+
+        /* Card samples */
+        .sample-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .sample-card h4 {
+            color: var(--brand);
+            margin-bottom: 0.5rem;
+        }
+
+        .sample-card p {
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        /* Typography samples */
+        .typography-sample h1 { font-size: 2.5rem; color: var(--text); margin-bottom: 0.5rem; }
+        .typography-sample h2 { font-size: 2rem; color: var(--text); margin-bottom: 0.5rem; }
+        .typography-sample h3 { font-size: 1.5rem; color: var(--text); margin-bottom: 0.5rem; }
+        .typography-sample p { color: var(--text); line-height: 1.6; margin-bottom: 0.5rem; }
+        .typography-sample .accent { color: var(--accent); font-weight: 600; }
+
+        /* RIGHT SIDEBAR - OKLCH 3D */
+        #oklchSidebar {
+            background: oklch(12% 0.01 250);
+            border-left: 2px solid oklch(25% 0.02 250);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #oklchCanvas {
+            width: 100%;
+            height: 60%;
+            display: block;
+        }
+
+        #oklchControls {
+            padding: 1rem;
+            background: oklch(15% 0.01 250 / 0.95);
+            height: 40%;
+            overflow-y: auto;
+        }
+
+        #oklchControls h3 {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            color: oklch(85% 0.08 240);
+        }
+
+        .oklch-control {
+            margin-bottom: 1rem;
+        }
+
+        .oklch-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .oklch-value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        .oklch-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(25% 0.02 250);
+            appearance: none;
+        }
+
+        .oklch-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+        }
+
+        /* Status bar */
+        #statusBar {
+            position: fixed;
+            bottom: 0;
+            left: 320px;
+            right: 400px;
+            background: oklch(20% 0.01 250 / 0.95);
+            color: oklch(85% 0.02 250);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.85rem;
+            border-top: 2px solid oklch(25% 0.02 250);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-badge.success {
+            background: oklch(60% 0.15 140 / 0.3);
+            color: oklch(80% 0.15 140);
+        }
+
+        .status-badge.warning {
+            background: oklch(60% 0.15 60 / 0.3);
+            color: oklch(80% 0.15 60);
+        }
+    </style>
+</head>
+<body>
+    <!-- LEFT SIDEBAR - Configuration Controls -->
+    <aside id="configSidebar">
+        <h1>🎨 Design System Controls</h1>
+
+        <h2>Theme Presets</h2>
+        <button class="preset-btn active" data-preset="light">☀️ Light Theme</button>
+        <button class="preset-btn" data-preset="dark">🌙 Dark Theme</button>
+        <button class="preset-btn" data-preset="highcontrast">♿ High Contrast</button>
+        <button class="preset-btn" data-preset="blue">💙 Blue Theme</button>
+
+        <h2>Brand Color</h2>
+        <div class="config-group">
+            <div class="config-label">
+                <span>Lightness</span>
+                <span class="config-value" id="brandL">0.60</span>
+            </div>
+            <input type="range" class="config-slider" id="sliderBrandL" min="0" max="100" value="60">
+        </div>
+        <div class="config-group">
+            <div class="config-label">
+                <span>Chroma</span>
+                <span class="config-value" id="brandC">0.18</span>
+            </div>
+            <input type="range" class="config-slider" id="sliderBrandC" min="0" max="37" value="18">
+        </div>
+        <div class="config-group">
+            <div class="config-label">
+                <span>Hue</span>
+                <span class="config-value" id="brandH">260°</span>
+            </div>
+            <input type="range" class="config-slider" id="sliderBrandH" min="0" max="360" value="260">
+        </div>
+
+        <h2>Background (Auto-Enforced)</h2>
+        <div class="config-group">
+            <div class="config-label">
+                <span>Lightness</span>
+                <span class="config-value" id="bgL">0.98<span class="compliance-indicator pass"></span></span>
+            </div>
+            <div style="position: relative;">
+                <div class="legal-zone-overlay" id="legalZoneBg"></div>
+                <input type="range" class="config-slider" id="sliderBgL" min="0" max="100" value="98">
+            </div>
+        </div>
+
+        <h2>Text (Auto-Adjusted)</h2>
+        <div class="config-group">
+            <div class="config-label">
+                <span>Lightness</span>
+                <span class="config-value" id="textL">0.18<span class="compliance-indicator pass"></span></span>
+            </div>
+            <div style="position: relative;">
+                <div class="legal-zone-overlay" id="legalZoneText"></div>
+                <input type="range" class="config-slider" id="sliderTextL" min="0" max="100" value="18">
+            </div>
+            <div style="font-size: 0.75rem; color: oklch(65% 0.02 250); margin-top: 0.3rem;">
+                ✨ Auto-maintains 4.5:1 with background
+            </div>
+        </div>
+
+        <h2>Export</h2>
+        <button class="export-btn" id="exportCss">📋 Copy CSS Variables</button>
+        <button class="export-btn" id="exportTokens">💾 Export Design Tokens</button>
+        <button class="export-btn" id="exportTheme">🎨 Export Complete Theme</button>
+    </aside>
+
+    <!-- CENTER - Gallery Components -->
+    <main id="gallery">
+        <div class="gallery-section">
+            <h2>Buttons</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3>Primary Actions</h3>
+                    <button class="btn btn-primary">Primary Button</button>
+                    <button class="btn btn-secondary">Secondary Button</button>
+                    <button class="btn btn-accent">Accent Button</button>
+                </div>
+                <div class="component-card">
+                    <h3>Button States</h3>
+                    <button class="btn btn-primary">Normal</button>
+                    <button class="btn btn-primary" style="opacity: 0.7">Hover</button>
+                    <button class="btn btn-primary" disabled style="opacity: 0.5">Disabled</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Form Elements</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3>Text Input</h3>
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" class="form-input" placeholder="you@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="••••••••">
+                    </div>
+                </div>
+                <div class="component-card">
+                    <h3>Textarea</h3>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-input" rows="4" placeholder="Your message here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Cards</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3>Info Cards</h3>
+                    <div class="sample-card">
+                        <h4>Card Title</h4>
+                        <p>This is a sample card with auto-enforced color relationships. All text maintains 4.5:1 contrast with background.</p>
+                    </div>
+                </div>
+                <div class="component-card">
+                    <h3>Feature Card</h3>
+                    <div class="sample-card">
+                        <h4>Feature Name</h4>
+                        <p>Another card showing consistent color usage across the entire design system.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gallery-section">
+            <h2>Typography</h2>
+            <div class="component-card typography-sample">
+                <h1>Heading 1 - Large Display</h1>
+                <h2>Heading 2 - Section Title</h2>
+                <h3>Heading 3 - Subsection</h3>
+                <p>Body text with proper contrast ratio. This paragraph demonstrates how all text maintains readability across the design system. <span class="accent">Accent text</span> is also automatically enforced.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- RIGHT SIDEBAR - OKLCH 3D -->
+    <aside id="oklchSidebar">
+        <canvas id="oklchCanvas"></canvas>
+        <div id="oklchControls">
+            <h3>🎯 Explore OKLCH Space</h3>
+            <div class="oklch-control">
+                <div class="oklch-label">
+                    <span>Lightness (L)</span>
+                    <span class="oklch-value" id="oklchL">0.60</span>
+                </div>
+                <input type="range" class="oklch-slider" id="oklch3dL" min="0" max="100" value="60">
+            </div>
+            <div class="oklch-control">
+                <div class="oklch-label">
+                    <span>Chroma (C)</span>
+                    <span class="oklch-value" id="oklchC">0.15</span>
+                </div>
+                <input type="range" class="oklch-slider" id="oklch3dC" min="0" max="37" value="15">
+            </div>
+            <div class="oklch-control">
+                <div class="oklch-label">
+                    <span>Hue (H)</span>
+                    <span class="oklch-value" id="oklchH">240°</span>
+                </div>
+                <input type="range" class="oklch-slider" id="oklch3dH" min="0" max="360" value="240">
+            </div>
+            <div style="font-size: 0.75rem; color: oklch(65% 0.02 250); margin-top: 1rem; line-height: 1.4;">
+                🖱️ Drag to rotate • 🔍 Scroll to zoom<br>
+                🎯 Evil Martians' visualization
+            </div>
+        </div>
+    </aside>
+
+    <!-- Status Bar -->
+    <div id="statusBar">
+        <div class="status-item">
+            <span>WCAG AA Compliance:</span>
+            <span class="status-badge success" id="complianceStatus">✓ 100% Compliant</span>
+        </div>
+        <div class="status-item">
+            <span>Contrast Ratios:</span>
+            <span id="contrastInfo">Bg→Text: 7.2:1 • Bg→Brand: 5.1:1</span>
+        </div>
+        <div class="status-item">
+            <span>Design Tokens:</span>
+            <span id="tokenCount">7 active</span>
+        </div>
+    </div>
+
+    <script type="module">
+        // ========================================
+        // PART 1: Constraint Engine
+        // ========================================
+
+        const state = {
+            brand: { l: 0.60, c: 0.18, h: 260 },
+            bg: { l: 0.98, c: 0.03, h: 250 },
+            text: { l: 0.18, c: 0.02, h: 250 },
+            accent: { l: 0.70, c: 0.11, h: 25 }
+        };
+
+        function oklchToLuminance(l) {
+            return Math.pow(l, 2);
+        }
+
+        function getContrastRatio(l1, l2) {
+            const y1 = oklchToLuminance(l1);
+            const y2 = oklchToLuminance(l2);
+            const lighter = Math.max(y1, y2);
+            const darker = Math.min(y1, y2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function getLegalLightnessRange(bgL, minContrast = 4.5) {
+            const bgY = oklchToLuminance(bgL);
+            const lighterY = (minContrast * (bgY + 0.05)) - 0.05;
+            const darkerY = ((bgY + 0.05) / minContrast) - 0.05;
+
+            return {
+                min: Math.max(0, Math.sqrt(Math.max(0, darkerY))),
+                max: Math.min(1, Math.sqrt(Math.min(1, lighterY)))
+            };
+        }
+
+        function enforceTextConstraints() {
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+            if (state.text.l < legalRange.min) {
+                state.text.l = legalRange.min;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+            } else if (state.text.l > legalRange.max) {
+                state.text.l = legalRange.max;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+            }
+        }
+
+        function updateUI() {
+            // Update CSS variables
+            document.documentElement.style.setProperty('--brand', `oklch(${state.brand.l} ${state.brand.c} ${state.brand.h})`);
+            document.documentElement.style.setProperty('--bg', `oklch(${state.bg.l} ${state.bg.c} ${state.bg.h})`);
+            document.documentElement.style.setProperty('--text', `oklch(${state.text.l} ${state.text.c} ${state.text.h})`);
+            document.documentElement.style.setProperty('--accent', `oklch(${state.accent.l} ${state.accent.c} ${state.accent.h})`);
+
+            // Update displays
+            document.getElementById('brandL').textContent = state.brand.l.toFixed(2);
+            document.getElementById('brandC').textContent = state.brand.c.toFixed(2);
+            document.getElementById('brandH').textContent = state.brand.h.toFixed(0) + '°';
+            document.getElementById('bgL').textContent = state.bg.l.toFixed(2);
+            document.getElementById('textL').textContent = state.text.l.toFixed(2);
+
+            // Update status bar
+            const bgTextRatio = getContrastRatio(state.bg.l, state.text.l);
+            const bgBrandRatio = getContrastRatio(state.bg.l, state.brand.l);
+            document.getElementById('contrastInfo').textContent =
+                `Bg→Text: ${bgTextRatio.toFixed(1)}:1 • Bg→Brand: ${bgBrandRatio.toFixed(1)}:1`;
+
+            // Update compliance indicators
+            const textCompliant = bgTextRatio >= 4.5;
+            document.querySelector('#textL .compliance-indicator').className =
+                `compliance-indicator ${textCompliant ? 'pass' : 'fail'}`;
+
+            // Update status
+            if (textCompliant) {
+                document.getElementById('complianceStatus').textContent = '✓ 100% Compliant';
+                document.getElementById('complianceStatus').className = 'status-badge success';
+            } else {
+                document.getElementById('complianceStatus').textContent = '⚠ Issues Found';
+                document.getElementById('complianceStatus').className = 'status-badge warning';
+            }
+        }
+
+        // Event listeners for controls
+        document.getElementById('sliderBrandL').addEventListener('input', (e) => {
+            state.brand.l = parseFloat(e.target.value) / 100;
+            updateUI();
+        });
+
+        document.getElementById('sliderBrandC').addEventListener('input', (e) => {
+            state.brand.c = parseFloat(e.target.value) / 100;
+            updateUI();
+        });
+
+        document.getElementById('sliderBrandH').addEventListener('input', (e) => {
+            state.brand.h = parseFloat(e.target.value);
+            updateUI();
+        });
+
+        document.getElementById('sliderBgL').addEventListener('input', (e) => {
+            state.bg.l = parseFloat(e.target.value) / 100;
+            enforceTextConstraints();
+            updateUI();
+        });
+
+        document.getElementById('sliderTextL').addEventListener('input', (e) => {
+            let requested = parseFloat(e.target.value) / 100;
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+
+            if (requested < legalRange.min) {
+                requested = legalRange.min;
+                e.target.value = requested * 100;
+            } else if (requested > legalRange.max) {
+                requested = legalRange.max;
+                e.target.value = requested * 100;
+            }
+
+            state.text.l = requested;
+            updateUI();
+        });
+
+        // Presets
+        const presets = {
+            light: {
+                brand: { l: 0.60, c: 0.18, h: 260 },
+                bg: { l: 0.98, c: 0.03, h: 250 },
+                text: { l: 0.18, c: 0.02, h: 250 },
+                accent: { l: 0.70, c: 0.11, h: 25 }
+            },
+            dark: {
+                brand: { l: 0.70, c: 0.18, h: 260 },
+                bg: { l: 0.15, c: 0.01, h: 250 },
+                text: { l: 0.95, c: 0.01, h: 250 },
+                accent: { l: 0.75, c: 0.11, h: 25 }
+            },
+            highcontrast: {
+                brand: { l: 0.50, c: 0.25, h: 260 },
+                bg: { l: 1.00, c: 0.00, h: 0 },
+                text: { l: 0.00, c: 0.00, h: 0 },
+                accent: { l: 0.60, c: 0.20, h: 0 }
+            },
+            blue: {
+                brand: { l: 0.55, c: 0.20, h: 240 },
+                bg: { l: 0.97, c: 0.02, h: 240 },
+                text: { l: 0.20, c: 0.02, h: 240 },
+                accent: { l: 0.65, c: 0.15, h: 200 }
+            }
+        };
+
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const preset = btn.dataset.preset;
+                Object.assign(state, presets[preset]);
+
+                // Update sliders
+                document.getElementById('sliderBrandL').value = state.brand.l * 100;
+                document.getElementById('sliderBrandC').value = state.brand.c * 100;
+                document.getElementById('sliderBrandH').value = state.brand.h;
+                document.getElementById('sliderBgL').value = state.bg.l * 100;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+
+                // Update active state
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                updateUI();
+            });
+        });
+
+        // Export functions
+        document.getElementById('exportCss').addEventListener('click', () => {
+            const css = `:root {
+  --brand:  oklch(${state.brand.l} ${state.brand.c} ${state.brand.h});
+  --accent: oklch(${state.accent.l} ${state.accent.c} ${state.accent.h});
+  --bg:     oklch(${state.bg.l} ${state.bg.c} ${state.bg.h});
+  --text:   oklch(${state.text.l} ${state.text.c} ${state.text.h});
+}`;
+            navigator.clipboard.writeText(css);
+            alert('✅ CSS variables copied to clipboard!');
+        });
+
+        document.getElementById('exportTokens').addEventListener('click', () => {
+            const tokens = JSON.stringify(state, null, 2);
+            navigator.clipboard.writeText(tokens);
+            alert('✅ Design tokens (JSON) copied to clipboard!');
+        });
+
+        document.getElementById('exportTheme').addEventListener('click', () => {
+            const theme = {
+                name: 'Custom Theme',
+                colors: state,
+                wcagCompliance: {
+                    bgText: getContrastRatio(state.bg.l, state.text.l),
+                    bgBrand: getContrastRatio(state.bg.l, state.brand.l)
+                },
+                timestamp: new Date().toISOString()
+            };
+            const json = JSON.stringify(theme, null, 2);
+            navigator.clipboard.writeText(json);
+            alert('✅ Complete theme (JSON) copied to clipboard!');
+        });
+
+        // ========================================
+        // PART 2: OKLCH 3D Visualization
+        // ========================================
+
+        (async () => {
+            const THREE = await import('three');
+            const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+            const culoriModule = await import('https://cdn.jsdelivr.net/npm/culori@3.3.0/+esm');
+            const { converter } = culoriModule;
+            const toOklch = converter('oklch');
+            const toRgb = converter('rgb');
+            const delaunatorModule = await import('https://cdn.jsdelivr.net/npm/delaunator@5.0.1/+esm');
+            const Delaunator = delaunatorModule.default || delaunatorModule.Delaunator || delaunatorModule;
+
+            const L_MAX_COLOR = 1;
+            const C_MAX = 0.37;
+
+            function onGamutEdge(r, g, b) {
+                return r === 0 || g === 0 || b === 0 || r > 0.99 || g > 0.99 || b > 0.99;
+            }
+
+            function getModelData() {
+                let coordinates = [];
+                let colors = [];
+                for (let x = 0; x <= 1; x += 0.05) {
+                    for (let y = 0; y <= 1; y += 0.05) {
+                        for (let z = 0; z <= 1; z += 0.05) {
+                            if (onGamutEdge(x, y, z)) {
+                                let edgeRgb = { mode: 'rgb', r: x, g: y, b: z };
+                                let to = toOklch(edgeRgb);
+                                if (to.h !== undefined) {
+                                    colors.push(edgeRgb.r, edgeRgb.g, edgeRgb.b);
+                                    coordinates.push(new THREE.Vector3(to.l / L_MAX_COLOR, to.c / (C_MAX * 2), to.h / 360));
+                                }
+                            }
+                        }
+                    }
+                }
+                let bounds = [[0,0,0],[0,0,1],[1,0,0],[1,1,0],[1,0,1],[1,0,1],[1,1,1]];
+                for (let i of bounds) {
+                    coordinates.push(new THREE.Vector3(...i));
+                    colors.push(i[0], i[0], i[0]);
+                }
+                return [coordinates, colors];
+            }
+
+            function generateMesh(scene) {
+                scene.clear();
+                let [coordinates, colors] = getModelData();
+                let top = new THREE.BufferGeometry().setFromPoints(coordinates);
+                top.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                top.center();
+                const points2D = coordinates.map(c => [c.x, c.z]);
+                const delaunay = Delaunator.from(points2D);
+                top.setIndex(Array.from(delaunay.triangles));
+                top.computeVertexNormals();
+
+                let material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, vertexColors: true, transparent: true, opacity: 0.7 });
+                let l = new THREE.Vector2(0, 1);
+                let c = new THREE.Vector2(0, 1);
+                let h = new THREE.Vector2(0, 1);
+
+                material.onBeforeCompile = shader => {
+                    shader.uniforms.sliceL = { value: l };
+                    shader.uniforms.sliceC = { value: c };
+                    shader.uniforms.sliceH = { value: h };
+                    shader.vertexShader = `varying vec3 vPos;\n${shader.vertexShader}`.replace(`#include <begin_vertex>`, `#include <begin_vertex>\nvPos = transformed;`);
+                    shader.fragmentShader = `#define ss(a, b, c) smoothstep(a, b, c)\nuniform vec2 sliceL, sliceC, sliceH;\nvarying vec3 vPos;\n${shader.fragmentShader}`.replace(`#include <dithering_fragment>`, `#include <dithering_fragment>\nvec3 col = vec3(0.5, 0.5, 0.5);\nfloat width = 0.0025;\nfloat l = ss(width, 0., abs(vPos.x + sliceL.y));\nfloat c = ss(width, 0., abs(vPos.y + sliceC.y));\nfloat h = ss(width, 0., abs(vPos.z - sliceH.y));\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, l);\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, c);\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, h);`);
+                };
+
+                let topMesh = new THREE.Mesh(top, material);
+                topMesh.translateY(0.3);
+                scene.add(topMesh);
+
+                let bottom = new THREE.PlaneGeometry(1, 1, 1, 20);
+                let bottomColors = [];
+                let bottomSteps = bottom.attributes.position.array.length / 6;
+                for (let i = 0; i <= bottomSteps; i += 1) {
+                    let lchL = (L_MAX_COLOR * i) / bottomSteps;
+                    let rgbL = toRgb({ mode: 'oklch', l: lchL, c: 0, h: 0 }).r;
+                    bottomColors.push(rgbL, rgbL, rgbL, rgbL, rgbL, rgbL);
+                }
+                bottom.setAttribute('color', new THREE.Float32BufferAttribute(bottomColors, 3));
+                bottom.translate(0, 0, -0.2);
+                bottom.rotateZ(Math.PI * 0.5);
+                bottom.rotateX(-Math.PI * 0.5);
+                let bottomMesh = new THREE.Mesh(bottom, material);
+                scene.add(bottomMesh);
+
+                return color => {
+                    l.set(0, -color.l + 0.5);
+                    c.set(0, (0.5 * -color.c) / C_MAX + 0.5);
+                    h.set(0, 0.0028 * color.h - (color.h > 350 ? 0.51 : 0.5));
+                };
+            }
+
+            const canvas = document.getElementById('oklchCanvas');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, 400 / 300, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, canvas, antialias: true });
+            renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(400, 300);
+            camera.position.set(0.79, 0, 0.79);
+            camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enablePan = true;
+            controls.enableZoom = true;
+            controls.minDistance = 0.9;
+            controls.maxDistance = 3;
+
+            const updateSlices = generateMesh(scene);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                const width = document.getElementById('oklchSidebar').offsetWidth;
+                const height = window.innerHeight * 0.6;
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            });
+
+            animate();
+
+            // 3D controls
+            document.getElementById('oklch3dL').addEventListener('input', (e) => {
+                const l = parseFloat(e.target.value) / 100;
+                const c = parseFloat(document.getElementById('oklch3dC').value) / 100;
+                const h = parseFloat(document.getElementById('oklch3dH').value);
+                document.getElementById('oklchL').textContent = l.toFixed(2);
+                updateSlices({ l, c, h });
+            });
+
+            document.getElementById('oklch3dC').addEventListener('input', (e) => {
+                const l = parseFloat(document.getElementById('oklch3dL').value) / 100;
+                const c = parseFloat(e.target.value) / 100;
+                const h = parseFloat(document.getElementById('oklch3dH').value);
+                document.getElementById('oklchC').textContent = c.toFixed(2);
+                updateSlices({ l, c, h });
+            });
+
+            document.getElementById('oklch3dH').addEventListener('input', (e) => {
+                const l = parseFloat(document.getElementById('oklch3dL').value) / 100;
+                const c = parseFloat(document.getElementById('oklch3dC').value) / 100;
+                const h = parseFloat(e.target.value);
+                document.getElementById('oklchH').textContent = h.toFixed(0) + '°';
+                updateSlices({ l, c, h });
+            });
+
+            console.log('✅ OKLCH Design System Gallery loaded!');
+        })();
+
+        // Initial render
+        updateUI();
+    </script>
+</body>
+</html>

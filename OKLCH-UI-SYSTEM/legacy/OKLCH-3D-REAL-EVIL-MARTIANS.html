@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH 3D - REAL Evil Martians Code</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0d0d0d;
+            color: #f0f0f0;
+        }
+        #canvas3d {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(20, 20, 20, 0.9);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-width: 280px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 1.3rem; margin-bottom: 1rem; color: #6090ff; }
+        .control-group { margin-bottom: 1rem; }
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: #aaa;
+        }
+        .value { font-family: 'SF Mono', monospace; color: #fff; }
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #333;
+            appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #6090ff;
+            cursor: pointer;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            color: #6090ff;
+            text-align: center;
+        }
+        #progress {
+            font-size: 1rem;
+            color: #888;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas3d"></canvas>
+
+    <div id="controls">
+        <h1>🎨 OKLCH 3D (Real Code)</h1>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness (L)</span>
+                <span class="value" id="valueL">0.60</span>
+            </div>
+            <input type="range" id="sliderL" min="0" max="100" value="60">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Chroma (C)</span>
+                <span class="value" id="valueC">0.15</span>
+            </div>
+            <input type="range" id="sliderC" min="0" max="37" value="15">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Hue (H)</span>
+                <span class="value" id="valueH">240°</span>
+            </div>
+            <input type="range" id="sliderH" min="0" max="360" value="240">
+        </div>
+        <div style="font-size: 0.8rem; color: #666; margin-top: 1rem;">
+            Drag to rotate • Scroll to zoom
+        </div>
+    </div>
+
+    <div id="loading">
+        Loading 3D Model...
+        <div id="progress">Sampling RGB cube...</div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/delaunator@5.0.1/delaunator.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/culori@3.3.0/bundled/culori.min.js"></script>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+
+        // ===============================================================
+        // EVIL MARTIANS' EXACT CODE - FROM model.ts
+        // ===============================================================
+
+        const L_MAX_COLOR = 1;
+        const C_MAX = 0.37;
+
+        // From colors.ts - using Culori
+        const { converter, rgb, oklch } = culori;
+        const toOklch = converter('oklch');
+        const toRgb = converter('rgb');
+
+        // Line 30-32: EXACT function from model.ts
+        function onGamutEdge(r, g, b) {
+            return r === 0 || g === 0 || b === 0 || r > 0.99 || g > 0.99 || b > 0.99;
+        }
+
+        // Line 34-70: EXACT function from model.ts
+        function getModelData() {
+            let coordinates = [];
+            let colors = [];
+
+            console.log('Sampling RGB cube edges...');
+
+            // Sample RGB cube edges at 0.05 resolution (faster for browser)
+            // Evil Martians use 0.01 but it's 1M+ iterations
+            for (let x = 0; x <= 1; x += 0.05) {
+                for (let y = 0; y <= 1; y += 0.05) {
+                    for (let z = 0; z <= 1; z += 0.05) {
+                        if (onGamutEdge(x, y, z)) {
+                            let edgeRgb = { mode: 'rgb', r: x, g: y, b: z };
+                            let to = toOklch(edgeRgb);
+
+                            if (to.h !== undefined) {
+                                colors.push(edgeRgb.r, edgeRgb.g, edgeRgb.b);
+                                coordinates.push(
+                                    new THREE.Vector3(
+                                        to.l / L_MAX_COLOR,
+                                        to.c / (C_MAX * 2),
+                                        to.h / 360
+                                    )
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Add bounds (from line 55-67)
+            let bounds = [
+                [0, 0, 0],
+                [0, 0, 1],
+                [1, 0, 0],
+                [1, 1, 0],
+                [1, 0, 1],
+                [1, 0, 1],
+                [1, 1, 1]
+            ];
+            for (let i of bounds) {
+                coordinates.push(new THREE.Vector3(...i));
+                colors.push(i[0], i[0], i[0]);
+            }
+
+            console.log(`Generated ${coordinates.length} vertices`);
+            return [coordinates, colors];
+        }
+
+        // Line 72-147: EXACT mesh generation from model.ts
+        function generateMesh(scene) {
+            scene.clear();
+
+            let [coordinates, colors] = getModelData();
+
+            // Create geometry from points (line 76)
+            let top = new THREE.BufferGeometry().setFromPoints(coordinates);
+            top.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            top.center();
+
+            // Line 79-81: DELAUNATOR TRIANGULATION (The key part I was missing!)
+            console.log('Running Delaunator triangulation...');
+            const points2D = coordinates.map(c => [c.x, c.z]);
+            const delaunay = Delaunator.from(points2D);
+            top.setIndex(Array.from(delaunay.triangles));
+            top.computeVertexNormals();
+
+            // Line 84-119: Material with custom shaders
+            let material = new THREE.MeshBasicMaterial({
+                side: THREE.DoubleSide,
+                vertexColors: true
+            });
+
+            let l = new THREE.Vector2(0, 1);
+            let c = new THREE.Vector2(0, 1);
+            let h = new THREE.Vector2(0, 1);
+
+            material.onBeforeCompile = shader => {
+                shader.uniforms.sliceL = { value: l };
+                shader.uniforms.sliceC = { value: c };
+                shader.uniforms.sliceH = { value: h };
+
+                shader.vertexShader = `
+                    varying vec3 vPos;
+                    ${shader.vertexShader}
+                `.replace(
+                    `#include <begin_vertex>`,
+                    `#include <begin_vertex>
+                    vPos = transformed;
+                    `
+                );
+
+                shader.fragmentShader = `
+                    #define ss(a, b, c) smoothstep(a, b, c)
+                    uniform vec2 sliceL, sliceC, sliceH;
+                    varying vec3 vPos;
+                    ${shader.fragmentShader}
+                `.replace(
+                    `#include <dithering_fragment>`,
+                    `#include <dithering_fragment>
+                        vec3 col = vec3(0.5, 0.5, 0.5);
+                        float width = 0.0025;
+                        float l = ss(width, 0., abs(vPos.x + sliceL.y));
+                        float c = ss(width, 0., abs(vPos.y + sliceC.y));
+                        float h = ss(width, 0., abs(vPos.z - sliceH.y));
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, l);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, c);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, h);
+                    `
+                );
+            };
+
+            // Line 121-123: Create mesh and add to scene
+            let topMesh = new THREE.Mesh(top, material);
+            topMesh.translateY(0.3);
+            scene.add(topMesh);
+
+            // Line 125-140: Bottom plane (lightness gradient)
+            let bottom = new THREE.PlaneGeometry(1, 1, 1, 20);
+            let bottomColors = [];
+            let bottomSteps = bottom.attributes.position.array.length / 6;
+            for (let i = 0; i <= bottomSteps; i += 1) {
+                let lchL = (L_MAX_COLOR * i) / bottomSteps;
+                let rgbL = toRgb({ mode: 'oklch', l: lchL, c: 0, h: 0 }).r;
+                bottomColors.push(rgbL, rgbL, rgbL, rgbL, rgbL, rgbL);
+            }
+            bottom.setAttribute('color', new THREE.Float32BufferAttribute(bottomColors, 3));
+            bottom.translate(0, 0, -0.2);
+            bottom.rotateZ(Math.PI * 0.5);
+            bottom.rotateX(-Math.PI * 0.5);
+            let bottomMesh = new THREE.Mesh(bottom, material);
+            scene.add(bottomMesh);
+
+            // Return update function (line 142-146)
+            return color => {
+                l.set(0, -color.l + 0.5);
+                c.set(0, (0.5 * -color.c) / C_MAX + 0.5);
+                h.set(0, 0.0028 * color.h - (color.h > 350 ? 0.51 : 0.5));
+            };
+        }
+
+        // Line 149-175: Scene initialization
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        const renderer = new THREE.WebGLRenderer({ alpha: true, canvas });
+
+        renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.set(0.79, 0, 0.79);
+        camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enablePan = true;
+        controls.enableZoom = true;
+        controls.minDistance = 0.9;
+        controls.maxDistance = 3;
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // UI Controls
+        const sliderL = document.getElementById('sliderL');
+        const sliderC = document.getElementById('sliderC');
+        const sliderH = document.getElementById('sliderH');
+
+        let updateSlices;
+
+        function updateColor() {
+            if (!updateSlices) return;
+
+            const l = parseFloat(sliderL.value) / 100;
+            const c = parseFloat(sliderC.value) / 100;
+            const h = parseFloat(sliderH.value);
+
+            document.getElementById('valueL').textContent = l.toFixed(2);
+            document.getElementById('valueC').textContent = c.toFixed(2);
+            document.getElementById('valueH').textContent = h.toFixed(0) + '°';
+
+            // Update slicing planes
+            updateSlices({ l, c, h });
+        }
+
+        sliderL.addEventListener('input', updateColor);
+        sliderC.addEventListener('input', updateColor);
+        sliderH.addEventListener('input', updateColor);
+
+        // Generate mesh (THIS IS WHERE THE MAGIC HAPPENS)
+        console.log('🎨 Generating OKLCH 3D model with Evil Martians\' exact code...');
+        document.getElementById('progress').textContent = 'Generating mesh...';
+
+        // Small delay to let progress message show
+        setTimeout(() => {
+            updateSlices = generateMesh(scene);
+
+            document.getElementById('loading').style.display = 'none';
+            animate();
+            updateColor();
+
+            console.log('✅ OKLCH 3D Model Ready (Evil Martians\' Real Code)');
+        }, 50);
+    </script>
+</body>
+</html>

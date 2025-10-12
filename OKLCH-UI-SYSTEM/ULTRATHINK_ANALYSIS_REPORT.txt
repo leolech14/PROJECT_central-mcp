@@ -1,0 +1,171 @@
+========================================================================================
+🔥 ULTRATHINK ANALYSIS: ULTIMATE-UI-STUDIO-V2.html
+========================================================================================
+
+📊 SUMMARY STATISTICS:
+----------------------------------------------------------------------------------------
+  Total Functions: 221
+  Total Dependencies: 338
+  Duplicate Patterns: 85
+  Average Complexity: 6.2
+
+🏗️ FUNCTION CATEGORIES:
+----------------------------------------------------------------------------------------
+  Other: 86 functions
+    • SAPC
+    • analyzePatterns
+    • animate
+    • animate
+    • animate
+    ... and 81 more
+
+  Initialization: 31 functions
+    • init2DPickerToggles
+    • init2DPickers
+    • init3DSliceVisualizer
+    • init3DViewer
+    • initAnimationControls
+    ... and 26 more
+
+  State Updates: 27 functions
+    • scheduleURLUpdate
+    • update3DSliceFromCentralControl
+    • updateAllColorNames
+    • updateAutoSyncStatus
+    • updateCentralControlDisplay
+    ... and 22 more
+
+  Transformations: 11 functions
+    • apply
+    • apply
+    • apply
+    • apply
+    • apply
+    ... and 6 more
+
+  Setters: 11 functions
+    • applySettings
+    • canvasOffset
+    • loadSettings
+    • resetScaffold
+    • resetSettings
+    ... and 6 more
+
+  Getters: 11 functions
+    • getCLFromPosition
+    • getClosestColorName
+    • getColorName
+    • getGroupDisplayName
+    • getHueFromPosition
+    ... and 6 more
+
+  UI Display: 8 functions
+    • hideTemplateLayers
+    • hideTemplatePreview
+    • showFloatingLog
+    • showFloatingLogWithAria
+    • showNotification
+    ... and 3 more
+
+  Generators: 7 functions
+    • generateCategoryCard
+    • generateHotspotColorBar
+    • generateMesh
+    • generateOverviewContent
+    • generateRandomCompliantPalette
+    ... and 2 more
+
+  Event Handlers: 7 functions
+    • handleDragEnd
+    • handleDragEnter
+    • handleDragLeave
+    • handleDragOver
+    • handleDragStart
+    ... and 2 more
+
+  Calculations: 6 functions
+    • calculateAPCACompliantColor
+    • calculateContrastFromObjects
+    • calculateHarmony
+    • calculateInfluenceStrength
+    • calculateMinimalAdjustment
+    ... and 1 more
+
+  Export/Import: 4 functions
+    • disableImportButton
+    • enableImportButton
+    • exportAllDataAndRefresh
+    • importTemplate
+
+  Rendering: 4 functions
+    • renderAtomsView
+    • renderPatternsView
+    • renderTopologyView
+    • renderWeightsView
+
+  Canvas/Graphics: 2 functions
+    • drawChromaLightness
+    • drawHueWheel
+
+  Parsing: 2 functions
+    • parseComputedColor
+    • parseOKLCHFromComputed
+
+  UI Controls: 2 functions
+    • toggleCommandmentCategory
+    • toggleSidebar
+
+  Validation: 1 functions
+    • validatePaletteData
+
+  Synchronization: 1 functions
+    • enforceComplianceAndSync
+
+🔗 TOP DEPENDENCIES (Most Called Functions):
+----------------------------------------------------------------------------------------
+  • announceToScreenReader: called 18 times (complexity: 4)
+  • selectColorGroup: called 16 times (complexity: 3)
+  • showNotification: called 16 times (complexity: 5)
+  • showFloatingLog: called 12 times (complexity: 5)
+  • updateOklchCodeDisplay: called 7 times (complexity: 7)
+  • getClosestColorName: called 6 times (complexity: 6)
+  • updateAllColorNames: called 6 times (complexity: 10)
+  • drawHueWheel: called 6 times (complexity: 3)
+  • calculateContrastFromObjects: called 6 times (complexity: 7)
+  • updateColorLineDisplay: called 5 times (complexity: 5)
+  • updateScaffoldTheme: called 5 times (complexity: 6)
+  • getGroupDisplayName: called 5 times (complexity: 3)
+  • updateSafeZone: called 5 times (complexity: 11)
+  • drawChromaLightness: called 5 times (complexity: 4)
+  • animateColorSlide: called 5 times (complexity: 7)
+
+⚠️ HIGH COMPLEXITY FUNCTIONS (Refactoring Candidates):
+----------------------------------------------------------------------------------------
+  • getColorName: complexity 30
+  • resetWidgetOrder: complexity 29
+  • enforceComplianceAndSync: complexity 25
+  • applyNonColorLayers: complexity 17
+  • redo: complexity 17
+  • transformColorForMode: complexity 16
+  • sanitizeString: complexity 15
+  • updateFilteredHotspots: complexity 15
+  • lightnessMin: complexity 15
+  • sanitizeJSON: complexity 14
+  • getImmediateBackground: complexity 14
+  • lightnessMax: complexity 14
+  • validatePaletteData: complexity 13
+  • onGamutEdge: complexity 13
+  • initTemplateControls: complexity 13
+
+🔄 DUPLICATE CODE PATTERNS (Consolidation Opportunities):
+----------------------------------------------------------------------------------------
+  • [40x] <div class="card selectable" data-color-group="surface">
+  • [27x] background: var(--scaffold-bg-elevated);
+  • [22x] color: var(--scaffold-text-muted);
+  • [20x] border: 1px solid var(--scaffold-border);
+  • [18x] background: var(--scaffold-bg-input);
+  • [12x] const elements = document.querySelectorAll('[data-color-g...
+  • [11x] background: var(--scaffold-bg);
+  • [11x] border: 1px solid var(--scaffold-border-hover);
+  • [11x] <div class="commandment-category">
+  • [11x] <button class="commandment-header" onclick="toggleCommand...

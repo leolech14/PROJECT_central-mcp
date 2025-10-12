@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Rule Engine - WORKING Implementation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg, oklch(15% 0.01 250));
+            color: var(--text, oklch(95% 0.01 250));
+            font-family: 'SF Mono', Consolas, monospace;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: oklch(60% 0.18 260);
+            color: oklch(98% 0.01 250);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: var(--surface, oklch(18% 0.01 250));
+            border: 2px solid var(--border, oklch(30% 0.02 250));
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-input {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .rule-label {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+            margin-bottom: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 150px;
+            background: oklch(8% 0.01 250);
+            border: 1px solid oklch(20% 0.02 250);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: oklch(90% 0.02 250);
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            resize: vertical;
+        }
+
+        .output {
+            background: oklch(8% 0.01 250);
+            border: 1px solid oklch(20% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 200px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .color-result {
+            display: grid;
+            grid-template-columns: 150px 80px 1fr;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: oklch(12% 0.01 250);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-name {
+            color: oklch(75% 0.15 240);
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid oklch(30% 0.02 250);
+        }
+
+        .color-value {
+            color: oklch(80% 0.02 250);
+            font-size: 0.8rem;
+        }
+
+        .mode-switch {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mode-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: 2px solid oklch(30% 0.02 250);
+            background: transparent;
+            color: oklch(80% 0.02 250);
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background: oklch(60% 0.18 260);
+            color: oklch(98% 0.01 250);
+            border-color: oklch(60% 0.18 260);
+        }
+
+        .demo-ui {
+            background: var(--surface, oklch(18% 0.01 250));
+            border: 2px solid var(--border, oklch(30% 0.02 250));
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .demo-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            margin-right: 1rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .demo-button-primary {
+            background: var(--primary, oklch(60% 0.18 260));
+            color: var(--primary-contrast, oklch(98% 0.01 250));
+        }
+
+        .demo-button-secondary {
+            background: var(--secondary, oklch(55% 0.15 200));
+            color: var(--secondary-contrast, oklch(98% 0.01 250));
+        }
+
+        .demo-button-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .demo-button-secondary:hover {
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 OKLCH Rule Engine - WORKING</h1>
+        <p style="color: oklch(70% 0.02 250);">Define rules → Engine computes colors → UI updates automatically</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="applyRules()">⚡ Apply Rules</button>
+        <button class="btn" onclick="exportSystem()">💾 Export System</button>
+    </div>
+
+    <div class="mode-switch">
+        <button class="mode-btn active" onclick="switchMode('light')">☀️ Light</button>
+        <button class="mode-btn" onclick="switchMode('dark')">🌙 Dark</button>
+    </div>
+
+    <div class="layout">
+        <!-- LEFT: Rule Definitions -->
+        <div class="panel">
+            <h2>📝 Rule Definitions</h2>
+
+            <div class="rule-input">
+                <div class="rule-label">Base Colors (Manual Definition)</div>
+                <textarea id="baseColors">{
+  "background": { "l": 0.98, "c": 0.02, "h": 250 },
+  "primary": { "l": 0.60, "c": 0.18, "h": 260 }
+}</textarea>
+            </div>
+
+            <div class="rule-input">
+                <div class="rule-label">Color Rules (Computed from Base)</div>
+                <textarea id="colorRules">{
+  "text": "ensure 4.5:1 with background",
+  "secondary": "primary + H(+60) + C(-0.03)",
+  "accent": "primary + H(+150) + C(-0.06)",
+  "surface": "background + L(-0.03) IF light | background + L(+0.05) IF dark",
+  "border": "background + L(-0.12) IF light | background + L(+0.15) IF dark",
+  "primary-light": "primary + L(+0.10)",
+  "primary-dark": "primary + L(-0.10)",
+  "primary-contrast": "ensure 4.5:1 with primary"
+}</textarea>
+            </div>
+
+            <div class="rule-input">
+                <div class="rule-label">Mode Threshold Rules</div>
+                <textarea id="modeRules">{
+  "threshold": 0.5,
+  "trigger": "background.l",
+  "onLightMode": {
+    "background": { "l": [0.95, 1.0] },
+    "text": { "l": [0.0, 0.30] }
+  },
+  "onDarkMode": {
+    "background": { "l": [0.0, 0.20] },
+    "text": { "l": [0.85, 1.0] }
+  }
+}</textarea>
+            </div>
+        </div>
+
+        <!-- RIGHT: Computed Results -->
+        <div class="panel">
+            <h2>🎯 Computed Colors</h2>
+            <div id="computedColors" class="output"></div>
+        </div>
+    </div>
+
+    <!-- Demo UI -->
+    <div class="demo-ui">
+        <h3 style="margin-bottom: 1rem;">Demo UI (Updates Automatically)</h3>
+        <button class="demo-button demo-button-primary">Primary Action</button>
+        <button class="demo-button demo-button-secondary">Secondary Action</button>
+    </div>
+
+    <script>
+        // ========== RULE ENGINE ==========
+
+        let currentMode = 'light';
+        let baseColors = {};
+        let computedColors = {};
+
+        // Parse OKLCH to luminance for contrast calculations
+        function oklchToLuminance(l) {
+            return Math.pow(l, 2.2);
+        }
+
+        function calculateContrast(l1, l2) {
+            const lum1 = oklchToLuminance(l1);
+            const lum2 = oklchToLuminance(l2);
+            const lighter = Math.max(lum1, lum2);
+            const darker = Math.min(lum1, lum2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function findContrastingLightness(refL, minContrast = 4.5) {
+            // Find lightness that provides contrast with reference
+            const refY = oklchToLuminance(refL);
+
+            // Try lighter
+            const lighterY = (minContrast * (refY + 0.05)) - 0.05;
+            const lighterL = Math.sqrt(Math.min(1, lighterY));
+
+            // Try darker
+            const darkerY = ((refY + 0.05) / minContrast) - 0.05;
+            const darkerL = Math.sqrt(Math.max(0, darkerY));
+
+            // Choose based on mode
+            if (currentMode === 'light') {
+                return Math.min(darkerL, 0.30);
+            } else {
+                return Math.max(lighterL, 0.85);
+            }
+        }
+
+        // Parse and evaluate rules
+        function evaluateRule(rule, context) {
+            // Handle "ensure X:1 with Y"
+            if (rule.includes('ensure')) {
+                const match = rule.match(/ensure ([0-9.]+):1 with (\w+)/);
+                if (match) {
+                    const minContrast = parseFloat(match[1]);
+                    const refColorName = match[2];
+                    const refColor = context[refColorName] || baseColors[refColorName];
+
+                    if (refColor) {
+                        const l = findContrastingLightness(refColor.l, minContrast);
+                        return { l, c: 0.02, h: refColor.h };
+                    }
+                }
+            }
+
+            // Handle arithmetic operations: "base + L(+0.10)"
+            if (rule.includes('+') || rule.includes('-')) {
+                // Parse base color
+                const baseMatch = rule.match(/^(\w+)/);
+                if (baseMatch) {
+                    const baseName = baseMatch[1];
+                    const base = context[baseName] || baseColors[baseName];
+
+                    if (base) {
+                        let result = { ...base };
+
+                        // Apply L operations
+                        const lMatch = rule.match(/L\(([+-]?[0-9.]+)\)/);
+                        if (lMatch) {
+                            const delta = parseFloat(lMatch[1]);
+                            result.l = Math.max(0, Math.min(1, result.l + delta));
+                        }
+
+                        // Apply C operations
+                        const cMatch = rule.match(/C\(([+-]?[0-9.]+)\)/);
+                        if (cMatch) {
+                            const delta = parseFloat(cMatch[1]);
+                            result.c = Math.max(0, Math.min(0.37, result.c + delta));
+                        }
+
+                        // Apply H operations
+                        const hMatch = rule.match(/H\(([+-]?[0-9.]+)\)/);
+                        if (hMatch) {
+                            const delta = parseFloat(hMatch[1]);
+                            result.h = (result.h + delta + 360) % 360;
+                        }
+
+                        return result;
+                    }
+                }
+            }
+
+            // Handle mode-specific rules: "rule IF light | rule IF dark"
+            if (rule.includes('IF')) {
+                const parts = rule.split('|');
+                for (const part of parts) {
+                    const match = part.match(/(.+) IF (\w+)/);
+                    if (match) {
+                        const subrule = match[1].trim();
+                        const mode = match[2].trim();
+
+                        if (mode === currentMode) {
+                            return evaluateRule(subrule, context);
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        function applyRules() {
+            try {
+                // Parse base colors
+                baseColors = JSON.parse(document.getElementById('baseColors').value);
+
+                // Parse color rules
+                const rules = JSON.parse(document.getElementById('colorRules').value);
+
+                // Compute all colors
+                computedColors = { ...baseColors };
+
+                // Multiple passes to resolve dependencies
+                for (let pass = 0; pass < 3; pass++) {
+                    for (const [name, rule] of Object.entries(rules)) {
+                        const result = evaluateRule(rule, computedColors);
+                        if (result) {
+                            computedColors[name] = result;
+                        }
+                    }
+                }
+
+                // Display results
+                displayComputedColors();
+
+                // Update UI
+                applyColorsToUI();
+
+                console.log('✅ Rules applied successfully');
+            } catch (error) {
+                console.error('❌ Error applying rules:', error);
+                document.getElementById('computedColors').textContent = 'Error: ' + error.message;
+            }
+        }
+
+        function displayComputedColors() {
+            const container = document.getElementById('computedColors');
+            container.innerHTML = '';
+
+            for (const [name, color] of Object.entries(computedColors)) {
+                const div = document.createElement('div');
+                div.className = 'color-result';
+
+                const nameEl = document.createElement('div');
+                nameEl.className = 'color-name';
+                nameEl.textContent = name;
+
+                const swatchEl = document.createElement('div');
+                swatchEl.className = 'color-swatch';
+                swatchEl.style.background = toOklch(color);
+
+                const valueEl = document.createElement('div');
+                valueEl.className = 'color-value';
+                valueEl.textContent = toOklch(color);
+
+                div.appendChild(nameEl);
+                div.appendChild(swatchEl);
+                div.appendChild(valueEl);
+
+                container.appendChild(div);
+            }
+        }
+
+        function toOklch(color) {
+            return `oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(0)})`;
+        }
+
+        function applyColorsToUI() {
+            // Update CSS variables
+            for (const [name, color] of Object.entries(computedColors)) {
+                document.documentElement.style.setProperty(`--${name}`, toOklch(color));
+            }
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+
+            // Update button states
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Re-apply rules
+            applyRules();
+        }
+
+        function exportSystem() {
+            const system = {
+                mode: currentMode,
+                baseColors,
+                computedColors,
+                rules: JSON.parse(document.getElementById('colorRules').value)
+            };
+
+            const json = JSON.stringify(system, null, 2);
+
+            // Create a blob and download
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'oklch-color-system.json';
+            a.click();
+
+            console.log('✅ System exported');
+        }
+
+        // Initialize
+        applyRules();
+
+        console.log('✅ OKLCH Rule Engine loaded!');
+        console.log('📝 Edit rules in left panel');
+        console.log('⚡ Click "Apply Rules" to recompute');
+        console.log('🌓 Switch modes to see automatic adjustments');
+    </script>
+</body>
+</html>

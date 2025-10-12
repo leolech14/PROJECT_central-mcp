@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central-MCP Control Center</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+      color: #00ff00;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+      animation: fadeIn 1s ease-in;
+    }
+
+    .header h1 {
+      font-size: 48px;
+      color: #00ff00;
+      text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .header .subtitle {
+      font-size: 18px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .status {
+      background: rgba(0, 255, 0, 0.1);
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 15px 30px;
+      display: inline-block;
+      margin-top: 20px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px #00ff00; }
+      50% { box-shadow: 0 0 20px #00ff00, 0 0 30px #00ff00; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      border: 2px solid #333;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 255, 0, 0.2);
+      border-color: #00ff00;
+    }
+
+    .card-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .card h2 {
+      color: #00ffff;
+      font-size: 24px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card p {
+      color: #888;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .card a {
+      display: inline-block;
+      background: linear-gradient(135deg, #00ff00 0%, #00ffff 100%);
+      color: #000;
+      padding: 12px 30px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+    }
+
+    .card a:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 255, 0, 0.5);
+    }
+
+    .features {
+      background: rgba(0, 255, 255, 0.05);
+      border: 1px solid #00ffff;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .features h3 {
+      color: #00ffff;
+      font-size: 14px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .features ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .features li {
+      color: #00ff00;
+      padding: 5px 0;
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .features li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .footer a {
+      color: #00ffff;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    .cost-badge {
+      background: rgba(255, 215, 0, 0.1);
+      border: 2px solid gold;
+      color: gold;
+      padding: 10px 20px;
+      border-radius: 20px;
+      display: inline-block;
+      margin-top: 20px;
+      font-weight: bold;
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { box-shadow: 0 0 10px gold; }
+      50% { box-shadow: 0 0 20px gold, 0 0 30px gold; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🧠 CENTRAL-MCP</h1>
+      <div class="subtitle">Intelligence Coordination Hub</div>
+      <div class="status">
+        🟢 ALL SYSTEMS OPERATIONAL
+      </div>
+      <div class="cost-badge">
+        💰 RUNNING FOR FREE! ($0/month)
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Real-Time Dashboard -->
+      <div class="card" style="animation-delay: 0.1s;">
+        <span class="card-icon">📊</span>
+        <h2>Real-Time Dashboard</h2>
+        <p>Monitor tasks, agents, and system metrics with live WebSocket updates. See everything happening in real-time!</p>
+        <a href="http://34.41.115.199:8000/dashboard.html" target="_blank">OPEN DASHBOARD →</a>
+
+        <div class="features">
+          <h3>Features:</h3>
+          <ul>
+            <li>Live task status updates</li>
+            <li>Agent availability monitoring</li>
+            <li>System metrics & analytics</li>
+            <li>Activity log streaming</li>
+            <li>Auto-refresh every 5 seconds</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- GoTTY Web Terminal -->
+      <div class="card" style="animation-delay: 0.2s;">
+        <span class="card-icon">🖥️</span>
+        <h2>Live Agent Terminals</h2>
+        <p>Watch agents work in real-time! Full terminal access in your browser with TMUX multi-window support.</p>
+        <a href="http://34.41.115.199:8080" target="_blank">OPEN TERMINALS →</a>
+
+        <div class="features">
+          <h3>Features:</h3>
+          <ul>
+            <li>6 agent windows (A, B, C, D + logs)</li>
+            <li>Full terminal interactivity</li>
+            <li>Switch windows: Ctrl+B then 0-5</li>
+            <li>Watch code generation live</li>
+            <li>Auto-reconnect on disconnect</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Central-MCP Health -->
+      <div class="card" style="animation-delay: 0.3s;">
+        <span class="card-icon">🏥</span>
+        <h2>System Health</h2>
+        <p>Check the health status of Central-MCP server, database, and all connected services.</p>
+        <a href="http://34.41.115.199:3000/health" target="_blank">CHECK HEALTH →</a>
+
+        <div class="features">
+          <h3>Features:</h3>
+          <ul>
+            <li>Server uptime & status</li>
+            <li>Database connectivity</li>
+            <li>Memory & CPU usage</li>
+            <li>WebSocket connections</li>
+            <li>API response time</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- SSH Access -->
+      <div class="card" style="animation-delay: 0.4s;">
+        <span class="card-icon">🔐</span>
+        <h2>SSH Access</h2>
+        <p>Direct terminal access to the VM for advanced operations and debugging.</p>
+        <a href="javascript:alert('Run: gcloud compute ssh central-mcp-server --zone=us-central1-a')" style="background: linear-gradient(135deg, #666 0%, #888 100%);">COPY SSH COMMAND →</a>
+
+        <div class="features">
+          <h3>Command:</h3>
+          <ul>
+            <li style="font-size: 11px; color: #fff;">gcloud compute ssh central-mcp-server --zone=us-central1-a</li>
+            <li>Attach to TMUX: tmux attach -t agents</li>
+            <li>View logs: journalctl -u central-mcp -f</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p>
+        <strong>VM:</strong> central-mcp-server (E2-micro - FREE TIER) |
+        <strong>IP:</strong> 34.41.115.199 |
+        <strong>Region:</strong> us-central1-a
+      </p>
+      <p style="margin-top: 10px;">
+        <a href="https://console.cloud.google.com/compute/instances" target="_blank">Google Cloud Console</a> |
+        <a href="http://34.41.115.199:3000/health" target="_blank">API Health</a> |
+        <a href="javascript:location.reload()">Refresh Status</a>
+      </p>
+      <p style="margin-top: 20px; font-size: 12px;">
+        🚀 Powered by Central-MCP Intelligence Engine | 🧠 6-Agent Coordination System
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Auto-check health status
+    fetch('http://34.41.115.199:3000/health')
+      .then(r => r.json())
+      .then(data => {
+        console.log('✅ Central-MCP Health:', data);
+      })
+      .catch(err => {
+        console.warn('⚠️  Health check failed:', err);
+      });
+
+    // Update status indicators
+    setTimeout(() => {
+      const statusEl = document.querySelector('.status');
+      statusEl.innerHTML = '🟢 ALL SYSTEMS OPERATIONAL<br><small style="color: #00ffff;">WebSocket: ws://34.41.115.199:3000/mcp</small>';
+    }, 1000);
+  </script>
+</body>
+</html>

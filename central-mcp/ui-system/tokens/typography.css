@@ -1,0 +1,280 @@
+/* Central-MCP Typography System */
+
+:root {
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, 'Monaco', 'Menlo', monospace;
+  --font-display: 'Inter Display', system-ui, sans-serif;
+
+  /* Font Sizes - Responsive using clamp() */
+  --font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);    /* 12px - 14px */
+  --font-size-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);      /* 14px - 16px */
+  --font-size-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);      /* 16px - 18px */
+  --font-size-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);     /* 18px - 20px */
+  --font-size-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);      /* 20px - 24px */
+  --font-size-2xl: clamp(1.5rem, 1.3rem + 1vw, 2rem);           /* 24px - 32px */
+  --font-size-3xl: clamp(1.875rem, 1.6rem + 1.375vw, 2.5rem);   /* 30px - 40px */
+  --font-size-4xl: clamp(2.25rem, 1.9rem + 1.75vw, 3rem);       /* 36px - 48px */
+  --font-size-5xl: clamp(3rem, 2.5rem + 2.5vw, 4rem);           /* 48px - 64px */
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* Text Sizes - Composite Classes */
+  --text-xs: var(--font-size-xs) / var(--line-height-normal);
+  --text-sm: var(--font-size-sm) / var(--line-height-normal);
+  --text-base: var(--font-size-base) / var(--line-height-normal);
+  --text-lg: var(--font-size-lg) / var(--line-height-normal);
+  --text-xl: var(--font-size-xl) / var(--line-height-tight);
+  --text-2xl: var(--font-size-2xl) / var(--line-height-tight);
+  --text-3xl: var(--font-size-3xl) / var(--line-height-tight);
+  --text-4xl: var(--font-size-4xl) / var(--line-height-tight);
+  --text-5xl: var(--font-size-5xl) / var(--line-height-tight);
+}
+
+/* Base Typography */
+html {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Font Loading */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/Inter-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter Display';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('https://rsms.me/inter/font-files/InterDisplay-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('https://fonts.gstatic.com/s/jetbrainsmono/v15/tDbY2o-flEEny0FZhsfKu5WU4zr3E_BX_oP.woff2') format('woff2');
+}
+
+/* Typography Classes */
+.text-display-5xl {
+  font-family: var(--font-display);
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-display-4xl {
+  font-family: var(--font-display);
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-display-3xl {
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-h2 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-h3 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.text-h4 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.text-body-large {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-body {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+.text-body-small {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-caption {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+.text-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Font Weight Classes */
+.font-thin { font-weight: var(--font-weight-thin); }
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+.font-extrabold { font-weight: var(--font-weight-extrabold); }
+
+/* Line Height Classes */
+.leading-none { line-height: var(--line-height-none); }
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-snug { line-height: var(--line-height-snug); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+.leading-loose { line-height: var(--line-height-loose); }
+
+/* Letter Spacing Classes */
+.tracking-tighter { letter-spacing: var(--letter-spacing-tighter); }
+.tracking-tight { letter-spacing: var(--letter-spacing-tight); }
+.tracking-normal { letter-spacing: var(--letter-spacing-normal); }
+.tracking-wide { letter-spacing: var(--letter-spacing-wide); }
+.tracking-wider { letter-spacing: var(--letter-spacing-wider); }
+.tracking-widest { letter-spacing: var(--letter-spacing-widest); }
+
+/* Monospace for Code */
+.font-mono { font-family: var(--font-mono); }
+.font-display { font-family: var(--font-display); }
+
+/* Text Alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* Text Transform */
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* Text Decoration */
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.no-underline { text-decoration: none; }
+
+/* Text Color Utilities */
+.text-inherit { color: inherit; }
+.text-current { color: currentColor; }
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  html {
+    font-size: 14px;
+  }
+
+  .text-display-5xl {
+    font-size: var(--font-size-4xl);
+  }
+
+  .text-display-4xl {
+    font-size: var(--font-size-3xl);
+  }
+
+  .text-display-3xl {
+    font-size: var(--font-size-2xl);
+  }
+
+  .text-h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .text-h2 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Print Styles */
+@media print {
+  body {
+    font-family: 'Georgia', serif;
+    color: #000;
+    background: #fff;
+  }
+
+  .text-display-5xl,
+  .text-display-4xl,
+  .text-display-3xl,
+  .text-h1,
+  .text-h2,
+  .text-h3 {
+    font-family: 'Georgia', serif;
+    font-weight: var(--font-weight-bold);
+  }
+}

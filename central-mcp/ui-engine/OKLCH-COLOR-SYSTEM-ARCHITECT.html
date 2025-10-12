@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Color System Architect - Vectorize, Map & Rule Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: oklch(15% 0.01 250);
+            font-family: 'SF Mono', Consolas, monospace;
+            color: oklch(95% 0.01 250);
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: oklch(70% 0.02 250);
+            font-size: 0.9rem;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: oklch(18% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .panel h2 {
+            font-size: 1.3rem;
+            color: oklch(90% 0.02 250);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ========== COLOR FAMILIES ========== */
+        .color-family {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .family-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .family-name {
+            font-size: 1.1rem;
+            color: oklch(85% 0.02 250);
+            font-weight: 600;
+        }
+
+        .family-count {
+            font-size: 0.75rem;
+            color: oklch(60% 0.02 250);
+            background: oklch(20% 0.02 250);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .color-group {
+            margin-bottom: 1rem;
+        }
+
+        .color-item {
+            display: grid;
+            grid-template-columns: 120px 1fr 80px;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.75rem;
+            background: oklch(15% 0.01 250);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-name {
+            color: oklch(75% 0.15 240);
+            font-size: 0.85rem;
+        }
+
+        .color-rule {
+            color: oklch(70% 0.02 250);
+            font-size: 0.75rem;
+            font-style: italic;
+        }
+
+        .color-swatch {
+            width: 60px;
+            height: 30px;
+            border-radius: 6px;
+            border: 2px solid oklch(30% 0.02 250);
+        }
+
+        /* ========== RULE EDITOR ========== */
+        .rule-editor {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rule-title {
+            font-size: 0.9rem;
+            color: oklch(75% 0.15 120);
+            margin-bottom: 0.5rem;
+        }
+
+        .rule-syntax {
+            background: oklch(8% 0.01 250);
+            border: 1px solid oklch(20% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 0.8rem;
+            color: oklch(80% 0.02 250);
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        .rule-keyword {
+            color: oklch(75% 0.15 260);
+        }
+
+        .rule-value {
+            color: oklch(75% 0.15 40);
+        }
+
+        .rule-operator {
+            color: oklch(75% 0.15 320);
+        }
+
+        .rule-comment {
+            color: oklch(50% 0.02 250);
+        }
+
+        /* ========== MODE RULES ========== */
+        .mode-rules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-card {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .mode-header {
+            font-size: 1rem;
+            color: oklch(85% 0.02 250);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .constraint {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem;
+            background: oklch(15% 0.01 250);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .constraint-name {
+            color: oklch(70% 0.02 250);
+        }
+
+        .constraint-value {
+            color: oklch(85% 0.02 250);
+            font-weight: 600;
+        }
+
+        /* ========== STATE RULES ========== */
+        .state-rules {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .component-states {
+            margin-bottom: 1rem;
+        }
+
+        .component-name {
+            font-size: 0.9rem;
+            color: oklch(75% 0.15 40);
+            margin-bottom: 0.5rem;
+        }
+
+        .state-list {
+            display: grid;
+            gap: 0.3rem;
+            font-size: 0.75rem;
+        }
+
+        .state-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0.6rem;
+            background: oklch(15% 0.01 250);
+            border-radius: 4px;
+        }
+
+        .state-name {
+            color: oklch(65% 0.02 250);
+        }
+
+        .state-rule {
+            color: oklch(80% 0.02 250);
+        }
+
+        /* ========== MATHEMATICAL RELATIONSHIPS ========== */
+        .math-relations {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .math-formula {
+            background: oklch(8% 0.01 250);
+            border: 1px solid oklch(20% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .formula-name {
+            color: oklch(75% 0.15 120);
+            margin-bottom: 0.5rem;
+        }
+
+        .formula-expr {
+            color: oklch(85% 0.02 250);
+            font-family: 'SF Mono', monospace;
+        }
+
+        .formula-explanation {
+            color: oklch(60% 0.02 250);
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* ========== EXPORT ========== */
+        .export-section {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+        }
+
+        .btn-primary {
+            background: oklch(60% 0.18 260);
+            color: oklch(98% 0.01 250);
+        }
+
+        .btn-primary:hover {
+            background: oklch(65% 0.18 260);
+        }
+
+        .btn-secondary {
+            background: oklch(25% 0.02 250);
+            color: oklch(90% 0.02 250);
+            border: 1px solid oklch(35% 0.02 250);
+        }
+
+        .btn-secondary:hover {
+            background: oklch(30% 0.02 250);
+        }
+
+        .output-code {
+            background: oklch(8% 0.01 250);
+            border: 1px solid oklch(20% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: oklch(80% 0.02 250);
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎨 OKLCH Color System Architect</h1>
+        <p>Vectorize UI colors → Group by purpose → Define relationships → Generate rule-based system</p>
+    </div>
+
+    <div class="layout">
+        <!-- LEFT PANEL: Color Families & Groups -->
+        <div class="panel">
+            <h2>📦 Color Families & Groups</h2>
+
+            <!-- Primary Family -->
+            <div class="color-family">
+                <div class="family-header">
+                    <div class="family-name">Primary Family</div>
+                    <div class="family-count">5 variants</div>
+                </div>
+
+                <div class="color-group">
+                    <div class="color-item">
+                        <div class="color-name">primary.base</div>
+                        <div class="color-rule">oklch(0.60 0.18 260)</div>
+                        <div class="color-swatch" style="background: oklch(0.60 0.18 260);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">primary.light</div>
+                        <div class="color-rule">base + L(+0.10)</div>
+                        <div class="color-swatch" style="background: oklch(0.70 0.18 260);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">primary.dark</div>
+                        <div class="color-rule">base + L(-0.10)</div>
+                        <div class="color-swatch" style="background: oklch(0.50 0.18 260);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">primary.contrast</div>
+                        <div class="color-rule">ensure 4.5:1 with bg</div>
+                        <div class="color-swatch" style="background: oklch(0.98 0.02 260);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">primary.muted</div>
+                        <div class="color-rule">base + C(-0.10)</div>
+                        <div class="color-swatch" style="background: oklch(0.60 0.08 260);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Surface Family -->
+            <div class="color-family">
+                <div class="family-header">
+                    <div class="family-name">Surface Family</div>
+                    <div class="family-count">3 variants</div>
+                </div>
+
+                <div class="color-group">
+                    <div class="color-item">
+                        <div class="color-name">surface.base</div>
+                        <div class="color-rule">bg + L(-0.03) ⚡ light | bg + L(+0.05) ⚡ dark</div>
+                        <div class="color-swatch" style="background: oklch(0.95 0.01 250);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">surface.elevated</div>
+                        <div class="color-rule">base + L(-0.02) ⚡ light | base + L(+0.03) ⚡ dark</div>
+                        <div class="color-swatch" style="background: oklch(0.93 0.01 250);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">surface.sunken</div>
+                        <div class="color-rule">base + L(+0.02) ⚡ light | base + L(-0.03) ⚡ dark</div>
+                        <div class="color-swatch" style="background: oklch(0.97 0.01 250);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Family -->
+            <div class="color-family">
+                <div class="family-header">
+                    <div class="family-name">Text Family</div>
+                    <div class="family-count">4 variants</div>
+                </div>
+
+                <div class="color-group">
+                    <div class="color-item">
+                        <div class="color-name">text.primary</div>
+                        <div class="color-rule">ensure 4.5:1 with bg</div>
+                        <div class="color-swatch" style="background: oklch(0.18 0.02 250);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">text.secondary</div>
+                        <div class="color-rule">primary + L(+0.20) ⚡ light | primary + L(-0.20) ⚡ dark</div>
+                        <div class="color-swatch" style="background: oklch(0.38 0.02 250);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">text.disabled</div>
+                        <div class="color-rule">secondary × α(0.5)</div>
+                        <div class="color-swatch" style="background: oklch(0.38 0.02 250 / 0.5);"></div>
+                    </div>
+
+                    <div class="color-item">
+                        <div class="color-name">text.link</div>
+                        <div class="color-rule">inherit H from primary.base</div>
+                        <div class="color-swatch" style="background: oklch(0.50 0.15 260);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rule Syntax Reference -->
+            <div class="rule-editor">
+                <div class="rule-title">📖 Rule Syntax Reference</div>
+                <div class="rule-syntax"><span class="rule-comment">// Arithmetic Operations</span>
+<span class="rule-keyword">L</span><span class="rule-operator">(+0.10)</span>    <span class="rule-comment">// Add 0.10 to Lightness</span>
+<span class="rule-keyword">C</span><span class="rule-operator">(-0.05)</span>    <span class="rule-comment">// Subtract 0.05 from Chroma</span>
+<span class="rule-keyword">H</span><span class="rule-operator">(+60)</span>     <span class="rule-comment">// Add 60° to Hue</span>
+<span class="rule-keyword">α</span><span class="rule-operator">(0.5)</span>     <span class="rule-comment">// Set alpha to 0.5</span>
+
+<span class="rule-comment">// Mode-Specific Rules</span>
+<span class="rule-keyword">rule</span> <span class="rule-operator">⚡</span> <span class="rule-value">light</span>  <span class="rule-comment">// Apply in light mode</span>
+<span class="rule-keyword">rule</span> <span class="rule-operator">⚡</span> <span class="rule-value">dark</span>   <span class="rule-comment">// Apply in dark mode</span>
+
+<span class="rule-comment">// Constraints</span>
+<span class="rule-keyword">ensure</span> <span class="rule-value">4.5:1</span> <span class="rule-keyword">with</span> bg  <span class="rule-comment">// WCAG AA text</span>
+<span class="rule-keyword">ensure</span> <span class="rule-value">3.0:1</span> <span class="rule-keyword">with</span> bg  <span class="rule-comment">// WCAG AA UI</span>
+
+<span class="rule-comment">// Inheritance</span>
+<span class="rule-keyword">inherit</span> <span class="rule-value">H</span> <span class="rule-keyword">from</span> primary.base
+<span class="rule-keyword">inherit</span> <span class="rule-value">L C</span> <span class="rule-keyword">from</span> surface.base
+
+<span class="rule-comment">// Mathematical Expressions</span>
+base × <span class="rule-value">1.2</span>           <span class="rule-comment">// Multiply by constant</span>
+base + <span class="rule-value">L(primary) / 2</span> <span class="rule-comment">// Reference other colors</span></div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Mode Rules & State Rules -->
+        <div class="panel">
+            <h2>⚙️ Rules & Relationships</h2>
+
+            <!-- Mode Rules -->
+            <div class="mode-rules">
+                <div class="mode-card">
+                    <div class="mode-header">☀️ Light Mode</div>
+                    <div class="constraint">
+                        <span class="constraint-name">background.L</span>
+                        <span class="constraint-value">[0.95 → 1.0]</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">text.L</span>
+                        <span class="constraint-value">[0.0 → 0.30]</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">surface.L</span>
+                        <span class="constraint-value">bg - 0.03</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">border.L</span>
+                        <span class="constraint-value">bg - 0.12</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">min contrast</span>
+                        <span class="constraint-value">4.5:1</span>
+                    </div>
+                </div>
+
+                <div class="mode-card">
+                    <div class="mode-header">🌙 Dark Mode</div>
+                    <div class="constraint">
+                        <span class="constraint-name">background.L</span>
+                        <span class="constraint-value">[0.0 → 0.20]</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">text.L</span>
+                        <span class="constraint-value">[0.85 → 1.0]</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">surface.L</span>
+                        <span class="constraint-value">bg + 0.05</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">border.L</span>
+                        <span class="constraint-value">bg + 0.15</span>
+                    </div>
+                    <div class="constraint">
+                        <span class="constraint-name">min contrast</span>
+                        <span class="constraint-value">4.5:1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- State Rules -->
+            <div class="state-rules">
+                <div class="component-states">
+                    <div class="component-name">Button States</div>
+                    <div class="state-list">
+                        <div class="state-item">
+                            <span class="state-name">default</span>
+                            <span class="state-rule">primary.base</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">hover</span>
+                            <span class="state-rule">primary.base + L(+0.05)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">active</span>
+                            <span class="state-rule">primary.base + L(-0.05)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">disabled</span>
+                            <span class="state-rule">primary.base × α(0.5) + C(-0.10)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">focus</span>
+                            <span class="state-rule">primary.base + outline(2px)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-states">
+                    <div class="component-name">Input States</div>
+                    <div class="state-list">
+                        <div class="state-item">
+                            <span class="state-name">default</span>
+                            <span class="state-rule">surface.base + border(border.base)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">focus</span>
+                            <span class="state-rule">surface.base + border(primary.base)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">error</span>
+                            <span class="state-rule">surface.base + border(error.base)</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">disabled</span>
+                            <span class="state-rule">surface.base × α(0.5)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="component-states">
+                    <div class="component-name">Card States</div>
+                    <div class="state-list">
+                        <div class="state-item">
+                            <span class="state-name">default</span>
+                            <span class="state-rule">surface.base</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">hover</span>
+                            <span class="state-rule">surface.elevated</span>
+                        </div>
+                        <div class="state-item">
+                            <span class="state-name">selected</span>
+                            <span class="state-rule">surface.base + border(primary.base)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Relationships -->
+            <div class="math-relations">
+                <h3 style="color: oklch(85% 0.02 250); margin-bottom: 1rem;">📐 Mathematical Relationships</h3>
+
+                <div class="math-formula">
+                    <div class="formula-name">Contrast Enforcement</div>
+                    <div class="formula-expr">
+                        C(L₁, L₂) = (lighter + 0.05) / (darker + 0.05) ≥ 4.5
+                    </div>
+                    <div class="formula-explanation">
+                        Ensure WCAG AA contrast ratio between any two lightness values
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">Surface Depth</div>
+                    <div class="formula-expr">
+                        Surface(n) = Background + (n × 0.02) ⚡ dark
+                        Surface(n) = Background - (n × 0.02) ⚡ light
+                    </div>
+                    <div class="formula-explanation">
+                        Create elevation layers (n = 0, 1, 2, 3...) with consistent depth
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">Harmonic Hue Offset</div>
+                    <div class="formula-expr">
+                        Secondary.H = (Primary.H + 60°) % 360°    // Analogous
+                        Accent.H = (Primary.H + 150°) % 360°      // Split-complementary
+                    </div>
+                    <div class="formula-explanation">
+                        Generate harmonious color relationships from primary hue
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">Chroma Balance</div>
+                    <div class="formula-expr">
+                        ΣC(all colors) / count ≈ 0.10 ± 0.05
+                    </div>
+                    <div class="formula-explanation">
+                        Maintain average chroma for visual balance (not too saturated)
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">Mode Threshold Trigger</div>
+                    <div class="formula-expr">
+                        IF Background.L > 0.5 THEN mode = "light"
+                        ELSE mode = "dark"
+                    </div>
+                    <div class="formula-explanation">
+                        Automatically detect and switch mode based on background lightness
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">State Transform (Generic)</div>
+                    <div class="formula-expr">
+                        State(component, action) = Base + Transform(action)
+
+                        Where Transform = {
+                            hover:    L(+0.05),
+                            active:   L(-0.05),
+                            disabled: α(0.5) + C(-0.10),
+                            focus:    border(primary)
+                        }
+                    </div>
+                    <div class="formula-explanation">
+                        Generic state transformation rules applicable to any component
+                    </div>
+                </div>
+
+                <div class="math-formula">
+                    <div class="formula-name">Counter-Weight Balance</div>
+                    <div class="formula-expr">
+                        IF ΔPrimary.L > 0.1 THEN {
+                            Text.L = enforce_contrast(Background, 4.5),
+                            Secondary.C = Primary.C × 0.85,
+                            Border.L = Background.L + offset(mode)
+                        }
+                    </div>
+                    <div class="formula-explanation">
+                        When primary changes significantly, cascade adjustments to maintain balance
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Section -->
+            <div class="export-section">
+                <h3 style="color: oklch(85% 0.02 250); margin-bottom: 1rem;">💾 Export System</h3>
+
+                <button class="btn btn-primary" onclick="exportAsJSON()">📋 Export as JSON</button>
+                <button class="btn btn-secondary" onclick="exportAsCSS()">🎨 Export as CSS</button>
+                <button class="btn btn-secondary" onclick="exportAsJavaScript()">⚡ Export as JS</button>
+
+                <div id="exportOutput" class="output-code" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== COLOR SYSTEM DEFINITION ==========
+
+        const colorSystem = {
+            families: {
+                primary: {
+                    base: { l: 0.60, c: 0.18, h: 260 },
+                    light: { rule: 'base + L(+0.10)' },
+                    dark: { rule: 'base + L(-0.10)' },
+                    contrast: { rule: 'ensure 4.5:1 with background' },
+                    muted: { rule: 'base + C(-0.10)' }
+                },
+                secondary: {
+                    base: { rule: 'primary.base + H(+60) + C(-0.03)' },
+                    light: { rule: 'base + L(+0.10)' },
+                    dark: { rule: 'base + L(-0.10)' }
+                },
+                accent: {
+                    base: { rule: 'primary.base + H(+150) + C(-0.06)' },
+                    light: { rule: 'base + L(+0.10)' },
+                    dark: { rule: 'base + L(-0.10)' }
+                },
+                surface: {
+                    base: { rule: 'background + L(-0.03) ⚡ light | background + L(+0.05) ⚡ dark' },
+                    elevated: { rule: 'base + L(-0.02) ⚡ light | base + L(+0.03) ⚡ dark' },
+                    sunken: { rule: 'base + L(+0.02) ⚡ light | base + L(-0.03) ⚡ dark' }
+                },
+                text: {
+                    primary: { rule: 'ensure 4.5:1 with background' },
+                    secondary: { rule: 'primary + L(+0.20) ⚡ light | primary + L(-0.20) ⚡ dark' },
+                    disabled: { rule: 'secondary × α(0.5)' },
+                    link: { rule: 'inherit H from primary.base + ensure 4.5:1 with background' }
+                }
+            },
+
+            modeRules: {
+                light: {
+                    background: { l: [0.95, 1.0], c: [0, 0.05], h: 'any' },
+                    text: { l: [0, 0.30], c: [0, 0.05], h: 'inherit from background' },
+                    surface: { rule: 'background + L(-0.03)' },
+                    border: { rule: 'background + L(-0.12)' },
+                    minContrast: 4.5
+                },
+                dark: {
+                    background: { l: [0, 0.20], c: [0, 0.05], h: 'any' },
+                    text: { l: [0.85, 1.0], c: [0, 0.05], h: 'inherit from background' },
+                    surface: { rule: 'background + L(+0.05)' },
+                    border: { rule: 'background + L(+0.15)' },
+                    minContrast: 4.5
+                }
+            },
+
+            stateRules: {
+                button: {
+                    default: 'primary.base',
+                    hover: 'primary.base + L(+0.05)',
+                    active: 'primary.base + L(-0.05)',
+                    disabled: 'primary.base × α(0.5) + C(-0.10)',
+                    focus: 'primary.base + outline(2px primary.base)'
+                },
+                input: {
+                    default: 'surface.base + border(border.base)',
+                    focus: 'surface.base + border(primary.base)',
+                    error: 'surface.base + border(error.base)',
+                    disabled: 'surface.base × α(0.5)'
+                },
+                card: {
+                    default: 'surface.base',
+                    hover: 'surface.elevated',
+                    selected: 'surface.base + border(primary.base)'
+                }
+            },
+
+            mathematicalRelations: [
+                {
+                    name: 'Contrast Enforcement',
+                    formula: 'C(L₁, L₂) = (lighter + 0.05) / (darker + 0.05) ≥ 4.5',
+                    description: 'Ensure WCAG AA contrast ratio'
+                },
+                {
+                    name: 'Surface Depth',
+                    formula: 'Surface(n) = Background ± (n × 0.02)',
+                    description: 'Create elevation layers'
+                },
+                {
+                    name: 'Harmonic Hue Offset',
+                    formula: 'Secondary.H = (Primary.H + 60°) % 360°',
+                    description: 'Generate harmonious relationships'
+                },
+                {
+                    name: 'Mode Threshold',
+                    formula: 'IF Background.L > 0.5 THEN mode = "light" ELSE "dark"',
+                    description: 'Automatic mode detection'
+                }
+            ]
+        };
+
+        // ========== EXPORT FUNCTIONS ==========
+
+        function exportAsJSON() {
+            const json = JSON.stringify(colorSystem, null, 2);
+            showExport(json);
+        }
+
+        function exportAsCSS() {
+            let css = `:root {\n`;
+            css += `  /* Color System - Generated from OKLCH Architect */\n\n`;
+
+            // Export families
+            for (const [familyName, colors] of Object.entries(colorSystem.families)) {
+                css += `  /* ${familyName} family */\n`;
+                for (const [colorName, value] of Object.entries(colors)) {
+                    if (value.l !== undefined) {
+                        css += `  --${familyName}-${colorName}: oklch(${value.l} ${value.c} ${value.h});\n`;
+                    } else {
+                        css += `  /* --${familyName}-${colorName}: ${value.rule} */\n`;
+                    }
+                }
+                css += `\n`;
+            }
+
+            css += `}\n`;
+            showExport(css);
+        }
+
+        function exportAsJavaScript() {
+            let js = `// Color System - Generated from OKLCH Architect\n\n`;
+            js += `export const colorSystem = ${JSON.stringify(colorSystem, null, 2)};\n\n`;
+
+            js += `// Helper function to resolve color rules\n`;
+            js += `export function resolveColor(rule, mode = 'light') {\n`;
+            js += `  // Implementation would parse rules and return computed colors\n`;
+            js += `  // Example: "primary.base + L(+0.10)" → oklch(0.70 0.18 260)\n`;
+            js += `  console.log('Resolving:', rule, 'for mode:', mode);\n`;
+            js += `  return rule;\n`;
+            js += `}\n`;
+
+            showExport(js);
+        }
+
+        function showExport(content) {
+            const output = document.getElementById('exportOutput');
+            output.textContent = content;
+            output.style.display = 'block';
+        }
+
+        console.log('✅ OKLCH Color System Architect loaded!');
+        console.log('📦 Color families defined');
+        console.log('⚙️ Mode rules configured');
+        console.log('🎯 State rules mapped');
+        console.log('📐 Mathematical relationships established');
+    </script>
+</body>
+</html>

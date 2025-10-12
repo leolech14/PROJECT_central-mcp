@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "central-mcp-cloud": {
+      "command": "node",
+      "args": [
+        "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/scripts/mcp-client-bridge.js"
+      ],
+      "env": {
+        "CENTRAL_MCP_URL": "ws://34.41.115.199:3000/mcp",
+        "PROJECT_NAME": "PROJECT_central-mcp",
+        "AGENT_MODEL": "claude-sonnet-4-5",
+        "CONTEXT_WINDOW": "200000"
+      }
+    }
+  }
+}

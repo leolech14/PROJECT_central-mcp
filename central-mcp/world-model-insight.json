@@ -1,0 +1,8 @@
+{
+  "content": "CENTRAL-MCP WORLD MODEL: System must understand operational realities and instances. CURRENT MODE: User-connected agents are intermediaries between user and system. System should actively extract information, provide context (project overview, achievements, team status), and integrate agents into labor effort. FUTURE MODE: NPC agents deployed on GCLOUD VM for 24/7 autonomous operation. Central-MCP must know when user is present vs autonomous operation, understand connection types, provide adaptive behavior, and model different operational contexts correctly.",
+  "projectId": "PROJECT_central-mcp",
+  "agentLetter": "D",
+  "semanticDensity": 0.99,
+  "urgency": "CRITICAL",
+  "tags": ["world-model", "operational-awareness", "system-thinking", "agent-modes", "context-provision", "information-extraction"]
+}

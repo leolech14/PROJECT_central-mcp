@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Central-MCP UI Studio - Theme Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            background: oklch(0.15 0.01 270);
+            color: oklch(0.95 0.01 270);
+            overflow-x: hidden;
+        }
+
+        /* Main Layout */
+        .studio {
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            height: 100vh;
+        }
+
+        /* Left Panel - Controls */
+        .panel-left {
+            background: oklch(0.18 0.01 270);
+            border-right: 1px solid oklch(0.28 0.01 270);
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .panel-header {
+            margin-bottom: 24px;
+        }
+
+        .panel-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .panel-subtitle {
+            font-size: 14px;
+            color: oklch(0.70 0.01 270);
+        }
+
+        /* Center Panel - Preview */
+        .panel-center {
+            background: var(--background);
+            overflow-y: auto;
+            padding: 48px;
+            transition: background 250ms ease;
+        }
+
+        /* Right Panel - Theme Management */
+        .panel-right {
+            background: oklch(0.18 0.01 270);
+            border-left: 1px solid oklch(0.28 0.01 270);
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* Color Editor */
+        .color-group {
+            margin-bottom: 32px;
+        }
+
+        .color-group-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .color-group-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: oklch(0.60 0.18 270);
+            color: white;
+            font-weight: 500;
+        }
+
+        .color-item {
+            margin-bottom: 20px;
+        }
+
+        .color-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .color-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .color-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 2px solid oklch(0.28 0.01 270);
+        }
+
+        .color-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider-label {
+            font-size: 11px;
+            font-weight: 600;
+            width: 12px;
+            color: oklch(0.70 0.01 270);
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(0.25 0.01 270);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(0.65 0.18 270);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px oklch(0.15 0 0 / 0.3);
+        }
+
+        .slider-value {
+            font-size: 12px;
+            font-family: "SF Mono", monospace;
+            width: 48px;
+            text-align: right;
+            color: oklch(0.70 0.01 270);
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            padding: 4px;
+            background: oklch(0.20 0.01 270);
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: oklch(0.70 0.01 270);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 150ms ease;
+        }
+
+        .mode-btn.active {
+            background: oklch(0.65 0.18 270);
+            color: white;
+        }
+
+        /* Preview Components */
+        .preview-section {
+            margin-bottom: 48px;
+        }
+
+        .preview-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text);
+        }
+
+        .components-grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        /* Buttons Preview */
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 250ms ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px oklch(0.15 0 0 / 0.1);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border-color: var(--border);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text);
+        }
+
+        .btn-ghost:hover {
+            background: var(--primary-muted);
+            color: var(--primary);
+        }
+
+        /* Cards Preview */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px oklch(0.15 0 0 / 0.1);
+            transition: all 250ms ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 6px oklch(0.15 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .card-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Input Preview */
+        .input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 250ms ease;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-muted);
+        }
+
+        .input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        /* Theme Manager */
+        .theme-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .action-btn {
+            padding: 12px;
+            background: oklch(0.22 0.01 270);
+            border: 1px solid oklch(0.28 0.01 270);
+            border-radius: 8px;
+            color: oklch(0.95 0.01 270);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .action-btn:hover {
+            background: oklch(0.25 0.01 270);
+            border-color: oklch(0.38 0.02 270);
+        }
+
+        .action-btn-primary {
+            background: oklch(0.60 0.18 270);
+            border-color: oklch(0.60 0.18 270);
+            color: white;
+        }
+
+        .action-btn-primary:hover {
+            background: oklch(0.65 0.18 270);
+        }
+
+        /* Saved Themes List */
+        .saved-themes {
+            margin-top: 24px;
+        }
+
+        .saved-theme {
+            padding: 12px;
+            background: oklch(0.20 0.01 270);
+            border: 1px solid oklch(0.28 0.01 270);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .saved-theme:hover {
+            background: oklch(0.22 0.01 270);
+            border-color: oklch(0.38 0.02 270);
+        }
+
+        .saved-theme-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .saved-theme-date {
+            font-size: 12px;
+            color: oklch(0.70 0.01 270);
+        }
+
+        /* Export Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: oklch(0.15 0 0 / 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: oklch(0.18 0.01 270);
+            border: 1px solid oklch(0.28 0.01 270);
+            border-radius: 12px;
+            padding: 32px;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .export-code {
+            background: oklch(0.12 0.01 270);
+            border: 1px solid oklch(0.28 0.01 270);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: "SF Mono", monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin-bottom: 16px;
+            color: oklch(0.85 0.01 270);
+        }
+
+        .export-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .export-tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid oklch(0.28 0.01 270);
+            border-radius: 8px;
+            color: oklch(0.70 0.01 270);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 150ms ease;
+        }
+
+        .export-tab.active {
+            background: oklch(0.60 0.18 270);
+            border-color: oklch(0.60 0.18 270);
+            color: white;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: oklch(0.20 0.01 270);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: oklch(0.35 0.01 270);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: oklch(0.45 0.01 270);
+        }
+
+        /* CSS Variables (will be updated dynamically) */
+        :root {
+            --primary: oklch(0.60 0.18 270);
+            --primary-light: oklch(0.70 0.18 270);
+            --primary-dark: oklch(0.50 0.18 270);
+            --primary-muted: oklch(0.95 0.03 270);
+
+            --secondary: oklch(0.65 0.15 210);
+            --secondary-light: oklch(0.75 0.15 210);
+            --secondary-dark: oklch(0.55 0.15 210);
+            --secondary-muted: oklch(0.95 0.03 210);
+
+            --accent: oklch(0.75 0.15 85);
+            --accent-light: oklch(0.85 0.15 85);
+            --accent-dark: oklch(0.65 0.15 85);
+            --accent-muted: oklch(0.95 0.03 85);
+
+            --background: oklch(0.98 0.01 270);
+            --surface: oklch(1.00 0.00 270);
+            --surface-raised: oklch(0.96 0.01 270);
+
+            --text: oklch(0.15 0.02 270);
+            --text-secondary: oklch(0.45 0.02 270);
+            --text-tertiary: oklch(0.65 0.02 270);
+
+            --border: oklch(0.88 0.01 270);
+            --border-strong: oklch(0.78 0.02 270);
+            --divider: oklch(0.92 0.01 270);
+        }
+
+        [data-preview-mode="dark"] {
+            --primary: oklch(0.65 0.18 270);
+            --primary-light: oklch(0.75 0.18 270);
+            --primary-dark: oklch(0.55 0.18 270);
+            --primary-muted: oklch(0.20 0.05 270);
+
+            --secondary: oklch(0.70 0.15 210);
+            --secondary-light: oklch(0.80 0.15 210);
+            --secondary-dark: oklch(0.60 0.15 210);
+            --secondary-muted: oklch(0.20 0.03 210);
+
+            --accent: oklch(0.75 0.15 85);
+            --accent-light: oklch(0.85 0.15 85);
+            --accent-dark: oklch(0.65 0.15 85);
+            --accent-muted: oklch(0.20 0.03 85);
+
+            --background: oklch(0.15 0.01 270);
+            --surface: oklch(0.18 0.01 270);
+            --surface-raised: oklch(0.22 0.01 270);
+
+            --text: oklch(0.95 0.01 270);
+            --text-secondary: oklch(0.70 0.01 270);
+            --text-tertiary: oklch(0.50 0.01 270);
+
+            --border: oklch(0.28 0.01 270);
+            --border-strong: oklch(0.38 0.02 270);
+            --divider: oklch(0.24 0.01 270);
+        }
+    </style>
+</head>
+<body>
+    <div class="studio">
+        <!-- LEFT PANEL: Color Controls -->
+        <div class="panel-left">
+            <div class="panel-header">
+                <div class="panel-title">🎨 Color Studio</div>
+                <div class="panel-subtitle">Tweak colors live, create custom themes</div>
+            </div>
+
+            <div class="mode-toggle">
+                <button class="mode-btn active" data-mode="light">☀️ Light</button>
+                <button class="mode-btn" data-mode="dark">🌙 Dark</button>
+            </div>
+
+            <!-- Primary Color -->
+            <div class="color-group">
+                <div class="color-group-title">
+                    Primary
+                    <span class="color-group-badge">BRAND</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-label">
+                        <span class="color-name">Base</span>
+                        <div class="color-preview" id="primary-preview"></div>
+                    </div>
+                    <div class="color-sliders">
+                        <div class="slider-row">
+                            <span class="slider-label">L</span>
+                            <input type="range" id="primary-l" min="0" max="100" value="60" step="1">
+                            <span class="slider-value" id="primary-l-value">0.60</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">C</span>
+                            <input type="range" id="primary-c" min="0" max="37" value="18" step="1">
+                            <span class="slider-value" id="primary-c-value">0.18</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">H</span>
+                            <input type="range" id="primary-h" min="0" max="360" value="270" step="1">
+                            <span class="slider-value" id="primary-h-value">270</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Secondary Color -->
+            <div class="color-group">
+                <div class="color-group-title">
+                    Secondary
+                    <span class="color-group-badge">ACCENT</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-label">
+                        <span class="color-name">Base</span>
+                        <div class="color-preview" id="secondary-preview"></div>
+                    </div>
+                    <div class="color-sliders">
+                        <div class="slider-row">
+                            <span class="slider-label">L</span>
+                            <input type="range" id="secondary-l" min="0" max="100" value="65" step="1">
+                            <span class="slider-value" id="secondary-l-value">0.65</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">C</span>
+                            <input type="range" id="secondary-c" min="0" max="37" value="15" step="1">
+                            <span class="slider-value" id="secondary-c-value">0.15</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">H</span>
+                            <input type="range" id="secondary-h" min="0" max="360" value="210" step="1">
+                            <span class="slider-value" id="secondary-h-value">210</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accent Color -->
+            <div class="color-group">
+                <div class="color-group-title">
+                    Accent
+                    <span class="color-group-badge">HIGHLIGHT</span>
+                </div>
+                <div class="color-item">
+                    <div class="color-label">
+                        <span class="color-name">Base</span>
+                        <div class="color-preview" id="accent-preview"></div>
+                    </div>
+                    <div class="color-sliders">
+                        <div class="slider-row">
+                            <span class="slider-label">L</span>
+                            <input type="range" id="accent-l" min="0" max="100" value="75" step="1">
+                            <span class="slider-value" id="accent-l-value">0.75</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">C</span>
+                            <input type="range" id="accent-c" min="0" max="37" value="15" step="1">
+                            <span class="slider-value" id="accent-c-value">0.15</span>
+                        </div>
+                        <div class="slider-row">
+                            <span class="slider-label">H</span>
+                            <input type="range" id="accent-h" min="0" max="360" value="85" step="1">
+                            <span class="slider-value" id="accent-h-value">85</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER PANEL: Live Preview -->
+        <div class="panel-center" id="preview-panel">
+            <div class="preview-section">
+                <div class="preview-title">Buttons</div>
+                <div class="components-grid">
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-primary">Primary Button</button>
+                        <button class="btn btn-secondary">Secondary Button</button>
+                        <button class="btn btn-ghost">Ghost Button</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-title">Cards</div>
+                <div class="components-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <div class="card">
+                        <div class="card-title">Feature Card</div>
+                        <div class="card-text">This is a preview of how cards will look with your custom theme colors.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Another Card</div>
+                        <div class="card-text">Cards automatically adapt to your color scheme while maintaining accessibility.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-title">Form Inputs</div>
+                <div class="components-grid">
+                    <input type="text" class="input" placeholder="Enter your text here...">
+                    <input type="email" class="input" placeholder="email@example.com">
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <div class="preview-title">Typography</div>
+                <div class="components-grid">
+                    <h1 style="font-size: 36px; font-weight: 700; color: var(--text); margin-bottom: 16px;">Heading 1</h1>
+                    <h2 style="font-size: 30px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Heading 2</h2>
+                    <p style="font-size: 16px; color: var(--text-secondary); line-height: 1.5;">
+                        Body text uses the secondary text color for comfortable reading. All text maintains proper contrast ratios for accessibility.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Theme Management -->
+        <div class="panel-right">
+            <div class="panel-header">
+                <div class="panel-title">💾 Theme Manager</div>
+                <div class="panel-subtitle">Save, load, and export themes</div>
+            </div>
+
+            <div class="theme-actions">
+                <button class="action-btn action-btn-primary" onclick="saveTheme()">💾 Save Current Theme</button>
+                <button class="action-btn" onclick="exportTheme()">📥 Export Theme</button>
+                <button class="action-btn" onclick="loadDefaultTheme()">🔄 Reset to Default</button>
+            </div>
+
+            <div class="saved-themes">
+                <div class="panel-subtitle" style="margin-bottom: 12px;">Saved Themes</div>
+                <div id="saved-themes-list">
+                    <div class="saved-theme" onclick="loadTheme('default')">
+                        <div class="saved-theme-name">🎨 Default Theme</div>
+                        <div class="saved-theme-date">Official Central-MCP</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="export-modal">
+        <div class="modal">
+            <div class="modal-title">📥 Export Theme</div>
+
+            <div class="export-tabs">
+                <button class="export-tab active" data-format="css">CSS</button>
+                <button class="export-tab" data-format="json">JSON</button>
+                <button class="export-tab" data-format="tailwind">Tailwind</button>
+            </div>
+
+            <pre class="export-code" id="export-code-output"></pre>
+
+            <div style="display: flex; gap: 12px;">
+                <button class="action-btn action-btn-primary" style="flex: 1;" onclick="copyExportCode()">📋 Copy to Clipboard</button>
+                <button class="action-btn" onclick="closeExportModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current theme state
+        let currentMode = 'light';
+        let currentTheme = {
+            light: {
+                primary: { l: 0.60, c: 0.18, h: 270 },
+                secondary: { l: 0.65, c: 0.15, h: 210 },
+                accent: { l: 0.75, c: 0.15, h: 85 }
+            },
+            dark: {
+                primary: { l: 0.65, c: 0.18, h: 270 },
+                secondary: { l: 0.70, c: 0.15, h: 210 },
+                accent: { l: 0.75, c: 0.15, h: 85 }
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setupColorControls();
+            setupModeToggle();
+            updateAllPreviews();
+            loadSavedThemes();
+        });
+
+        function setupColorControls() {
+            const colorGroups = ['primary', 'secondary', 'accent'];
+            const components = ['l', 'c', 'h'];
+
+            colorGroups.forEach(group => {
+                components.forEach(component => {
+                    const slider = document.getElementById(`${group}-${component}`);
+                    const valueDisplay = document.getElementById(`${group}-${component}-value`);
+
+                    slider.addEventListener('input', (e) => {
+                        let value = parseInt(e.target.value);
+                        let displayValue;
+
+                        if (component === 'l' || component === 'c') {
+                            displayValue = (value / 100).toFixed(2);
+                            currentTheme[currentMode][group][component] = value / 100;
+                        } else { // h
+                            displayValue = value;
+                            currentTheme[currentMode][group][component] = value;
+                        }
+
+                        valueDisplay.textContent = displayValue;
+                        updateAllPreviews();
+                    });
+                });
+            });
+        }
+
+        function setupModeToggle() {
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMode = btn.dataset.mode;
+
+                    const previewPanel = document.getElementById('preview-panel');
+                    if (currentMode === 'dark') {
+                        previewPanel.setAttribute('data-preview-mode', 'dark');
+                    } else {
+                        previewPanel.removeAttribute('data-preview-mode');
+                    }
+
+                    updateSliderValues();
+                    updateAllPreviews();
+                });
+            });
+        }
+
+        function updateSliderValues() {
+            const colorGroups = ['primary', 'secondary', 'accent'];
+            const components = ['l', 'c', 'h'];
+
+            colorGroups.forEach(group => {
+                components.forEach(component => {
+                    const value = currentTheme[currentMode][group][component];
+                    const slider = document.getElementById(`${group}-${component}`);
+                    const valueDisplay = document.getElementById(`${group}-${component}-value`);
+
+                    if (component === 'l' || component === 'c') {
+                        slider.value = value * 100;
+                        valueDisplay.textContent = value.toFixed(2);
+                    } else {
+                        slider.value = value;
+                        valueDisplay.textContent = value;
+                    }
+                });
+            });
+        }
+
+        function updateAllPreviews() {
+            updateColorPreviews();
+            updateCSSVariables();
+        }
+
+        function updateColorPreviews() {
+            const colorGroups = ['primary', 'secondary', 'accent'];
+            colorGroups.forEach(group => {
+                const color = currentTheme[currentMode][group];
+                const preview = document.getElementById(`${group}-preview`);
+                const oklch = `oklch(${color.l.toFixed(2)} ${color.c.toFixed(2)} ${color.h})`;
+                preview.style.background = oklch;
+            });
+        }
+
+        function updateCSSVariables() {
+            const root = document.documentElement;
+            const theme = currentTheme[currentMode];
+
+            // Primary
+            root.style.setProperty('--primary', `oklch(${theme.primary.l} ${theme.primary.c} ${theme.primary.h})`);
+            root.style.setProperty('--primary-light', `oklch(${Math.min(1, theme.primary.l + 0.10)} ${theme.primary.c} ${theme.primary.h})`);
+            root.style.setProperty('--primary-dark', `oklch(${Math.max(0, theme.primary.l - 0.10)} ${theme.primary.c} ${theme.primary.h})`);
+            root.style.setProperty('--primary-muted', currentMode === 'light' ?
+                `oklch(0.95 0.03 ${theme.primary.h})` : `oklch(0.20 0.05 ${theme.primary.h})`);
+
+            // Secondary
+            root.style.setProperty('--secondary', `oklch(${theme.secondary.l} ${theme.secondary.c} ${theme.secondary.h})`);
+            root.style.setProperty('--secondary-light', `oklch(${Math.min(1, theme.secondary.l + 0.10)} ${theme.secondary.c} ${theme.secondary.h})`);
+            root.style.setProperty('--secondary-dark', `oklch(${Math.max(0, theme.secondary.l - 0.10)} ${theme.secondary.c} ${theme.secondary.h})`);
+            root.style.setProperty('--secondary-muted', currentMode === 'light' ?
+                `oklch(0.95 0.03 ${theme.secondary.h})` : `oklch(0.20 0.03 ${theme.secondary.h})`);
+
+            // Accent
+            root.style.setProperty('--accent', `oklch(${theme.accent.l} ${theme.accent.c} ${theme.accent.h})`);
+            root.style.setProperty('--accent-light', `oklch(${Math.min(1, theme.accent.l + 0.10)} ${theme.accent.c} ${theme.accent.h})`);
+            root.style.setProperty('--accent-dark', `oklch(${Math.max(0, theme.accent.l - 0.10)} ${theme.accent.c} ${theme.accent.h})`);
+            root.style.setProperty('--accent-muted', currentMode === 'light' ?
+                `oklch(0.95 0.03 ${theme.accent.h})` : `oklch(0.20 0.03 ${theme.accent.h})`);
+
+            // Neutrals (fixed based on mode)
+            if (currentMode === 'light') {
+                root.style.setProperty('--background', 'oklch(0.98 0.01 270)');
+                root.style.setProperty('--surface', 'oklch(1.00 0.00 270)');
+                root.style.setProperty('--surface-raised', 'oklch(0.96 0.01 270)');
+                root.style.setProperty('--text', 'oklch(0.15 0.02 270)');
+                root.style.setProperty('--text-secondary', 'oklch(0.45 0.02 270)');
+                root.style.setProperty('--text-tertiary', 'oklch(0.65 0.02 270)');
+                root.style.setProperty('--border', 'oklch(0.88 0.01 270)');
+                root.style.setProperty('--border-strong', 'oklch(0.78 0.02 270)');
+                root.style.setProperty('--divider', 'oklch(0.92 0.01 270)');
+            } else {
+                root.style.setProperty('--background', 'oklch(0.15 0.01 270)');
+                root.style.setProperty('--surface', 'oklch(0.18 0.01 270)');
+                root.style.setProperty('--surface-raised', 'oklch(0.22 0.01 270)');
+                root.style.setProperty('--text', 'oklch(0.95 0.01 270)');
+                root.style.setProperty('--text-secondary', 'oklch(0.70 0.01 270)');
+                root.style.setProperty('--text-tertiary', 'oklch(0.50 0.01 270)');
+                root.style.setProperty('--border', 'oklch(0.28 0.01 270)');
+                root.style.setProperty('--border-strong', 'oklch(0.38 0.02 270)');
+                root.style.setProperty('--divider', 'oklch(0.24 0.01 270)');
+            }
+        }
+
+        // Theme Management
+        function saveTheme() {
+            const name = prompt('Enter theme name:');
+            if (!name) return;
+
+            const theme = {
+                name,
+                date: new Date().toISOString(),
+                colors: currentTheme
+            };
+
+            const themes = JSON.parse(localStorage.getItem('central-mcp-themes') || '[]');
+            themes.push(theme);
+            localStorage.setItem('central-mcp-themes', JSON.stringify(themes));
+
+            loadSavedThemes();
+            alert('Theme saved successfully!');
+        }
+
+        function loadSavedThemes() {
+            const themes = JSON.parse(localStorage.getItem('central-mcp-themes') || '[]');
+            const list = document.getElementById('saved-themes-list');
+
+            themes.forEach((theme, index) => {
+                const item = document.createElement('div');
+                item.className = 'saved-theme';
+                item.onclick = () => loadCustomTheme(index);
+                item.innerHTML = `
+                    <div class="saved-theme-name">${theme.name}</div>
+                    <div class="saved-theme-date">${new Date(theme.date).toLocaleDateString()}</div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function loadCustomTheme(index) {
+            const themes = JSON.parse(localStorage.getItem('central-mcp-themes') || '[]');
+            currentTheme = themes[index].colors;
+            updateSliderValues();
+            updateAllPreviews();
+        }
+
+        function loadDefaultTheme() {
+            currentTheme = {
+                light: {
+                    primary: { l: 0.60, c: 0.18, h: 270 },
+                    secondary: { l: 0.65, c: 0.15, h: 210 },
+                    accent: { l: 0.75, c: 0.15, h: 85 }
+                },
+                dark: {
+                    primary: { l: 0.65, c: 0.18, h: 270 },
+                    secondary: { l: 0.70, c: 0.15, h: 210 },
+                    accent: { l: 0.75, c: 0.15, h: 85 }
+                }
+            };
+            updateSliderValues();
+            updateAllPreviews();
+        }
+
+        // Export functionality
+        function exportTheme() {
+            document.getElementById('export-modal').classList.add('active');
+            generateExportCode('css');
+
+            document.querySelectorAll('.export-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    generateExportCode(tab.dataset.format);
+                });
+            });
+        }
+
+        function generateExportCode(format) {
+            const output = document.getElementById('export-code-output');
+            const theme = currentTheme;
+
+            if (format === 'css') {
+                output.textContent = generateCSSExport(theme);
+            } else if (format === 'json') {
+                output.textContent = JSON.stringify(theme, null, 2);
+            } else if (format === 'tailwind') {
+                output.textContent = generateTailwindExport(theme);
+            }
+        }
+
+        function generateCSSExport(theme) {
+            return `:root {
+  /* Light Mode */
+  --primary: oklch(${theme.light.primary.l} ${theme.light.primary.c} ${theme.light.primary.h});
+  --secondary: oklch(${theme.light.secondary.l} ${theme.light.secondary.c} ${theme.light.secondary.h});
+  --accent: oklch(${theme.light.accent.l} ${theme.light.accent.c} ${theme.light.accent.h});
+}
+
+[data-theme="dark"] {
+  /* Dark Mode */
+  --primary: oklch(${theme.dark.primary.l} ${theme.dark.primary.c} ${theme.dark.primary.h});
+  --secondary: oklch(${theme.dark.secondary.l} ${theme.dark.secondary.c} ${theme.dark.secondary.h});
+  --accent: oklch(${theme.dark.accent.l} ${theme.dark.accent.c} ${theme.dark.accent.h});
+}`;
+        }
+
+        function generateTailwindExport(theme) {
+            return `module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        primary: 'oklch(${theme.light.primary.l} ${theme.light.primary.c} ${theme.light.primary.h})',
+        secondary: 'oklch(${theme.light.secondary.l} ${theme.light.secondary.c} ${theme.light.secondary.h})',
+        accent: 'oklch(${theme.light.accent.l} ${theme.light.accent.c} ${theme.light.accent.h})',
+      }
+    }
+  }
+}`;
+        }
+
+        function copyExportCode() {
+            const code = document.getElementById('export-code-output').textContent;
+            navigator.clipboard.writeText(code);
+            alert('Copied to clipboard!');
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.remove('active');
+        }
+
+        // Close modal on overlay click
+        document.getElementById('export-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'export-modal') {
+                closeExportModal();
+            }
+        });
+    </script>
+</body>
+</html>

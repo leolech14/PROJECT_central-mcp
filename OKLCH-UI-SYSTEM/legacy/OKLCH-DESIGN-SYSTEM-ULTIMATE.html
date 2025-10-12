@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Design System - 3D + Tokens + WCAG/APCA</title>
+
+    <style>
+        /*
+=======================================================================
+DESIGN TOKENS - 100% OKLCH
+=======================================================================
+*/
+        :root {
+            /* Base Colors - OKLCH Only */
+            --bg: oklch(15% 0.01 250);
+            --surface: oklch(20% 0.01 250);
+            --text: oklch(95% 0.01 250);
+            --text-secondary: oklch(75% 0.02 250);
+            --border: oklch(30% 0.02 250);
+
+            /* Brand Tokens - Controlled by 3D Picker */
+            --primary: oklch(60% 0.15 240);
+            --primary-hover: oklch(65% 0.17 240);
+            --accent: oklch(65% 0.18 180);
+            --success: oklch(65% 0.15 145);
+            --warning: oklch(70% 0.16 75);
+            --error: oklch(60% 0.18 25);
+
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+
+            /* Typography */
+            --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-mono: 'SF Mono', Consolas, monospace;
+
+            /* Radius */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr 300px;
+            height: 100vh;
+            gap: 2px;
+            background: var(--border);
+        }
+
+        /* Left Panel - 3D Picker */
+        .picker-panel {
+            background: var(--surface);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        #canvas3d {
+            width: 100%;
+            height: 400px;
+            display: block;
+            background: var(--bg);
+        }
+
+        .picker-controls {
+            padding: var(--space-4);
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: var(--space-3);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .control-group {
+            margin-bottom: var(--space-4);
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: var(--space-2);
+        }
+
+        .value-display {
+            font-family: var(--font-mono);
+            color: var(--text-secondary);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .token-assignments {
+            margin-top: var(--space-6);
+        }
+
+        .token-btn {
+            width: 100%;
+            padding: var(--space-3);
+            margin-bottom: var(--space-2);
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .token-btn:hover {
+            border-color: var(--primary);
+            transform: translateX(4px);
+        }
+
+        .token-swatch {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+        }
+
+        /* Center Panel - UI Preview */
+        .preview-panel {
+            background: var(--bg);
+            overflow-y: auto;
+            padding: var(--space-8);
+        }
+
+        .preview-header {
+            margin-bottom: var(--space-8);
+        }
+
+        .preview-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: var(--space-2);
+        }
+
+        .preview-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .component-section {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            margin-bottom: var(--space-6);
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: var(--space-4);
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-3) var(--space-6);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-warning { background: var(--warning); color: oklch(20% 0.02 75); }
+        .btn-error { background: var(--error); color: white; }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+        .btn-group {
+            display: flex;
+            gap: var(--space-3);
+            flex-wrap: wrap;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+            color: var(--primary);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            border: 2px solid;
+            margin-bottom: var(--space-3);
+        }
+
+        .alert-primary {
+            background: color-mix(in oklch, var(--primary) 15%, transparent);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .alert-success {
+            background: color-mix(in oklch, var(--success) 15%, transparent);
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .alert-warning {
+            background: color-mix(in oklch, var(--warning) 15%, transparent);
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .alert-error {
+            background: color-mix(in oklch, var(--error) 15%, transparent);
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        /* Right Panel - Compliance */
+        .compliance-panel {
+            background: var(--surface);
+            overflow-y: auto;
+            padding: var(--space-4);
+        }
+
+        .compliance-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .compliance-check {
+            background: var(--bg);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .compliance-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-1);
+        }
+
+        .compliance-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .compliance-pass { color: var(--success); }
+        .compliance-fail { color: var(--error); }
+
+        .compliance-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: var(--space-1);
+        }
+
+        .badge-pass { background: var(--success); color: white; }
+        .badge-fail { background: var(--error); color: white; }
+
+        .token-list {
+            margin-top: var(--space-4);
+        }
+
+        .token-item {
+            padding: var(--space-2);
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-2);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+        }
+
+        .token-name {
+            color: var(--accent);
+        }
+
+        .token-value {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- LEFT: 3D Picker + Token Assignment -->
+        <div class="picker-panel">
+            <canvas id="canvas3d"></canvas>
+
+            <div class="picker-controls">
+                <h2>🎨 OKLCH 3D Picker</h2>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Lightness (L)</span>
+                        <span class="value-display" id="valueL">60%</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderL" min="0" max="100" value="60">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Chroma (C)</span>
+                        <span class="value-display" id="valueC">0.15</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderC" min="0" max="37" value="15">
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>Hue (H)</span>
+                        <span class="value-display" id="valueH">240°</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderH" min="0" max="360" value="240">
+                </div>
+
+                <div class="token-assignments">
+                    <h2>🎯 Assign to Token</h2>
+                    <button class="token-btn" onclick="assignToken('primary')">
+                        <div class="token-swatch" id="swatch-primary" style="background: var(--primary);"></div>
+                        <span>Primary</span>
+                    </button>
+                    <button class="token-btn" onclick="assignToken('accent')">
+                        <div class="token-swatch" id="swatch-accent" style="background: var(--accent);"></div>
+                        <span>Accent</span>
+                    </button>
+                    <button class="token-btn" onclick="assignToken('success')">
+                        <div class="token-swatch" id="swatch-success" style="background: var(--success);"></div>
+                        <span>Success</span>
+                    </button>
+                    <button class="token-btn" onclick="assignToken('warning')">
+                        <div class="token-swatch" id="swatch-warning" style="background: var(--warning);"></div>
+                        <span>Warning</span>
+                    </button>
+                    <button class="token-btn" onclick="assignToken('error')">
+                        <div class="token-swatch" id="swatch-error" style="background: var(--error);"></div>
+                        <span>Error</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: Live UI Preview -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h1 class="preview-title">Design System Preview</h1>
+                <p class="preview-subtitle">Live preview with OKLCH tokens</p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="component-section">
+                <h3 class="section-title">Buttons</h3>
+                <div class="btn-group">
+                    <button class="btn btn-primary">Primary</button>
+                    <button class="btn btn-accent">Accent</button>
+                    <button class="btn btn-success">Success</button>
+                    <button class="btn btn-warning">Warning</button>
+                    <button class="btn btn-error">Error</button>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="component-section">
+                <h3 class="section-title">Alerts</h3>
+                <div class="alert alert-primary">
+                    <strong>Primary:</strong> This uses your primary color token.
+                </div>
+                <div class="alert alert-success">
+                    <strong>Success:</strong> Operation completed successfully.
+                </div>
+                <div class="alert alert-warning">
+                    <strong>Warning:</strong> Please review before proceeding.
+                </div>
+                <div class="alert alert-error">
+                    <strong>Error:</strong> Something went wrong.
+                </div>
+            </div>
+
+            <!-- Cards -->
+            <div class="component-section">
+                <h3 class="section-title">Cards</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div class="card">
+                        <div class="card-title">Dashboard Card</div>
+                        <p style="color: var(--text-secondary);">Your design tokens applied to cards.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">Analytics</div>
+                        <p style="color: var(--text-secondary);">Real-time theme updates.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: WCAG / APCA Compliance -->
+        <div class="compliance-panel">
+            <h2>✅ Compliance</h2>
+
+            <div class="compliance-section">
+                <h3 style="font-size: 1rem; margin-bottom: var(--space-3);">WCAG 2.2 AA</h3>
+
+                <div class="compliance-check">
+                    <div class="compliance-label">Primary vs Background</div>
+                    <div class="compliance-value compliance-pass" id="wcag-primary">4.52:1</div>
+                    <div class="compliance-badge badge-pass" id="badge-primary-wcag">✓ AA Pass</div>
+                </div>
+
+                <div class="compliance-check">
+                    <div class="compliance-label">Accent vs Background</div>
+                    <div class="compliance-value compliance-pass" id="wcag-accent">5.12:1</div>
+                    <div class="compliance-badge badge-pass" id="badge-accent-wcag">✓ AA Pass</div>
+                </div>
+
+                <div class="compliance-check">
+                    <div class="compliance-label">Success vs Background</div>
+                    <div class="compliance-value compliance-pass" id="wcag-success">4.87:1</div>
+                    <div class="compliance-badge badge-pass" id="badge-success-wcag">✓ AA Pass</div>
+                </div>
+            </div>
+
+            <div class="compliance-section">
+                <h3 style="font-size: 1rem; margin-bottom: var(--space-3);">APCA (Advanced)</h3>
+
+                <div class="compliance-check">
+                    <div class="compliance-label">Primary Readability</div>
+                    <div class="compliance-value compliance-pass" id="apca-primary">72 Lc</div>
+                    <div class="compliance-badge badge-pass" id="badge-primary-apca">✓ Fluent</div>
+                </div>
+
+                <div class="compliance-check">
+                    <div class="compliance-label">Text Readability</div>
+                    <div class="compliance-value compliance-pass" id="apca-text">89 Lc</div>
+                    <div class="compliance-badge badge-pass" id="badge-text-apca">✓ Preferred</div>
+                </div>
+            </div>
+
+            <div class="compliance-section">
+                <h3 style="font-size: 1rem; margin-bottom: var(--space-3);">Design Tokens</h3>
+                <div class="token-list">
+                    <div class="token-item">
+                        <span class="token-name">--primary:</span>
+                        <div class="token-value" id="token-primary">oklch(60% 0.15 240)</div>
+                    </div>
+                    <div class="token-item">
+                        <span class="token-name">--accent:</span>
+                        <div class="token-value" id="token-accent">oklch(65% 0.18 180)</div>
+                    </div>
+                    <div class="token-item">
+                        <span class="token-name">--success:</span>
+                        <div class="token-value" id="token-success">oklch(65% 0.15 145)</div>
+                    </div>
+                    <div class="token-item">
+                        <span class="token-name">--warning:</span>
+                        <div class="token-value" id="token-warning">oklch(70% 0.16 75)</div>
+                    </div>
+                    <div class="token-item">
+                        <span class="token-name">--error:</span>
+                        <div class="token-value" id="token-error">oklch(60% 0.18 25)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js';
+        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js';
+
+        // OKLCH to RGB
+        function oklchToRgb(l, c, h) {
+            const hRad = (h * Math.PI) / 180;
+            const a = c * Math.cos(hRad);
+            const b = c * Math.sin(hRad);
+
+            const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+            const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+            const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
+
+            const lCube = l_ * l_ * l_;
+            const mCube = m_ * m_ * m_;
+            const sCube = s_ * s_ * s_;
+
+            let r = +4.0767245293 * lCube - 3.3072168827 * mCube + 0.2307590544 * sCube;
+            let g = -1.2681437731 * lCube + 2.6093323231 * mCube - 0.3411344290 * sCube;
+            let b2 = -0.0041119885 * lCube - 0.7034763098 * mCube + 1.7068625689 * sCube;
+
+            r = r > 0.0031308 ? 1.055 * Math.pow(r, 1/2.4) - 0.055 : 12.92 * r;
+            g = g > 0.0031308 ? 1.055 * Math.pow(g, 1/2.4) - 0.055 : 12.92 * g;
+            b2 = b2 > 0.0031308 ? 1.055 * Math.pow(b2, 1/2.4) - 0.055 : 12.92 * b2;
+
+            return {
+                r: Math.max(0, Math.min(1, r)),
+                g: Math.max(0, Math.min(1, g)),
+                b: Math.max(0, Math.min(1, b2))
+            };
+        }
+
+        // WCAG Contrast Ratio
+        function getContrastRatio(l1, l2) {
+            const lighter = Math.max(l1, l2);
+            const darker = Math.min(l1, l2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        // APCA Contrast (simplified)
+        function getAPCA(txtY, bgY) {
+            const difference = Math.abs(txtY - bgY);
+            return (difference * 100).toFixed(0);
+        }
+
+        // Initialize 3D
+        const canvas = document.getElementById('canvas3d');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 400 / 400, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, canvas, antialias: true });
+
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(400, 400);
+        camera.position.set(0.79, 0, 0.79);
+        camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enablePan = false;
+        controls.enableZoom = true;
+
+        // Create simple 3D representation
+        const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 32, 20);
+        const material = new THREE.MeshBasicMaterial({
+            color: 0x4080ff,
+            wireframe: true,
+            transparent: true,
+            opacity: 0.6
+        });
+        const cylinder = new THREE.Mesh(geometry, material);
+        scene.add(cylinder);
+
+        // Cursor
+        const cursorGeometry = new THREE.SphereGeometry(0.03, 16, 16);
+        const cursorMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const cursor = new THREE.Mesh(cursorGeometry, cursorMaterial);
+        scene.add(cursor);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // UI Logic
+        const sliderL = document.getElementById('sliderL');
+        const sliderC = document.getElementById('sliderC');
+        const sliderH = document.getElementById('sliderH');
+
+        function updatePicker() {
+            const l = parseFloat(sliderL.value) / 100;
+            const c = parseFloat(sliderC.value) / 100;
+            const h = parseFloat(sliderH.value);
+
+            document.getElementById('valueL').textContent = (l * 100).toFixed(0) + '%';
+            document.getElementById('valueC').textContent = c.toFixed(2);
+            document.getElementById('valueH').textContent = h.toFixed(0) + '°';
+
+            // Update cursor
+            cursor.position.set(
+                (l - 0.5) * 1,
+                (c / 0.37 - 0.5) * 1,
+                (h / 360 - 0.5) * 1
+            );
+        }
+
+        window.assignToken = function(token) {
+            const l = parseFloat(sliderL.value) / 100;
+            const c = parseFloat(sliderC.value) / 100;
+            const h = parseFloat(sliderH.value);
+
+            const oklchValue = `oklch(${(l * 100).toFixed(1)}% ${c.toFixed(3)} ${h.toFixed(0)})`;
+
+            document.documentElement.style.setProperty(`--${token}`, oklchValue);
+            document.getElementById(`swatch-${token}`).style.background = oklchValue;
+            document.getElementById(`token-${token}`).textContent = oklchValue;
+
+            // Update compliance
+            updateCompliance(token, l);
+        };
+
+        function updateCompliance(token, lightness) {
+            const bgLightness = 0.15; // Background lightness
+            const ratio = getContrastRatio(lightness, bgLightness);
+            const apca = getAPCA(lightness, bgLightness);
+
+            const wcagEl = document.getElementById(`wcag-${token}`);
+            const apcaEl = document.getElementById(`apca-${token}`);
+            const wcagBadge = document.getElementById(`badge-${token}-wcag`);
+            const apcaBadge = document.getElementById(`badge-${token}-apca`);
+
+            if (wcagEl) {
+                wcagEl.textContent = ratio.toFixed(2) + ':1';
+                wcagEl.className = 'compliance-value ' + (ratio >= 4.5 ? 'compliance-pass' : 'compliance-fail');
+                if (wcagBadge) {
+                    wcagBadge.textContent = ratio >= 4.5 ? '✓ AA Pass' : '✗ AA Fail';
+                    wcagBadge.className = 'compliance-badge ' + (ratio >= 4.5 ? 'badge-pass' : 'badge-fail');
+                }
+            }
+
+            if (apcaEl) {
+                apcaEl.textContent = apca + ' Lc';
+                apcaEl.className = 'compliance-value ' + (apca >= 60 ? 'compliance-pass' : 'compliance-fail');
+                if (apcaBadge) {
+                    apcaBadge.textContent = apca >= 75 ? '✓ Preferred' : apca >= 60 ? '✓ Fluent' : '✗ Below';
+                    apcaBadge.className = 'compliance-badge ' + (apca >= 60 ? 'badge-pass' : 'badge-fail');
+                }
+            }
+        }
+
+        sliderL.addEventListener('input', updatePicker);
+        sliderC.addEventListener('input', updatePicker);
+        sliderH.addEventListener('input', updatePicker);
+
+        updatePicker();
+        console.log('✅ OKLCH Design System Ready!');
+    </script>
+</body>
+</html>

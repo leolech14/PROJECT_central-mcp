@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Theme Builder - Live Preview & Export</title>
+
+    <!-- Using OKLCH.com's visualization code (Evil Martians) -->
+    <link rel="stylesheet" href="https://oklch.com/index-DYwA_pQ5.css">
+    <script type="module" src="https://oklch.com/index-NL1M0NIB.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --theme-bg: oklch(15% 0.01 250);
+            --theme-surface: oklch(20% 0.01 250);
+            --theme-text: oklch(95% 0.01 250);
+            --theme-border: oklch(30% 0.02 250);
+            --theme-primary: oklch(60% 0.15 240);
+            --theme-accent: oklch(65% 0.18 180);
+            --theme-success: oklch(65% 0.15 145);
+            --theme-warning: oklch(70% 0.16 75);
+            --theme-error: oklch(60% 0.18 25);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--theme-bg);
+            color: var(--theme-text);
+            overflow-x: hidden;
+        }
+
+        .split-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            height: 100vh;
+        }
+
+        .generator-panel {
+            background: var(--theme-surface);
+            border-right: 2px solid var(--theme-border);
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .preview-panel {
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--theme-primary), var(--theme-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: oklch(65% 0.02 250);
+            margin-bottom: 2rem;
+        }
+
+        .control-section {
+            background: oklch(18% 0.01 250);
+            border: 2px solid var(--theme-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-group {
+            margin-bottom: 1rem;
+        }
+
+        .control-label {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .lock-toggle {
+            appearance: none;
+            width: 40px;
+            height: 22px;
+            background: oklch(25% 0.02 250);
+            border-radius: 11px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .lock-toggle:checked {
+            background: var(--theme-success);
+        }
+
+        .lock-toggle::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: white;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+        }
+
+        .lock-toggle:checked::before {
+            transform: translateX(18px);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(25% 0.02 250);
+            appearance: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--theme-primary);
+            cursor: pointer;
+        }
+
+        .value-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-family: 'SF Mono', monospace;
+            color: oklch(75% 0.02 250);
+        }
+
+        .color-count-input {
+            width: 100%;
+            padding: 0.6rem;
+            background: oklch(22% 0.01 250);
+            border: 2px solid var(--theme-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--theme-primary);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        .generate-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .palette-mini {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .mini-swatch {
+            aspect-ratio: 1;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid var(--theme-border);
+        }
+
+        .mini-swatch.selected {
+            border: 2px solid var(--theme-accent);
+            box-shadow: 0 0 0 2px oklch(20% 0.01 250), 0 0 0 4px var(--theme-accent);
+        }
+
+        .token-assignments {
+            margin-top: 1rem;
+        }
+
+        .token-row {
+            display: grid;
+            grid-template-columns: 100px 40px 1fr;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .token-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .token-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid var(--theme-border);
+            cursor: pointer;
+        }
+
+        .token-value {
+            font-size: 0.75rem;
+            font-family: 'SF Mono', monospace;
+            color: oklch(70% 0.02 250);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .export-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .export-btn {
+            padding: 0.8rem;
+            background: oklch(25% 0.02 250);
+            border: 2px solid var(--theme-border);
+            border-radius: 8px;
+            color: white;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .export-btn:hover {
+            background: oklch(30% 0.05 240);
+        }
+
+        /* PREVIEW COMPONENTS */
+        .preview-header {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .component-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .component-demo {
+            background: var(--theme-surface);
+            border: 2px solid var(--theme-border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .demo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--theme-accent);
+        }
+
+        .demo-content {
+            display: grid;
+            gap: 1rem;
+        }
+
+        /* UI Components */
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--theme-primary);
+            color: white;
+        }
+
+        .btn-accent {
+            background: var(--theme-accent);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--theme-success);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--theme-warning);
+            color: oklch(20% 0.02 75);
+        }
+
+        .btn-error {
+            background: var(--theme-error);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: var(--theme-surface);
+            border: 2px solid var(--theme-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: var(--theme-primary);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+
+        .alert-primary {
+            background: color-mix(in oklch, var(--theme-primary) 15%, transparent);
+            border-color: var(--theme-primary);
+            color: var(--theme-primary);
+        }
+
+        .alert-success {
+            background: color-mix(in oklch, var(--theme-success) 15%, transparent);
+            border-color: var(--theme-success);
+            color: var(--theme-success);
+        }
+
+        .alert-warning {
+            background: color-mix(in oklch, var(--theme-warning) 15%, transparent);
+            border-color: var(--theme-warning);
+            color: var(--theme-warning);
+        }
+
+        .alert-error {
+            background: color-mix(in oklch, var(--theme-error) 15%, transparent);
+            border-color: var(--theme-error);
+            color: var(--theme-error);
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--theme-bg);
+            border: 2px solid var(--theme-border);
+            border-radius: 8px;
+            color: var(--theme-text);
+            font-size: 1rem;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--theme-primary);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-primary { background: var(--theme-primary); color: white; }
+        .badge-accent { background: var(--theme-accent); color: white; }
+        .badge-success { background: var(--theme-success); color: white; }
+        .badge-warning { background: var(--theme-warning); color: oklch(20% 0.02 75); }
+        .badge-error { background: var(--theme-error); color: white; }
+
+        .export-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--theme-surface);
+            border: 2px solid var(--theme-border);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        .export-modal.active {
+            display: block;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            display: none;
+        }
+
+        .modal-backdrop.active {
+            display: block;
+        }
+
+        .code-block {
+            background: oklch(12% 0.01 250);
+            border: 2px solid var(--theme-border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 1rem 0;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--theme-error);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="split-layout">
+        <!-- LEFT: Generator & Controls -->
+        <div class="generator-panel">
+            <h1>🎨 Theme Builder</h1>
+            <p class="subtitle">Generate palettes, assign tokens, preview live</p>
+
+            <!-- Parametric Generator -->
+            <div class="control-section">
+                <div class="section-title">⚙️ Palette Generator</div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <input type="checkbox" class="lock-toggle" id="lockL" checked>
+                        <span>🔒 Lock L</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderL" min="0" max="1" step="0.01" value="0.33" disabled>
+                    <div class="value-row">
+                        <span>Lightness</span>
+                        <span id="valueL">0.33</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <input type="checkbox" class="lock-toggle" id="lockC" checked>
+                        <span>🔒 Lock C</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderC" min="0" max="0.37" step="0.01" value="0.06" disabled>
+                    <div class="value-row">
+                        <span>Chroma</span>
+                        <span id="valueC">0.06</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <input type="checkbox" class="lock-toggle" id="lockH">
+                        <span>🔓 Slide H</span>
+                    </div>
+                    <input type="range" class="slider" id="sliderH" min="0" max="360" step="1" value="180">
+                    <div class="value-row">
+                        <span>Hue</span>
+                        <span id="valueH">180°</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>📊 Color Count</span>
+                    </div>
+                    <input type="number" class="color-count-input" id="colorCount" min="2" max="360" value="12">
+                </div>
+
+                <button class="generate-btn" onclick="generatePalette()">⚡ GENERATE</button>
+
+                <div class="palette-mini" id="paletteMini"></div>
+            </div>
+
+            <!-- Token Assignments -->
+            <div class="control-section">
+                <div class="section-title">🎯 Token Assignments</div>
+                <div class="token-assignments">
+                    <div class="token-row">
+                        <span class="token-name">Primary</span>
+                        <div class="token-swatch" id="swatch-primary" style="background: var(--theme-primary);" onclick="selectTokenForAssignment('primary')"></div>
+                        <div class="token-value" id="value-primary">oklch(60% 0.15 240)</div>
+                    </div>
+                    <div class="token-row">
+                        <span class="token-name">Accent</span>
+                        <div class="token-swatch" id="swatch-accent" style="background: var(--theme-accent);" onclick="selectTokenForAssignment('accent')"></div>
+                        <div class="token-value" id="value-accent">oklch(65% 0.18 180)</div>
+                    </div>
+                    <div class="token-row">
+                        <span class="token-name">Success</span>
+                        <div class="token-swatch" id="swatch-success" style="background: var(--theme-success);" onclick="selectTokenForAssignment('success')"></div>
+                        <div class="token-value" id="value-success">oklch(65% 0.15 145)</div>
+                    </div>
+                    <div class="token-row">
+                        <span class="token-name">Warning</span>
+                        <div class="token-swatch" id="swatch-warning" style="background: var(--theme-warning);" onclick="selectTokenForAssignment('warning')"></div>
+                        <div class="token-value" id="value-warning">oklch(70% 0.16 75)</div>
+                    </div>
+                    <div class="token-row">
+                        <span class="token-name">Error</span>
+                        <div class="token-swatch" id="swatch-error" style="background: var(--theme-error);" onclick="selectTokenForAssignment('error')"></div>
+                        <div class="token-value" id="value-error">oklch(60% 0.18 25)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export -->
+            <div class="control-section">
+                <div class="section-title">💾 Export Theme</div>
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportConfig()">📄 Config Layer</button>
+                    <button class="export-btn" onclick="exportHTML()">🖼️ HTML + CSS</button>
+                    <button class="export-btn" onclick="exportJSON()">📦 JSON</button>
+                    <button class="export-btn" onclick="exportComplete()">🚀 Complete Theme</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Live Preview -->
+        <div class="preview-panel">
+            <h2 class="preview-header">👁️ Live Theme Preview</h2>
+
+            <div class="component-grid">
+                <!-- Buttons -->
+                <div class="component-demo">
+                    <div class="demo-title">Buttons</div>
+                    <div class="demo-content" style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-primary">Primary</button>
+                        <button class="btn btn-accent">Accent</button>
+                        <button class="btn btn-success">Success</button>
+                        <button class="btn btn-warning">Warning</button>
+                        <button class="btn btn-error">Error</button>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div class="component-demo">
+                    <div class="demo-title">Alerts</div>
+                    <div class="demo-content">
+                        <div class="alert alert-primary">
+                            <strong>Primary Alert:</strong> This is your primary color in action.
+                        </div>
+                        <div class="alert alert-success">
+                            <strong>Success:</strong> Operation completed successfully.
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Warning:</strong> Please review before proceeding.
+                        </div>
+                        <div class="alert alert-error">
+                            <strong>Error:</strong> Something went wrong.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div class="component-demo">
+                    <div class="demo-title">Cards</div>
+                    <div class="demo-content" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div class="card">
+                            <div class="card-title">Dashboard Card</div>
+                            <p style="color: oklch(75% 0.02 250); margin: 0;">Your theme colors applied to content cards.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Analytics</div>
+                            <p style="color: oklch(75% 0.02 250); margin: 0;">Real-time preview of your design system.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Badges -->
+                <div class="component-demo">
+                    <div class="demo-title">Badges</div>
+                    <div class="demo-content" style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+                        <span class="badge badge-primary">Primary</span>
+                        <span class="badge badge-accent">Accent</span>
+                        <span class="badge badge-success">Success</span>
+                        <span class="badge badge-warning">Warning</span>
+                        <span class="badge badge-error">Error</span>
+                    </div>
+                </div>
+
+                <!-- Forms -->
+                <div class="component-demo">
+                    <div class="demo-title">Form Elements</div>
+                    <div class="demo-content">
+                        <input type="text" class="input" placeholder="Input with theme colors..." value="Try typing here">
+                        <input type="email" class="input" placeholder="Email address">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Modal -->
+    <div class="modal-backdrop" id="modalBackdrop" onclick="closeModal()"></div>
+    <div class="export-modal" id="exportModal">
+        <button class="close-modal" onclick="closeModal()">×</button>
+        <h2 id="modalTitle"></h2>
+        <div id="modalContent"></div>
+    </div>
+
+    <script>
+        // OKLCH to RGB (from Evil Martians' oklch-picker)
+        function oklchToRgb(l, c, h) {
+            const hRad = (h * Math.PI) / 180;
+            const a = c * Math.cos(hRad);
+            const b = c * Math.sin(hRad);
+
+            const l_ = l + 0.3963377774 * a + 0.2158037573 * b;
+            const m_ = l - 0.1055613458 * a - 0.0638541728 * b;
+            const s_ = l - 0.0894841775 * a - 1.2914855480 * b;
+
+            const lCube = l_ * l_ * l_;
+            const mCube = m_ * m_ * m_;
+            const sCube = s_ * s_ * s_;
+
+            let r = +4.0767245293 * lCube - 3.3072168827 * mCube + 0.2307590544 * sCube;
+            let g = -1.2681437731 * lCube + 2.6093323231 * mCube - 0.3411344290 * sCube;
+            let b2 = -0.0041119885 * lCube - 0.7034763098 * mCube + 1.7068625689 * sCube;
+
+            r = r > 0.0031308 ? 1.055 * Math.pow(r, 1/2.4) - 0.055 : 12.92 * r;
+            g = g > 0.0031308 ? 1.055 * Math.pow(g, 1/2.4) - 0.055 : 12.92 * g;
+            b2 = b2 > 0.0031308 ? 1.055 * Math.pow(b2, 1/2.4) - 0.055 : 12.92 * b2;
+
+            return {
+                r: Math.round(Math.max(0, Math.min(255, r * 255))),
+                g: Math.round(Math.max(0, Math.min(255, g * 255))),
+                b: Math.round(Math.max(0, Math.min(255, b2 * 255)))
+            };
+        }
+
+        let generatedColors = [];
+        let selectedTokenForAssignment = null;
+
+        // UI Controls
+        const lockL = document.getElementById('lockL');
+        const lockC = document.getElementById('lockC');
+        const lockH = document.getElementById('lockH');
+        const sliderL = document.getElementById('sliderL');
+        const sliderC = document.getElementById('sliderC');
+        const sliderH = document.getElementById('sliderH');
+
+        lockL.addEventListener('change', () => {
+            sliderL.disabled = lockL.checked;
+        });
+
+        lockC.addEventListener('change', () => {
+            sliderC.disabled = lockC.checked;
+        });
+
+        lockH.addEventListener('change', () => {
+            sliderH.disabled = lockH.checked;
+        });
+
+        sliderL.addEventListener('input', () => {
+            document.getElementById('valueL').textContent = parseFloat(sliderL.value).toFixed(2);
+        });
+
+        sliderC.addEventListener('input', () => {
+            document.getElementById('valueC').textContent = parseFloat(sliderC.value).toFixed(2);
+        });
+
+        sliderH.addEventListener('input', () => {
+            document.getElementById('valueH').textContent = sliderH.value + '°';
+        });
+
+        function generatePalette() {
+            const count = parseInt(document.getElementById('colorCount').value);
+            const L = parseFloat(sliderL.value);
+            const C = parseFloat(sliderC.value);
+            const H = parseFloat(sliderH.value);
+
+            generatedColors = [];
+
+            if (!lockH.checked) {
+                // Vary Hue (USER'S REQUESTED MODE!)
+                for (let i = 0; i < count; i++) {
+                    const hue = Math.round((i / (count - 1)) * 360);
+                    const rgb = oklchToRgb(L, C, hue);
+                    const hex = '#' + [rgb.r, rgb.g, rgb.b].map(x => {
+                        const h = x.toString(16);
+                        return h.length === 1 ? '0' + h : h;
+                    }).join('');
+                    generatedColors.push({
+                        oklch: `oklch(${(L * 100).toFixed(1)}% ${C.toFixed(3)} ${hue})`,
+                        hex: hex,
+                        l: L,
+                        c: C,
+                        h: hue
+                    });
+                }
+            } else if (!lockL.checked) {
+                // Vary Lightness
+                for (let i = 0; i < count; i++) {
+                    const lightness = i / (count - 1);
+                    const rgb = oklchToRgb(lightness, C, H);
+                    const hex = '#' + [rgb.r, rgb.g, rgb.b].map(x => {
+                        const h = x.toString(16);
+                        return h.length === 1 ? '0' + h : h;
+                    }).join('');
+                    generatedColors.push({
+                        oklch: `oklch(${(lightness * 100).toFixed(1)}% ${C.toFixed(3)} ${H})`,
+                        hex: hex,
+                        l: lightness,
+                        c: C,
+                        h: H
+                    });
+                }
+            } else if (!lockC.checked) {
+                // Vary Chroma
+                for (let i = 0; i < count; i++) {
+                    const chroma = (i / (count - 1)) * 0.37;
+                    const rgb = oklchToRgb(L, chroma, H);
+                    const hex = '#' + [rgb.r, rgb.g, rgb.b].map(x => {
+                        const h = x.toString(16);
+                        return h.length === 1 ? '0' + h : h;
+                    }).join('');
+                    generatedColors.push({
+                        oklch: `oklch(${(L * 100).toFixed(1)}% ${chroma.toFixed(3)} ${H})`,
+                        hex: hex,
+                        l: L,
+                        c: chroma,
+                        h: H
+                    });
+                }
+            }
+
+            displayPaletteMini();
+        }
+
+        function displayPaletteMini() {
+            const mini = document.getElementById('paletteMini');
+            mini.innerHTML = '';
+
+            generatedColors.forEach((color, index) => {
+                const swatch = document.createElement('div');
+                swatch.className = 'mini-swatch';
+                swatch.style.background = color.hex;
+                swatch.title = color.oklch;
+                swatch.onclick = () => {
+                    if (selectedTokenForAssignment) {
+                        assignColorToToken(selectedTokenForAssignment, color);
+                        selectedTokenForAssignment = null;
+                    }
+                    document.querySelectorAll('.mini-swatch').forEach(s => s.classList.remove('selected'));
+                    swatch.classList.add('selected');
+                };
+                mini.appendChild(swatch);
+            });
+        }
+
+        function selectTokenForAssignment(token) {
+            selectedTokenForAssignment = token;
+            alert(`🎨 Click a color from the palette to assign to ${token.toUpperCase()}`);
+        }
+
+        function assignColorToToken(token, color) {
+            document.documentElement.style.setProperty(`--theme-${token}`, color.oklch);
+            document.getElementById(`swatch-${token}`).style.background = color.oklch;
+            document.getElementById(`value-${token}`).textContent = color.oklch;
+        }
+
+        function exportConfig() {
+            const config = `:root {
+  --theme-bg: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-bg').trim()};
+  --theme-surface: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-surface').trim()};
+  --theme-text: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-text').trim()};
+  --theme-border: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-border').trim()};
+  --theme-primary: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim()};
+  --theme-accent: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim()};
+  --theme-success: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-success').trim()};
+  --theme-warning: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-warning').trim()};
+  --theme-error: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-error').trim()};
+}`;
+            showModal('📄 Config Layer Export', `<div class="code-block">${config}</div><button class="btn btn-primary" onclick="copyToClipboard('${config.replace(/\n/g, '\\n')}')">📋 Copy to Clipboard</button>`);
+        }
+
+        function exportHTML() {
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My OKLCH Theme</title>
+    <style>
+        :root {
+            --theme-primary: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim()};
+            --theme-accent: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim()};
+            --theme-success: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-success').trim()};
+            --theme-warning: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-warning').trim()};
+            --theme-error: ${getComputedStyle(document.documentElement).getPropertyValue('--theme-error').trim()};
+        }
+        .btn-primary { background: var(--theme-primary); color: white; }
+        /* Add more styles... */
+    </style>
+</head>
+<body>
+    <button class="btn-primary">My Button</button>
+</body>
+</html>`;
+            showModal('🖼️ HTML + CSS Export', `<div class="code-block">${html.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div><button class="btn btn-primary" onclick="downloadHTML('${encodeURIComponent(html)}')">💾 Download HTML</button>`);
+        }
+
+        function exportJSON() {
+            const theme = {
+                primary: getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim(),
+                accent: getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim(),
+                success: getComputedStyle(document.documentElement).getPropertyValue('--theme-success').trim(),
+                warning: getComputedStyle(document.documentElement).getPropertyValue('--theme-warning').trim(),
+                error: getComputedStyle(document.documentElement).getPropertyValue('--theme-error').trim()
+            };
+            const json = JSON.stringify(theme, null, 2);
+            showModal('📦 JSON Export', `<div class="code-block">${json}</div><button class="btn btn-primary" onclick="copyToClipboard('${json.replace(/\n/g, '\\n')}')">📋 Copy to Clipboard</button>`);
+        }
+
+        function exportComplete() {
+            const complete = {
+                config: {
+                    primary: getComputedStyle(document.documentElement).getPropertyValue('--theme-primary').trim(),
+                    accent: getComputedStyle(document.documentElement).getPropertyValue('--theme-accent').trim(),
+                    success: getComputedStyle(document.documentElement).getPropertyValue('--theme-success').trim(),
+                    warning: getComputedStyle(document.documentElement).getPropertyValue('--theme-warning').trim(),
+                    error: getComputedStyle(document.documentElement).getPropertyValue('--theme-error').trim()
+                },
+                palette: generatedColors
+            };
+            const json = JSON.stringify(complete, null, 2);
+            showModal('🚀 Complete Theme Export', `<div class="code-block">${json}</div><button class="btn btn-primary" onclick="copyToClipboard('${json.replace(/\n/g, '\\n')}')">📋 Copy to Clipboard</button>`);
+        }
+
+        function showModal(title, content) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('exportModal').classList.add('active');
+            document.getElementById('modalBackdrop').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('exportModal').classList.remove('active');
+            document.getElementById('modalBackdrop').classList.remove('active');
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text.replace(/\\n/g, '\n'));
+            alert('✅ Copied to clipboard!');
+        }
+
+        function downloadHTML(encoded) {
+            const html = decodeURIComponent(encoded);
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'my-oklch-theme.html';
+            a.click();
+        }
+
+        // Initialize
+        generatePalette();
+    </script>
+</body>
+</html>

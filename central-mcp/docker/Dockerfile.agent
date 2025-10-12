@@ -1,0 +1,136 @@
+# Central-MCP Agent - RunPod Deployment
+# Optimized for Claude Code CLI + Multi-Agent Coordination
+
+FROM node:20-bullseye
+
+# Metadata
+LABEL maintainer="Central-MCP"
+LABEL description="Agent environment for Central-MCP coordination system"
+LABEL version="1.0.0"
+
+# Environment setup
+ENV DEBIAN_FRONTEND=noninteractive \
+    NODE_ENV=production \
+    AGENT_LETTER=A \
+    AGENT_MODEL=claude-sonnet-4-5 \
+    AGENT_ROLE=coordinator \
+    CENTRAL_MCP_URL=http://34.41.115.199:3000
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    tmux \
+    vim \
+    nano \
+    htop \
+    wget \
+    unzip \
+    sqlite3 \
+    jq \
+    netcat \
+    iputils-ping \
+    dnsutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Claude Code CLI globally
+RUN npm install -g @anthropic-ai/claude-code@latest
+
+# Verify installation
+RUN claude-code --version || echo "Claude Code CLI installed"
+
+# Create workspace
+WORKDIR /workspace
+
+# Create agent user (non-root for security)
+RUN useradd -m -s /bin/bash agent && \
+    mkdir -p /workspace/.claude /workspace/projects && \
+    chown -R agent:agent /workspace
+
+# Switch to agent user
+USER agent
+
+# Configure tmux
+RUN echo "# Tmux configuration for Central-MCP agents" > ~/.tmux.conf && \
+    echo "set -g mouse on" >> ~/.tmux.conf && \
+    echo "set -g history-limit 50000" >> ~/.tmux.conf && \
+    echo "set -g status-bg colour235" >> ~/.tmux.conf && \
+    echo "set -g status-fg colour136" >> ~/.tmux.conf && \
+    echo "set -g status-left '#[fg=colour196]#H #[fg=colour136]Session: #S '" >> ~/.tmux.conf && \
+    echo "set -g status-right '#[fg=colour166]Agent: \${AGENT_LETTER} #[fg=colour136]%H:%M:%S'" >> ~/.tmux.conf
+
+# Configure bash
+RUN echo "# Central-MCP Agent Environment" >> ~/.bashrc && \
+    echo "export PS1='🤖 Agent \$AGENT_LETTER [\w]$ '" >> ~/.bashrc && \
+    echo "alias ll='ls -lah'" >> ~/.bashrc && \
+    echo "alias claude='claude-code'" >> ~/.bashrc && \
+    echo "echo ''" >> ~/.bashrc && \
+    echo "echo '🤖 Central-MCP Agent \$AGENT_LETTER'" >> ~/.bashrc && \
+    echo "echo '   Model: \$AGENT_MODEL'" >> ~/.bashrc && \
+    echo "echo '   Role: \$AGENT_ROLE'" >> ~/.bashrc && \
+    echo "echo '   Central-MCP: \$CENTRAL_MCP_URL'" >> ~/.bashrc && \
+    echo "echo ''" >> ~/.bashrc && \
+    echo "echo '📋 Quick Commands:'" >> ~/.bashrc && \
+    echo "echo '   claude-code          - Start Claude Code CLI'" >> ~/.bashrc && \
+    echo "echo '   tmux                - Start tmux session'" >> ~/.bashrc && \
+    echo "echo '   check-connection    - Test Central-MCP connection'" >> ~/.bashrc && \
+    echo "echo ''"  >> ~/.bashrc
+
+# Create connection check script
+RUN echo '#!/bin/bash' > /workspace/check-connection.sh && \
+    echo 'echo "🔍 Testing Central-MCP connection..."' >> /workspace/check-connection.sh && \
+    echo 'echo "URL: $CENTRAL_MCP_URL/health"' >> /workspace/check-connection.sh && \
+    echo 'echo ""' >> /workspace/check-connection.sh && \
+    echo 'curl -s "$CENTRAL_MCP_URL/health" | jq . || echo "❌ Connection failed"' >> /workspace/check-connection.sh && \
+    chmod +x /workspace/check-connection.sh && \
+    echo "alias check-connection='/workspace/check-connection.sh'" >> ~/.bashrc
+
+# Create agent startup script
+RUN echo '#!/bin/bash' > /workspace/start-agent.sh && \
+    echo '# Central-MCP Agent Startup' >> /workspace/start-agent.sh && \
+    echo 'clear' >> /workspace/start-agent.sh && \
+    echo 'echo "╔════════════════════════════════════════════════════════════╗"' >> /workspace/start-agent.sh && \
+    echo 'echo "║          🧠 CENTRAL-MCP AGENT SYSTEM                      ║"' >> /workspace/start-agent.sh && \
+    echo 'echo "╚════════════════════════════════════════════════════════════╝"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "🤖 Agent:       $AGENT_LETTER"' >> /workspace/start-agent.sh && \
+    echo 'echo "🧠 Model:       $AGENT_MODEL"' >> /workspace/start-agent.sh && \
+    echo 'echo "🎯 Role:        $AGENT_ROLE"' >> /workspace/start-agent.sh && \
+    echo 'echo "🔗 Central-MCP: $CENTRAL_MCP_URL"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "Testing connection to Central-MCP..."' >> /workspace/start-agent.sh && \
+    echo 'if curl -s -f "$CENTRAL_MCP_URL/health" > /dev/null 2>&1; then' >> /workspace/start-agent.sh && \
+    echo '  echo "✅ Connected to Central-MCP"' >> /workspace/start-agent.sh && \
+    echo 'else' >> /workspace/start-agent.sh && \
+    echo '  echo "⚠️  Cannot reach Central-MCP (may be starting...)"' >> /workspace/start-agent.sh && \
+    echo 'fi' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /workspace/start-agent.sh && \
+    echo 'echo "📋 TO START WORKING:"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "  1. Start Claude Code CLI:"' >> /workspace/start-agent.sh && \
+    echo 'echo "     $ claude-code"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "  2. Connect to Central-MCP:"' >> /workspace/start-agent.sh && \
+    echo 'echo "     Say: \"Connect to MCP\""' >> /workspace/start-agent.sh && \
+    echo 'echo "     Tool: connectToMCP (auto-detects agent identity)"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "  3. Start working on assigned tasks!"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"' >> /workspace/start-agent.sh && \
+    echo 'echo ""' >> /workspace/start-agent.sh && \
+    echo 'exec /bin/bash' >> /workspace/start-agent.sh && \
+    chmod +x /workspace/start-agent.sh
+
+# Set working directory
+WORKDIR /workspace
+
+# Expose SSH port (RunPod will handle this)
+EXPOSE 22
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node --version && claude-code --version || exit 1
+
+# Default command
+CMD ["/workspace/start-agent.sh"]

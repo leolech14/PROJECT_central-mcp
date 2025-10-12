@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central-MCP Monitor - Real-Time Intelligence Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* OKLCH Color System - Dark Theme */
+            --scaffold-bg-0: oklch(0.14 0.005 270);
+            --scaffold-bg-1: oklch(0.17 0.005 270);
+            --scaffold-bg-2: oklch(0.20 0.005 270);
+            --scaffold-border: oklch(0.24 0.005 270);
+            --scaffold-border-interactive: oklch(0.32 0.005 270);
+            --scaffold-text-primary: oklch(0.92 0.005 270);
+            --scaffold-text-secondary: oklch(0.65 0.005 270);
+
+            /* Status Colors */
+            --color-success: oklch(0.65 0.18 145);
+            --color-warning: oklch(0.70 0.18 70);
+            --color-error: oklch(0.60 0.20 25);
+            --color-info: oklch(0.60 0.18 270);
+            --color-idle: oklch(0.50 0.05 270);
+
+            /* Spacing Scale */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 24px;
+            --space-6: 32px;
+            --space-7: 48px;
+
+            /* Typography */
+            --text-xs: 11px;
+            --text-sm: 12px;
+            --text-base: 13px;
+            --text-md: 14px;
+            --text-lg: 16px;
+            --text-xl: 20px;
+            --text-2xl: 24px;
+
+            /* Radius */
+            --radius-sm: 3px;
+            --radius-md: 6px;
+            --radius-lg: 8px;
+            --radius-xl: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+            background: var(--scaffold-bg-0);
+            color: var(--scaffold-text-primary);
+            font-size: var(--text-base);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: var(--space-5);
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-6);
+            padding-bottom: var(--space-4);
+            border-bottom: 1px solid var(--scaffold-border);
+        }
+
+        .dashboard-title {
+            font-size: var(--text-2xl);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-indicator.healthy {
+            background: var(--color-success);
+            box-shadow: 0 0 12px var(--color-success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .last-update {
+            font-size: var(--text-sm);
+            color: var(--scaffold-text-secondary);
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-5);
+            margin-bottom: var(--space-5);
+        }
+
+        /* Card Component */
+        .card {
+            background: var(--scaffold-bg-1);
+            border: 1px solid var(--scaffold-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            transition: all 200ms ease-out;
+        }
+
+        .card:hover {
+            border-color: var(--scaffold-border-interactive);
+            background: var(--scaffold-bg-2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .card-title {
+            font-size: var(--text-md);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .card-badge {
+            font-size: var(--text-xs);
+            padding: 2px var(--space-2);
+            border-radius: var(--radius-sm);
+            background: var(--scaffold-bg-2);
+            color: var(--scaffold-text-secondary);
+            font-weight: 500;
+        }
+
+        /* Loop Status Grid */
+        .loop-grid {
+            display: grid;
+            gap: var(--space-3);
+        }
+
+        .loop-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-3);
+            background: var(--scaffold-bg-0);
+            border: 1px solid var(--scaffold-border);
+            border-radius: var(--radius-md);
+            transition: all 150ms ease-out;
+        }
+
+        .loop-item:hover {
+            background: var(--scaffold-bg-1);
+        }
+
+        .loop-info {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .loop-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .loop-status-dot.active {
+            background: var(--color-success);
+            box-shadow: 0 0 8px var(--color-success);
+        }
+
+        .loop-status-dot.idle {
+            background: var(--color-idle);
+        }
+
+        .loop-name {
+            font-size: var(--text-sm);
+            font-weight: 500;
+        }
+
+        .loop-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+
+        .loop-count {
+            font-size: var(--text-xs);
+            color: var(--scaffold-text-secondary);
+        }
+
+        .loop-duration {
+            font-size: var(--text-xs);
+            color: var(--scaffold-text-secondary);
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .metric-value {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--scaffold-text-primary);
+        }
+
+        .metric-label {
+            font-size: var(--text-sm);
+            color: var(--scaffold-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .metric-change {
+            font-size: var(--text-xs);
+            color: var(--color-success);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .metric-change.negative {
+            color: var(--color-error);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 6px;
+            background: var(--scaffold-bg-0);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-top: var(--space-2);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--color-success);
+            border-radius: var(--radius-sm);
+            transition: width 300ms ease-out;
+        }
+
+        /* Agent List */
+        .agent-list {
+            display: grid;
+            gap: var(--space-2);
+        }
+
+        .agent-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-2);
+            background: var(--scaffold-bg-0);
+            border-radius: var(--radius-sm);
+        }
+
+        .agent-letter {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-md);
+            background: var(--color-info);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: var(--text-md);
+        }
+
+        .agent-info {
+            flex: 1;
+            margin-left: var(--space-3);
+        }
+
+        .agent-name {
+            font-size: var(--text-sm);
+            font-weight: 500;
+        }
+
+        .agent-project {
+            font-size: var(--text-xs);
+            color: var(--scaffold-text-secondary);
+        }
+
+        .agent-status {
+            font-size: var(--text-xs);
+            padding: 2px var(--space-2);
+            border-radius: var(--radius-sm);
+            background: var(--color-success);
+            color: white;
+            font-weight: 500;
+        }
+
+        /* System Health */
+        .health-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-3);
+        }
+
+        .health-metric {
+            padding: var(--space-3);
+            background: var(--scaffold-bg-0);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--scaffold-border);
+        }
+
+        .health-label {
+            font-size: var(--text-xs);
+            color: var(--scaffold-text-secondary);
+            margin-bottom: var(--space-1);
+        }
+
+        .health-value {
+            font-size: var(--text-lg);
+            font-weight: 600;
+        }
+
+        /* Loading Animation */
+        .skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--scaffold-bg-1) 0%,
+                var(--scaffold-bg-2) 50%,
+                var(--scaffold-bg-1) 100%
+            );
+            background-size: 200% 100%;
+            animation: skeleton 1.5s ease-in-out infinite;
+        }
+
+        @keyframes skeleton {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Sparkline */
+        .sparkline {
+            height: 40px;
+            margin-top: var(--space-3);
+        }
+
+        .sparkline-svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sparkline-path {
+            fill: none;
+            stroke: var(--color-success);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Error State */
+        .error-state {
+            padding: var(--space-5);
+            text-align: center;
+            color: var(--color-error);
+        }
+
+        .error-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: var(--space-3);
+        }
+
+        /* Empty State */
+        .empty-state {
+            padding: var(--space-5);
+            text-align: center;
+            color: var(--scaffold-text-secondary);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: var(--space-3);
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title">
+                <span class="status-indicator healthy"></span>
+                <span>Central-MCP Monitor</span>
+            </div>
+            <div class="last-update" id="lastUpdate">
+                Last updated: Loading...
+            </div>
+        </div>
+
+        <!-- Top Metrics Row -->
+        <div class="dashboard-grid">
+            <!-- System Health Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        🏥 System Health
+                    </div>
+                    <div class="card-badge" id="systemHealthBadge">Loading...</div>
+                </div>
+                <div class="health-grid">
+                    <div class="health-metric">
+                        <div class="health-label">CPU Usage</div>
+                        <div class="health-value" id="cpuUsage">--</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-label">Memory</div>
+                        <div class="health-value" id="memoryUsage">--</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-label">Uptime</div>
+                        <div class="health-value" id="uptime">--</div>
+                    </div>
+                    <div class="health-metric">
+                        <div class="health-label">Active Loops</div>
+                        <div class="health-value" id="activeLoops">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        📁 Projects
+                    </div>
+                    <div class="card-badge" id="projectsBadge">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="projectsCount">--</div>
+                    <div class="metric-label">Total Discovered</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="projectsProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agents Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        🤖 Active Agents
+                    </div>
+                    <div class="card-badge" id="agentsBadge">0</div>
+                </div>
+                <div id="agentsList" class="agent-list">
+                    <div class="empty-state">
+                        <div style="font-size: var(--text-sm);">No active agents</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tasks Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        ✅ Tasks
+                    </div>
+                    <div class="card-badge" id="tasksBadge">0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="tasksCompleted">--</div>
+                    <div class="metric-label">Completed / Total</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="tasksProgress" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto-Proactive Loops -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    🔄 Auto-Proactive Intelligence Loops
+                </div>
+                <div class="card-badge" id="loopsBadge">9 Total</div>
+            </div>
+            <div class="loop-grid" id="loopsGrid">
+                <!-- Loops will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = window.location.origin;
+        const REFRESH_INTERVAL = 2000; // 2 seconds
+
+        // State
+        let refreshTimer = null;
+
+        // Format duration
+        function formatDuration(ms) {
+            if (!ms || ms === 0) return '--';
+            if (ms < 1) return '<1ms';
+            if (ms < 1000) return `${Math.round(ms)}ms`;
+            return `${(ms / 1000).toFixed(1)}s`;
+        }
+
+        // Format uptime
+        function formatUptime(seconds) {
+            if (!seconds) return '--';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${hours}h ${minutes}m`;
+        }
+
+        // Format bytes
+        function formatBytes(bytes) {
+            if (!bytes) return '--';
+            if (bytes < 1024) return `${bytes}B`;
+            if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)}KB`;
+            if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
+            return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)}GB`;
+        }
+
+        // Fetch system status
+        async function fetchSystemStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/system/status`);
+                if (!response.ok) throw new Error('Failed to fetch status');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching system status:', error);
+                return null;
+            }
+        }
+
+        // Fetch loop statistics
+        async function fetchLoopStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/loops/stats`);
+                if (!response.ok) throw new Error('Failed to fetch loop stats');
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching loop stats:', error);
+                return null;
+            }
+        }
+
+        // Update dashboard
+        async function updateDashboard() {
+            const [systemStatus, loopStats] = await Promise.all([
+                fetchSystemStatus(),
+                fetchLoopStats()
+            ]);
+
+            if (!systemStatus) {
+                showError();
+                return;
+            }
+
+            // Update last update time
+            document.getElementById('lastUpdate').textContent =
+                `Last updated: ${new Date().toLocaleTimeString()}`;
+
+            // Update system health
+            updateSystemHealth(systemStatus);
+
+            // Update projects
+            updateProjects(systemStatus);
+
+            // Update agents
+            updateAgents(systemStatus);
+
+            // Update tasks
+            updateTasks(systemStatus);
+
+            // Update loops
+            if (loopStats) {
+                updateLoops(loopStats);
+            }
+        }
+
+        // Update system health section
+        function updateSystemHealth(status) {
+            const { system } = status;
+
+            // Health badge
+            const healthPercentage = Math.round((system?.health || 0) * 100);
+            document.getElementById('systemHealthBadge').textContent =
+                `${healthPercentage}% Healthy`;
+
+            // CPU (mock for now - would come from node exporter)
+            document.getElementById('cpuUsage').textContent =
+                system?.cpu ? `${Math.round(system.cpu)}%` : '--';
+
+            // Memory
+            const memUsage = system?.memory?.heapUsed || 0;
+            const memTotal = system?.memory?.heapTotal || 1;
+            const memPercent = Math.round((memUsage / memTotal) * 100);
+            document.getElementById('memoryUsage').textContent =
+                `${formatBytes(memUsage)} (${memPercent}%)`;
+
+            // Uptime
+            document.getElementById('uptime').textContent =
+                formatUptime(system?.uptime || 0);
+
+            // Active loops
+            document.getElementById('activeLoops').textContent =
+                `${system?.activeLoops || 0}/9`;
+        }
+
+        // Update projects section
+        function updateProjects(status) {
+            const { projects } = status;
+            const count = projects?.total || 0;
+            const healthyPercent = projects?.healthyPercent || 0;
+
+            document.getElementById('projectsBadge').textContent = count;
+            document.getElementById('projectsCount').textContent = count;
+            document.getElementById('projectsProgress').style.width = `${healthyPercent}%`;
+        }
+
+        // Update agents section
+        function updateAgents(status) {
+            const { agents } = status;
+            const activeAgents = agents?.active || [];
+
+            document.getElementById('agentsBadge').textContent = activeAgents.length;
+
+            const agentsList = document.getElementById('agentsList');
+
+            if (activeAgents.length === 0) {
+                agentsList.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: var(--text-sm);">No active agents</div>
+                    </div>
+                `;
+                return;
+            }
+
+            agentsList.innerHTML = activeAgents.map(agent => `
+                <div class="agent-item">
+                    <div class="agent-letter">${agent.agentLetter}</div>
+                    <div class="agent-info">
+                        <div class="agent-name">Agent ${agent.agentLetter}</div>
+                        <div class="agent-project">${agent.projectName || 'Unknown'}</div>
+                    </div>
+                    <div class="agent-status">Active</div>
+                </div>
+            `).join('');
+        }
+
+        // Update tasks section
+        function updateTasks(status) {
+            const { tasks } = status;
+            const total = tasks?.total || 0;
+            const completed = tasks?.completed || 0;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            document.getElementById('tasksBadge').textContent = total;
+            document.getElementById('tasksCompleted').textContent = `${completed} / ${total}`;
+            document.getElementById('tasksProgress').style.width = `${percentage}%`;
+        }
+
+        // Update loops section
+        function updateLoops(loopStats) {
+            const loopsGrid = document.getElementById('loopsGrid');
+
+            const loops = [
+                { id: 0, name: 'System Status', interval: '5s' },
+                { id: 1, name: 'Agent Discovery', interval: '60s' },
+                { id: 2, name: 'Project Discovery', interval: '60s' },
+                { id: 4, name: 'Progress Monitoring', interval: '30s' },
+                { id: 5, name: 'Status Analysis', interval: '300s' },
+                { id: 6, name: 'Opportunity Scanning', interval: '900s' },
+                { id: 7, name: 'Spec Generation', interval: '600s' },
+                { id: 8, name: 'Task Assignment', interval: '120s' },
+                { id: 9, name: 'Git Push Monitor', interval: '60s' }
+            ];
+
+            loopsGrid.innerHTML = loops.map(loop => {
+                const stats = loopStats?.[`loop${loop.id}`] || {};
+                const isActive = stats.executionCount > 0;
+                const avgDuration = stats.avgDuration || 0;
+
+                return `
+                    <div class="loop-item">
+                        <div class="loop-info">
+                            <div class="loop-status-dot ${isActive ? 'active' : 'idle'}"></div>
+                            <div>
+                                <div class="loop-name">Loop ${loop.id}: ${loop.name}</div>
+                                <div class="loop-count">${stats.executionCount || 0} executions</div>
+                            </div>
+                        </div>
+                        <div class="loop-meta">
+                            <div class="loop-duration">${formatDuration(avgDuration)} avg</div>
+                            <div class="loop-count">${loop.interval} interval</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Show error state
+        function showError() {
+            const container = document.querySelector('.dashboard-container');
+            container.innerHTML = `
+                <div class="error-state">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    <h2>Unable to connect to Central-MCP</h2>
+                    <p>Please ensure the server is running and accessible.</p>
+                </div>
+            `;
+        }
+
+        // Start refresh cycle
+        function startRefresh() {
+            updateDashboard();
+            refreshTimer = setInterval(updateDashboard, REFRESH_INTERVAL);
+        }
+
+        // Stop refresh cycle
+        function stopRefresh() {
+            if (refreshTimer) {
+                clearInterval(refreshTimer);
+                refreshTimer = null;
+            }
+        }
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopRefresh();
+            } else {
+                startRefresh();
+            }
+        });
+
+        // Initialize
+        startRefresh();
+    </script>
+</body>
+</html>

@@ -1,0 +1,383 @@
+<!--
+═══════════════════════════════════════════════════════════════
+OKLCH CHROMA SELECTOR - 2D RECTANGULAR SELECTOR
+Standalone component for chroma selection in OKLCH color space
+═══════════════════════════════════════════════════════════════
+
+FEATURES:
+- 2D rectangular chroma selector
+- X-axis: Hue (0° to 360°)
+- Y-axis: Chroma (0 to 0.37)
+- Visual representation of chroma range at current lightness
+- Click/drag interaction
+- Real-time preview
+- Exports: oklch(L C H) string, C and H values
+
+USAGE:
+1. Copy this entire file
+2. Paste into your HTML
+3. Listen to 'chromachange' custom event
+4. Access selected chroma/hue via event.detail
+
+INTEGRATION:
+const selector = document.querySelector('#oklchChromaSelector');
+selector.addEventListener('chromachange', (e) => {
+    console.log('Chroma:', e.detail.chroma);
+    console.log('Hue:', e.detail.hue);
+    console.log('OKLCH:', e.detail.oklch);
+});
+
+CUSTOMIZATION:
+- Change size: Modify canvas width/height
+- Change L: Call updateLightness()
+- Change position: Modify CSS
+
+═══════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Chroma Selector Component</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            background: oklch(15% 0.01 250);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: oklch(95% 0.01 250);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .component-container {
+            background: oklch(18% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 700px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        #oklchChromaSelector {
+            display: block;
+            cursor: crosshair;
+            border: 2px solid oklch(40% 0.02 250);
+            border-radius: 8px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .control-value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(30% 0.02 250);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            border: none;
+        }
+
+        .preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 10px;
+            border: 2px solid oklch(40% 0.02 250);
+            margin-top: 1rem;
+        }
+
+        .output {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            color: oklch(85% 0.02 250);
+            background: oklch(12% 0.01 250);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            white-space: pre;
+        }
+
+        .axis-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: oklch(60% 0.02 250);
+            margin-top: 0.5rem;
+        }
+
+        .code-block {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.8rem;
+            color: oklch(80% 0.02 250);
+            overflow-x: auto;
+        }
+
+        .code-title {
+            color: oklch(75% 0.15 240);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="component-container">
+        <h1>🎨 OKLCH Chroma Selector</h1>
+        <p class="description">
+            A 2D rectangular selector for chroma and hue in the OKLCH color space.
+            X-axis represents Hue (0° to 360°), Y-axis represents Chroma (0 to 0.37).
+            Click or drag to select any chroma/hue combination at the current lightness.
+        </p>
+
+        <canvas id="oklchChromaSelector" width="600" height="300"></canvas>
+
+        <div class="axis-labels">
+            <span>Hue: 0°</span>
+            <span>Hue: 180°</span>
+            <span>Hue: 360°</span>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Lightness (L)</span>
+                    <span class="control-value" id="lightnessValue">0.60</span>
+                </div>
+                <input type="range" id="lightnessSlider" min="0" max="100" value="60">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Selected Chroma (C)</span>
+                    <span class="control-value" id="chromaValue">0.15</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Selected Hue (H)</span>
+                    <span class="control-value" id="hueValue">240°</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="preview" class="preview"></div>
+
+        <div class="output" id="output">oklch(0.60 0.15 240)</div>
+
+        <div class="code-block">
+            <div class="code-title">// Integration Example:</div>
+const selector = document.querySelector('#oklchChromaSelector');
+selector.addEventListener('chromachange', (e) => {
+    console.log('Chroma:', e.detail.chroma);
+    console.log('Hue:', e.detail.hue);
+    console.log('OKLCH:', e.detail.oklch);
+});
+        </div>
+    </div>
+
+    <script type="module">
+        // State
+        const state = {
+            lightness: 0.60,
+            chroma: 0.15,
+            hue: 240,
+            isDragging: false
+        };
+
+        // Constants
+        const C_MAX = 0.37;
+
+        // Canvas setup
+        const canvas = document.getElementById('oklchChromaSelector');
+        const ctx = canvas.getContext('2d');
+
+        // Draw chroma selector
+        function drawChromaSelector() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw chroma/hue gradient
+            for (let x = 0; x < canvas.width; x += 2) {
+                for (let y = 0; y < canvas.height; y += 2) {
+                    const hue = (x / canvas.width) * 360;
+                    const chroma = (1 - (y / canvas.height)) * C_MAX;
+
+                    ctx.fillStyle = `oklch(${state.lightness} ${chroma.toFixed(3)} ${hue.toFixed(0)})`;
+                    ctx.fillRect(x, y, 2, 2);
+                }
+            }
+
+            // Draw selected point indicator
+            const indicatorX = (state.hue / 360) * canvas.width;
+            const indicatorY = (1 - (state.chroma / C_MAX)) * canvas.height;
+
+            // Draw crosshair
+            ctx.strokeStyle = 'oklch(100% 0 0)';
+            ctx.lineWidth = 2;
+
+            // Horizontal line
+            ctx.beginPath();
+            ctx.moveTo(0, indicatorY);
+            ctx.lineTo(canvas.width, indicatorY);
+            ctx.stroke();
+
+            // Vertical line
+            ctx.beginPath();
+            ctx.moveTo(indicatorX, 0);
+            ctx.lineTo(indicatorX, canvas.height);
+            ctx.stroke();
+
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(indicatorX, indicatorY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'oklch(100% 0 0)';
+            ctx.strokeStyle = 'oklch(0% 0 0)';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Get chroma/hue from mouse position
+        function getValuesFromPosition(x, y) {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+
+            const hue = Math.max(0, Math.min(360, (canvasX / canvas.width) * 360));
+            const chroma = Math.max(0, Math.min(C_MAX, (1 - (canvasY / canvas.height)) * C_MAX));
+
+            return { hue: Math.round(hue), chroma: parseFloat(chroma.toFixed(3)) };
+        }
+
+        // Update state and UI
+        function updateValues(hue, chroma) {
+            state.hue = hue;
+            state.chroma = chroma;
+            drawChromaSelector();
+            updateOutput();
+            dispatchChromaChange();
+        }
+
+        function updateOutput() {
+            const oklch = `oklch(${state.lightness.toFixed(2)} ${state.chroma.toFixed(3)} ${state.hue})`;
+            document.getElementById('output').textContent = oklch;
+            document.getElementById('preview').style.background = oklch;
+            document.getElementById('chromaValue').textContent = state.chroma.toFixed(3);
+            document.getElementById('hueValue').textContent = `${state.hue}°`;
+        }
+
+        // Dispatch custom event
+        function dispatchChromaChange() {
+            const event = new CustomEvent('chromachange', {
+                detail: {
+                    chroma: state.chroma,
+                    hue: state.hue,
+                    lightness: state.lightness,
+                    oklch: `oklch(${state.lightness.toFixed(2)} ${state.chroma.toFixed(3)} ${state.hue})`
+                }
+            });
+            canvas.dispatchEvent(event);
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            const values = getValuesFromPosition(e.clientX, e.clientY);
+            updateValues(values.hue, values.chroma);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (state.isDragging) {
+                const values = getValuesFromPosition(e.clientX, e.clientY);
+                updateValues(values.hue, values.chroma);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            state.isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            state.isDragging = false;
+        });
+
+        // Lightness slider
+        const lightnessSlider = document.getElementById('lightnessSlider');
+        lightnessSlider.addEventListener('input', (e) => {
+            state.lightness = parseFloat(e.target.value) / 100;
+            document.getElementById('lightnessValue').textContent = state.lightness.toFixed(2);
+            drawChromaSelector();
+            updateOutput();
+        });
+
+        // Initial draw
+        drawChromaSelector();
+        updateOutput();
+
+        console.log('✅ OKLCH Chroma Selector loaded successfully!');
+    </script>
+</body>
+</html>

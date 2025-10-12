@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Central-MCP Desktop</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'MS Sans Serif', 'Microsoft Sans Serif', sans-serif;
+      background: #008080;
+      overflow: hidden;
+      height: 100vh;
+      cursor: default;
+      user-select: none;
+    }
+
+    /* Desktop Background */
+    .desktop {
+      width: 100%;
+      height: calc(100vh - 40px);
+      background: linear-gradient(135deg, #008080 0%, #006060 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Desktop Icons */
+    .desktop-icons {
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .desktop-icon {
+      width: 80px;
+      text-align: center;
+      cursor: pointer;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    .desktop-icon img {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 5px;
+    }
+
+    .desktop-icon.selected {
+      background: rgba(0, 0, 128, 0.3);
+      outline: 1px dotted white;
+    }
+
+    /* Window System */
+    .window {
+      position: absolute;
+      min-width: 400px;
+      min-height: 300px;
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .window.active {
+      z-index: 200;
+    }
+
+    .window.minimized {
+      display: none;
+    }
+
+    .window-titlebar {
+      background: linear-gradient(to right, #000080, #1084d0);
+      color: white;
+      padding: 3px;
+      font-weight: bold;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+    }
+
+    .window.inactive .window-titlebar {
+      background: linear-gradient(to right, #808080, #a0a0a0);
+    }
+
+    .window-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding-left: 5px;
+    }
+
+    .window-controls {
+      display: flex;
+      gap: 2px;
+    }
+
+    .window-button {
+      width: 16px;
+      height: 14px;
+      background: #c0c0c0;
+      border: 1px outset #fff;
+      font-size: 10px;
+      line-height: 12px;
+      text-align: center;
+      cursor: pointer;
+      color: black;
+      font-weight: bold;
+    }
+
+    .window-button:active {
+      border-style: inset;
+    }
+
+    .window-content {
+      flex: 1;
+      background: white;
+      overflow: auto;
+      border: 2px inset #808080;
+      margin: 2px;
+    }
+
+    /* Taskbar */
+    .taskbar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: linear-gradient(to bottom, #c0c0c0, #808080);
+      border-top: 2px solid white;
+      display: flex;
+      align-items: center;
+      padding: 2px;
+      gap: 5px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.3);
+    }
+
+    .start-button {
+      background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
+      border: 2px outset #fff;
+      padding: 5px 15px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .start-button:active {
+      border-style: inset;
+    }
+
+    .start-button img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .taskbar-apps {
+      display: flex;
+      gap: 3px;
+      flex: 1;
+    }
+
+    .taskbar-app {
+      background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
+      border: 2px outset #fff;
+      padding: 5px 10px;
+      font-size: 11px;
+      cursor: pointer;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .taskbar-app.active {
+      border-style: inset;
+      background: linear-gradient(to bottom, #a0a0a0, #808080);
+    }
+
+    .taskbar-clock {
+      background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
+      border: 2px inset #808080;
+      padding: 5px 10px;
+      font-size: 11px;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    /* Start Menu */
+    .start-menu {
+      position: fixed;
+      bottom: 42px;
+      left: 2px;
+      width: 250px;
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      box-shadow: 2px -2px 5px rgba(0,0,0,0.5);
+      display: none;
+      z-index: 1000;
+    }
+
+    .start-menu-header {
+      background: linear-gradient(to right, #000080, #1084d0);
+      color: white;
+      padding: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .start-menu-items {
+      padding: 5px 0;
+    }
+
+    .start-menu-item {
+      padding: 8px 30px 8px 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .start-menu-item:hover {
+      background: #000080;
+      color: white;
+    }
+
+    .start-menu-item img {
+      width: 24px;
+      height: 24px;
+      position: absolute;
+      left: 8px;
+    }
+
+    /* Agent Monitor Styles */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 10px;
+    }
+
+    .agent-panel {
+      background: #f0f0f0;
+      border: 2px inset #808080;
+      padding: 10px;
+    }
+
+    .agent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #000080;
+    }
+
+    .agent-status {
+      padding: 2px 8px;
+      border: 1px solid #000;
+      font-size: 10px;
+      background: #c0c0c0;
+    }
+
+    .agent-status.online { background: #00ff00; }
+    .agent-status.busy { background: #ffff00; }
+    .agent-status.offline { background: #ff0000; color: white; }
+
+    .agent-logs {
+      background: #000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+      font-size: 10px;
+      height: 150px;
+      overflow-y: auto;
+      padding: 5px;
+      border: 1px solid #808080;
+    }
+
+    .log-entry {
+      margin-bottom: 2px;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .progress-section {
+      margin-top: 10px;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar-container {
+      background: white;
+      border: 2px inset #808080;
+      height: 20px;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(to bottom, #000080, #1084d0);
+      height: 100%;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* Project Dashboard */
+    .project-tabs {
+      display: flex;
+      background: #c0c0c0;
+      border-bottom: 2px solid #808080;
+    }
+
+    .project-tab {
+      padding: 5px 15px;
+      background: #a0a0a0;
+      border: 2px outset #fff;
+      border-bottom: none;
+      cursor: pointer;
+      font-size: 11px;
+    }
+
+    .project-tab.active {
+      background: white;
+      border-bottom: 2px solid white;
+    }
+
+    .project-content {
+      padding: 10px;
+      background: white;
+    }
+
+    /* Rules Registry */
+    .rules-list {
+      background: white;
+      border: 2px inset #808080;
+      height: 300px;
+      overflow-y: auto;
+    }
+
+    .rule-item {
+      padding: 8px;
+      border-bottom: 1px solid #c0c0c0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .rule-item:hover {
+      background: #e0e0e0;
+    }
+
+    .rule-type {
+      padding: 2px 6px;
+      background: #000080;
+      color: white;
+      font-size: 10px;
+      border-radius: 2px;
+    }
+
+    .button {
+      background: linear-gradient(to bottom, #c0c0c0, #a0a0a0);
+      border: 2px outset #fff;
+      padding: 5px 15px;
+      cursor: pointer;
+      font-size: 11px;
+      margin: 5px;
+    }
+
+    .button:active {
+      border-style: inset;
+    }
+
+    /* Resize Handle */
+    .resize-handle {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      width: 16px;
+      height: 16px;
+      cursor: nwse-resize;
+      background: linear-gradient(135deg, transparent 0%, transparent 40%, #808080 40%, #808080 60%, transparent 60%);
+    }
+
+    /* Loading Screen */
+    .boot-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #000;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .boot-logo {
+      font-size: 48px;
+      margin-bottom: 30px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+    }
+
+    .boot-progress {
+      width: 300px;
+      height: 30px;
+      background: #333;
+      border: 2px solid #666;
+      overflow: hidden;
+    }
+
+    .boot-progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #00ff00, #00ffff);
+      width: 0;
+      animation: bootProgress 3s ease-in-out forwards;
+    }
+
+    @keyframes bootProgress {
+      to { width: 100%; }
+    }
+
+    .boot-text {
+      margin-top: 20px;
+      color: #00ff00;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Boot Screen -->
+  <div class="boot-screen" id="bootScreen">
+    <div class="boot-logo">🧠 Central-MCP OS</div>
+    <div class="boot-progress">
+      <div class="boot-progress-fill"></div>
+    </div>
+    <div class="boot-text">Loading intelligence coordination system...</div>
+  </div>
+
+  <!-- Desktop -->
+  <div class="desktop" id="desktop">
+    <!-- Desktop Icons -->
+    <div class="desktop-icons">
+      <div class="desktop-icon" data-app="agent-monitor">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%23c0c0c0' stroke='%23000' width='40' height='30' x='4' y='9'/%3E%3Ctext x='24' y='28' text-anchor='middle' font-size='16' fill='%2300ff00'%3E🤖%3C/text%3E%3C/svg%3E" alt="Agent Monitor">
+        <div>Agent Monitor</div>
+      </div>
+      <div class="desktop-icon" data-app="project-dashboard">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%23ffff00' stroke='%23000' width='40' height='35' x='4' y='6' rx='2'/%3E%3Ctext x='24' y='30' text-anchor='middle' font-size='20'%3E📊%3C/text%3E%3C/svg%3E" alt="Projects">
+        <div>Projects</div>
+      </div>
+      <div class="desktop-icon" data-app="rules-registry">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%23ff6600' stroke='%23000' width='32' height='38' x='8' y='5' rx='2'/%3E%3Ctext x='24' y='32' text-anchor='middle' font-size='20'%3E📋%3C/text%3E%3C/svg%3E" alt="Rules">
+        <div>Rules Registry</div>
+      </div>
+      <div class="desktop-icon" data-app="task-manager">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%2300ff00' stroke='%23000' width='40' height='32' x='4' y='8' rx='2'/%3E%3Ctext x='24' y='30' text-anchor='middle' font-size='18'%3E📈%3C/text%3E%3C/svg%3E" alt="Tasks">
+        <div>Task Manager</div>
+      </div>
+      <div class="desktop-icon" data-app="terminal">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%23000' stroke='%23c0c0c0' width='40' height='30' x='4' y='9'/%3E%3Ctext x='8' y='28' font-size='12' fill='%2300ff00'%3E>_■%3C/text%3E%3C/svg%3E" alt="Terminal">
+        <div>Terminal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Windows (initially hidden) -->
+
+  <!-- Agent Monitor Window -->
+  <div class="window" id="agent-monitor-window" style="left: 50px; top: 50px; width: 900px; height: 600px;">
+    <div class="window-titlebar">
+      <div class="window-title">
+        <span>🤖</span>
+        <span>Agent Monitor - Live Streaming</span>
+      </div>
+      <div class="window-controls">
+        <div class="window-button minimize">_</div>
+        <div class="window-button maximize">□</div>
+        <div class="window-button close">×</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div class="agent-grid" id="agentGrid">
+        <!-- Agents will be populated by JavaScript -->
+      </div>
+    </div>
+    <div class="resize-handle"></div>
+  </div>
+
+  <!-- Project Dashboard Window -->
+  <div class="window" id="project-dashboard-window" style="left: 100px; top: 100px; width: 800px; height: 500px;">
+    <div class="window-titlebar">
+      <div class="window-title">
+        <span>📊</span>
+        <span>Multi-Project Dashboard</span>
+      </div>
+      <div class="window-controls">
+        <div class="window-button minimize">_</div>
+        <div class="window-button maximize">□</div>
+        <div class="window-button close">×</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div class="project-tabs" id="projectTabs">
+        <div class="project-tab active" data-project="localbrain">LocalBrain</div>
+        <div class="project-tab" data-project="central-mcp">Central-MCP</div>
+        <div class="project-tab" data-project="orchestra">Orchestra Blue</div>
+      </div>
+      <div class="project-content" id="projectContent">
+        <!-- Project content will be populated -->
+      </div>
+    </div>
+    <div class="resize-handle"></div>
+  </div>
+
+  <!-- Rules Registry Window -->
+  <div class="window" id="rules-registry-window" style="left: 150px; top: 150px; width: 700px; height: 500px;">
+    <div class="window-titlebar">
+      <div class="window-title">
+        <span>📋</span>
+        <span>Rules Registry - Coordination Rules</span>
+      </div>
+      <div class="window-controls">
+        <div class="window-button minimize">_</div>
+        <div class="window-button maximize">□</div>
+        <div class="window-button close">×</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div style="padding: 10px;">
+        <button class="button" onclick="addRule()">➕ Add New Rule</button>
+        <button class="button" onclick="loadRules()">🔄 Refresh Rules</button>
+      </div>
+      <div class="rules-list" id="rulesList">
+        <!-- Rules will be populated -->
+      </div>
+    </div>
+    <div class="resize-handle"></div>
+  </div>
+
+  <!-- Task Manager Window -->
+  <div class="window" id="task-manager-window" style="left: 200px; top: 100px; width: 750px; height: 550px;">
+    <div class="window-titlebar">
+      <div class="window-title">
+        <span>📈</span>
+        <span>Task Manager - Real-Time Progress</span>
+      </div>
+      <div class="window-controls">
+        <div class="window-button minimize">_</div>
+        <div class="window-button maximize">□</div>
+        <div class="window-button close">×</div>
+      </div>
+    </div>
+    <div class="window-content">
+      <div id="taskList" style="padding: 10px;">
+        <!-- Tasks will be populated -->
+      </div>
+    </div>
+    <div class="resize-handle"></div>
+  </div>
+
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <div class="start-button" onclick="toggleStartMenu()">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23ff0000' d='M3 3h8v8H3z'/%3E%3Cpath fill='%2300ff00' d='M13 3h8v8h-8z'/%3E%3Cpath fill='%230000ff' d='M3 13h8v8H3z'/%3E%3Cpath fill='%23ffff00' d='M13 13h8v8h-8z'/%3E%3C/svg%3E" alt="Start">
+      <span>Start</span>
+    </div>
+    <div class="taskbar-apps" id="taskbarApps"></div>
+    <div class="taskbar-clock" id="clock"></div>
+  </div>
+
+  <!-- Start Menu -->
+  <div class="start-menu" id="startMenu">
+    <div class="start-menu-header">
+      <span>🧠</span>
+      <span>Central-MCP</span>
+    </div>
+    <div class="start-menu-items">
+      <div class="start-menu-item" onclick="openApp('agent-monitor')">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E🤖%3C/text%3E%3C/svg%3E">
+        <span>Agent Monitor</span>
+      </div>
+      <div class="start-menu-item" onclick="openApp('project-dashboard')">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E📊%3C/text%3E%3C/svg%3E">
+        <span>Projects</span>
+      </div>
+      <div class="start-menu-item" onclick="openApp('rules-registry')">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E📋%3C/text%3E%3C/svg%3E">
+        <span>Rules Registry</span>
+      </div>
+      <div class="start-menu-item" onclick="openApp('task-manager')">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E📈%3C/text%3E%3C/svg%3E">
+        <span>Task Manager</span>
+      </div>
+      <div class="start-menu-item" onclick="openApp('terminal')">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E💻%3C/text%3E%3C/svg%3E">
+        <span>Terminal</span>
+      </div>
+      <div class="start-menu-item" onclick="window.location.reload()">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='2' y='20' font-size='18'%3E🔄%3C/text%3E%3C/svg%3E">
+        <span>Refresh System</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Boot sequence
+    setTimeout(() => {
+      document.getElementById('bootScreen').style.display = 'none';
+      initializeDesktop();
+    }, 3000);
+
+    // Desktop initialization
+    function initializeDesktop() {
+      updateClock();
+      setInterval(updateClock, 1000);
+      connectWebSocket();
+      initializeAgents();
+      loadRules();
+      setupWindowDragging();
+      setupDesktopIcons();
+    }
+
+    // Clock
+    function updateClock() {
+      const now = new Date();
+      const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('clock').textContent = time;
+    }
+
+    // Start Menu
+    function toggleStartMenu() {
+      const menu = document.getElementById('startMenu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close start menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('startMenu');
+      const startButton = document.querySelector('.start-button');
+      if (!menu.contains(e.target) && !startButton.contains(e.target)) {
+        menu.style.display = 'none';
+      }
+    });
+
+    // Desktop Icons
+    function setupDesktopIcons() {
+      const icons = document.querySelectorAll('.desktop-icon');
+      icons.forEach(icon => {
+        icon.addEventListener('click', function() {
+          icons.forEach(i => i.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+        icon.addEventListener('dblclick', function() {
+          const app = this.dataset.app;
+          openApp(app);
+        });
+      });
+    }
+
+    // Open App
+    function openApp(appName) {
+      const window = document.getElementById(`${appName}-window`);
+      if (!window) {
+        if (appName === 'terminal') {
+          window.open('http://34.41.115.199:8080', '_blank');
+          return;
+        }
+        return;
+      }
+
+      window.style.display = 'flex';
+      window.classList.remove('minimized');
+      bringToFront(window);
+      updateTaskbar();
+      document.getElementById('startMenu').style.display = 'none';
+    }
+
+    // Window Management
+    let zIndex = 100;
+    function bringToFront(window) {
+      document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+      window.classList.add('active');
+      window.style.zIndex = ++zIndex;
+    }
+
+    // Window Controls
+    function setupWindowDragging() {
+      const windows = document.querySelectorAll('.window');
+
+      windows.forEach(window => {
+        const titlebar = window.querySelector('.window-titlebar');
+        const minimizeBtn = window.querySelector('.minimize');
+        const maximizeBtn = window.querySelector('.maximize');
+        const closeBtn = window.querySelector('.close');
+
+        let isDragging = false;
+        let currentX, currentY, initialX, initialY;
+
+        titlebar.addEventListener('mousedown', (e) => {
+          if (e.target === titlebar || e.target.classList.contains('window-title') || e.target.parentElement.classList.contains('window-title')) {
+            isDragging = true;
+            bringToFront(window);
+            initialX = e.clientX - window.offsetLeft;
+            initialY = e.clientY - window.offsetTop;
+          }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          if (isDragging) {
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+            window.style.left = currentX + 'px';
+            window.style.top = currentY + 'px';
+          }
+        });
+
+        document.addEventListener('mouseup', () => {
+          isDragging = false;
+        });
+
+        // Window buttons
+        minimizeBtn.addEventListener('click', () => {
+          window.classList.add('minimized');
+          updateTaskbar();
+        });
+
+        maximizeBtn.addEventListener('click', () => {
+          if (window.dataset.maximized === 'true') {
+            window.style.width = window.dataset.oldWidth;
+            window.style.height = window.dataset.oldHeight;
+            window.style.left = window.dataset.oldLeft;
+            window.style.top = window.dataset.oldTop;
+            window.dataset.maximized = 'false';
+          } else {
+            window.dataset.oldWidth = window.style.width;
+            window.dataset.oldHeight = window.style.height;
+            window.dataset.oldLeft = window.style.left;
+            window.dataset.oldTop = window.style.top;
+            window.style.width = '100%';
+            window.style.height = 'calc(100vh - 40px)';
+            window.style.left = '0';
+            window.style.top = '0';
+            window.dataset.maximized = 'true';
+          }
+        });
+
+        closeBtn.addEventListener('click', () => {
+          window.style.display = 'none';
+          updateTaskbar();
+        });
+      });
+    }
+
+    // Taskbar
+    function updateTaskbar() {
+      const taskbarApps = document.getElementById('taskbarApps');
+      taskbarApps.innerHTML = '';
+
+      const windows = document.querySelectorAll('.window');
+      windows.forEach(window => {
+        if (window.style.display === 'flex') {
+          const title = window.querySelector('.window-title span:last-child').textContent;
+          const app = document.createElement('div');
+          app.className = 'taskbar-app';
+          if (window.classList.contains('active') && !window.classList.contains('minimized')) {
+            app.classList.add('active');
+          }
+          app.textContent = title;
+          app.addEventListener('click', () => {
+            if (window.classList.contains('minimized')) {
+              window.classList.remove('minimized');
+              bringToFront(window);
+            } else if (window.classList.contains('active')) {
+              window.classList.add('minimized');
+            } else {
+              bringToFront(window);
+            }
+            updateTaskbar();
+          });
+          taskbarApps.appendChild(app);
+        }
+      });
+    }
+
+    // WebSocket Connection
+    let ws = null;
+    function connectWebSocket() {
+      ws = new WebSocket('ws://34.41.115.199:3000/mcp');
+
+      ws.onopen = () => {
+        console.log('✅ Connected to Central-MCP');
+        // Request initial data
+        requestTaskList();
+        requestAgentStatus();
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        handleMessage(data);
+      };
+
+      ws.onerror = () => console.error('WebSocket error');
+      ws.onclose = () => {
+        console.log('Disconnected, reconnecting...');
+        setTimeout(connectWebSocket, 5000);
+      };
+    }
+
+    function handleMessage(data) {
+      if (data.result && data.result.tasks) {
+        updateTasks(data.result.tasks);
+      }
+      if (data.result && data.result.agents) {
+        updateAgents(data.result.agents);
+      }
+    }
+
+    function requestTaskList() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'get_all_tasks', arguments: {} },
+          id: Date.now()
+        }));
+      }
+    }
+
+    function requestAgentStatus() {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'tools/call',
+          params: { name: 'get_agent_status', arguments: {} },
+          id: Date.now()
+        }));
+      }
+    }
+
+    // Auto-refresh
+    setInterval(() => {
+      requestTaskList();
+      requestAgentStatus();
+    }, 5000);
+
+    // Initialize Agents
+    const agents = [
+      { id: 'A', name: 'UI Specialist', model: 'GLM-4.6', project: 'LocalBrain', status: 'offline', logs: [], progress: 0 },
+      { id: 'B', name: 'Design System', model: 'Sonnet-4.5', project: 'LocalBrain', status: 'offline', logs: [], progress: 0 },
+      { id: 'C', name: 'Backend', model: 'GLM-4.6', project: 'Central-MCP', status: 'offline', logs: [], progress: 0 },
+      { id: 'D', name: 'Integration', model: 'Sonnet-4.5', project: 'Orchestra', status: 'offline', logs: [], progress: 0 }
+    ];
+
+    function initializeAgents() {
+      const grid = document.getElementById('agentGrid');
+      grid.innerHTML = agents.map(agent => `
+        <div class="agent-panel" id="agent-${agent.id}">
+          <div class="agent-header">
+            <span>Agent ${agent.id} - ${agent.name}</span>
+            <span class="agent-status ${agent.status}" id="status-${agent.id}">${agent.status.toUpperCase()}</span>
+          </div>
+          <div style="font-size: 10px; color: #666; margin-bottom: 5px;">
+            Model: ${agent.model} | Project: <strong id="project-${agent.id}">${agent.project}</strong>
+          </div>
+          <div class="agent-logs" id="logs-${agent.id}">
+            <div class="log-entry">[SYSTEM] Agent ${agent.id} initialized</div>
+            <div class="log-entry">[SYSTEM] Waiting for tasks...</div>
+          </div>
+          <div class="progress-section">
+            <div class="progress-label">
+              <span>Current Task</span>
+              <span id="progress-text-${agent.id}">0%</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="progress-${agent.id}" style="width: 0%">
+                <span>0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Simulate some activity
+      simulateAgentActivity();
+    }
+
+    function simulateAgentActivity() {
+      const agentIds = ['A', 'B', 'C', 'D'];
+      let counter = 0;
+
+      setInterval(() => {
+        const agentId = agentIds[counter % agentIds.length];
+        const logs = document.getElementById(`logs-${agentId}`);
+        const timestamp = new Date().toLocaleTimeString();
+        const messages = [
+          '[INFO] Analyzing codebase...',
+          '[INFO] Processing task requirements...',
+          '[INFO] Generating solution...',
+          '[SUCCESS] Task component completed!',
+          '[INFO] Updating project status...'
+        ];
+        const msg = messages[Math.floor(Math.random() * messages.length)];
+
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.textContent = `[${timestamp}] ${msg}`;
+        logs.appendChild(entry);
+        logs.scrollTop = logs.scrollHeight;
+
+        // Keep only last 20 entries
+        while (logs.children.length > 20) {
+          logs.removeChild(logs.firstChild);
+        }
+
+        // Update progress randomly
+        const progress = Math.min(100, Math.floor(Math.random() * 30) + (parseInt(document.getElementById(`progress-${agentId}`).style.width) || 0));
+        updateAgentProgress(agentId, progress);
+
+        counter++;
+      }, 3000);
+    }
+
+    function updateAgentProgress(agentId, percentage) {
+      const progressBar = document.getElementById(`progress-${agentId}`);
+      const progressText = document.getElementById(`progress-text-${agentId}`);
+      progressBar.style.width = percentage + '%';
+      progressBar.querySelector('span').textContent = percentage + '%';
+      progressText.textContent = percentage + '%';
+
+      // Update status
+      const status = document.getElementById(`status-${agentId}`);
+      if (percentage > 0 && percentage < 100) {
+        status.textContent = 'BUSY';
+        status.className = 'agent-status busy';
+      } else if (percentage === 100) {
+        status.textContent = 'ONLINE';
+        status.className = 'agent-status online';
+        setTimeout(() => updateAgentProgress(agentId, 0), 2000);
+      }
+    }
+
+    function updateTasks(tasks) {
+      // Update task manager window
+    }
+
+    function updateAgents(agentData) {
+      // Update agent statuses
+    }
+
+    // Rules Registry
+    const rules = [
+      { type: 'ROUTING', name: 'UI tasks → Agent A', priority: 'HIGH' },
+      { type: 'ROUTING', name: 'Backend tasks → Agent C', priority: 'HIGH' },
+      { type: 'DEPENDENCY', name: 'T004 blocks T011', priority: 'CRITICAL' },
+      { type: 'PRIORITY', name: 'Critical tasks first', priority: 'CRITICAL' },
+      { type: 'PROJECT', name: 'Max 2 projects per agent', priority: 'MEDIUM' }
+    ];
+
+    function loadRules() {
+      const list = document.getElementById('rulesList');
+      list.innerHTML = rules.map((rule, i) => `
+        <div class="rule-item">
+          <div>
+            <span class="rule-type">${rule.type}</span>
+            <span style="margin-left: 10px;">${rule.name}</span>
+          </div>
+          <div>
+            <span style="font-size: 10px; color: ${rule.priority === 'CRITICAL' ? '#ff0000' : rule.priority === 'HIGH' ? '#ff8800' : '#666'};">
+              ${rule.priority}
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addRule() {
+      const name = prompt('Enter rule name:');
+      if (name) {
+        const type = prompt('Rule type (ROUTING/DEPENDENCY/PRIORITY/PROJECT):') || 'ROUTING';
+        const priority = prompt('Priority (LOW/MEDIUM/HIGH/CRITICAL):') || 'MEDIUM';
+        rules.push({ type: type.toUpperCase(), name, priority: priority.toUpperCase() });
+        loadRules();
+      }
+    }
+  </script>
+</body>
+</html>

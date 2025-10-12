@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>OKLCH Color Picker & Converter - Complete Standalone</title>
+    <meta name="color-scheme" content="dark light">
+    
+    <!-- Inline CSS from oklch.com -->
+    <link rel="stylesheet" href="https://oklch.com/index-DYwA_pQ5.css">
+    
+    <!-- Inline JavaScript from oklch.com -->
+    <script type="module" src="https://oklch.com/index-NL1M0NIB.js"></script>
+</head>
+<body>
+    <div class="layout" aria-hidden="false">
+        <div class="layout_title">
+            <div class="title">
+                <h1 class="title_text">OKLCH Color Picker & Converter - Complete</h1>
+            </div>
+        </div>
+        
+        <main class="main layout_main" id="main-panel">
+            <div class="main_row main_row--sample">
+                <div class="sample is-srgb is-supported">
+                    <div class="sample_reader" aria-live="polite">srgb space</div>
+                    <div class="sample_normal"></div>
+                    <div class="sample_compare" aria-hidden="false">
+                        <div class="sample_unavailable"></div>
+                        <div class="sample_real"><div class="sample_note">P3</div></div>
+                        <div class="sample_fallback"><button class="sample_note" title="Go fallback color">fallback</button></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main_row">
+                <div class="code is-lch">
+                    <div class="field">
+                        <input class="field_input" aria-label="OKLCH CSS code" type="text" value="oklch(0.7 0.1 110)">
+                    </div>
+                </div>
+                
+                <div class="code is-rgb">
+                    <div class="field">
+                        <input class="field_input" aria-label="hex/rgba CSS code" type="text" value="#a2a457">
+                    </div>
+                    <div class="code_note is-paste" aria-hidden="false">Paste HEX/RGB/HSL to convert to OKLCH</div>
+                </div>
+            </div>
+        </main>
+        
+        <div class="layout_l">
+            <section class="card is-l">
+                <h2 class="card_title">Lightness</h2>
+                <div class="card_number">
+                    <div class="field">
+                        <input class="field_input" aria-label="L" type="text" value="0.7">
+                    </div>
+                </div>
+                <div class="card_chart">
+                    <div class="card_size">
+                        <div class="chart is-h" aria-hidden="true">
+                            <canvas class="chart_canvas" width="680" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="range is-l">
+                    <canvas class="range_space" width="680" height="80"></canvas>
+                    <input class="range_input" type="range" min="0" max="1" step="0.0001" value="0.7">
+                </div>
+            </section>
+        </div>
+        
+        <div class="layout_c">
+            <section class="card is-c">
+                <h2 class="card_title">Chroma</h2>
+                <div class="card_number">
+                    <div class="field">
+                        <input class="field_input" aria-label="C" type="text" value="0.1">
+                    </div>
+                </div>
+                <div class="card_chart">
+                    <div class="card_size">
+                        <div class="chart is-l" aria-hidden="true">
+                            <canvas class="chart_canvas" width="680" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="range is-c">
+                    <canvas class="range_space" width="680" height="80"></canvas>
+                    <input class="range_input" type="range" min="0" max="0.37" step="0.0001" value="0.1">
+                </div>
+            </section>
+        </div>
+        
+        <div class="layout_h">
+            <section class="card is-h">
+                <h2 class="card_title">Hue</h2>
+                <div class="card_number">
+                    <div class="field">
+                        <input class="field_input" aria-label="H" type="text" value="110">
+                    </div>
+                </div>
+                <div class="card_chart">
+                    <div class="card_size">
+                        <div class="chart is-c" aria-hidden="true">
+                            <canvas class="chart_canvas" width="680" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="range is-h">
+                    <canvas class="range_space" width="680" height="80"></canvas>
+                    <input class="range_input" type="range" min="0" max="360" step="0.01" value="110">
+                </div>
+            </section>
+        </div>
+        
+        <div class="layout_extra">
+            <div class="layout_3d is-shown">
+                <section class="card is-3d">
+                    <h2 class="card_title">3D</h2>
+                    <div class="minimodel">
+                        <canvas class="minimodel_canvas" width="808" height="636"></canvas>
+                        <div class="minimodel_status" style="display: none;">Loading</div>
+                        <div class="minimodel_button">
+                            <button class="button is-3d" title="Open 3D in fullscreen">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m1.5 14.5 13-13m-13 13V9m0 5.5H7m7.5-13H9m5.5 0V7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <section class="card is-a">
+                <h2 class="card_title">Alpha</h2>
+                <div class="card_number">
+                    <div class="field">
+                        <input class="field_input" aria-label="Alpha" type="text" value="100">
+                    </div>
+                </div>
+                <div class="range is-a">
+                    <input class="range_input" type="range" min="0" max="100" step="0.01" value="100">
+                </div>
+            </section>
+        </div>
+        
+        <div class="layout_prefs">
+            <section class="settings" aria-label="Settings">
+                <label class="checkbox">
+                    <input class="checkbox_input" name="mode3d" type="checkbox" checked>
+                    <span class="checkbox_control">
+                        <span class="checkbox_icon"></span>Show 3D
+                    </span>
+                </label>
+                <label class="checkbox">
+                    <input class="checkbox_input" name="charts" type="checkbox" checked>
+                    <span class="checkbox_control">
+                        <span class="checkbox_icon"></span>Show graphs
+                    </span>
+                </label>
+                <label class="checkbox">
+                    <input class="checkbox_input" name="p3" type="checkbox" checked>
+                    <span class="checkbox_control">
+                        <span class="checkbox_icon"></span>Show P3
+                    </span>
+                </label>
+                <label class="checkbox">
+                    <input class="checkbox_input" name="rec2020" type="checkbox">
+                    <span class="checkbox_control">
+                        <span class="checkbox_icon"></span>Show Rec2020
+                    </span>
+                </label>
+            </section>
+        </div>
+    </div>
+    
+    <article class="fullmodel is-hidden" aria-hidden="true">
+        <h2 class="title">OKLCH 3D model</h2>
+        <div class="fullmodel_status"></div>
+        <div class="fullmodel_button">
+            <button class="button is-close3d" title="Back to color picker">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 16 16">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1.5 14.5 13-13m-13 0 13 13"></path>
+                </svg>
+            </button>
+        </div>
+        <canvas class="fullmodel_canvas"></canvas>
+        <div class="fullmodel_note">Drag to rotate • Scroll to zoom • Right button to move</div>
+    </article>
+</body>
+</html>

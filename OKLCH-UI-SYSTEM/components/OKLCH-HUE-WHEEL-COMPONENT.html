@@ -1,0 +1,369 @@
+<!--
+═══════════════════════════════════════════════════════════════
+OKLCH HUE WHEEL - 2D CIRCULAR SELECTOR
+Standalone component for hue selection in OKLCH color space
+═══════════════════════════════════════════════════════════════
+
+FEATURES:
+- 360° circular hue selector
+- Visual representation of hue spectrum at current L/C
+- Click/drag interaction
+- Real-time preview
+- Exports: oklch(L C H) string, H value
+
+USAGE:
+1. Copy this entire file
+2. Paste into your HTML
+3. Listen to 'huechange' custom event
+4. Access selected hue via event.detail.hue
+
+INTEGRATION:
+const wheel = document.querySelector('#oklchHueWheel');
+wheel.addEventListener('huechange', (e) => {
+    console.log('Selected hue:', e.detail.hue);
+    console.log('OKLCH color:', e.detail.oklch);
+});
+
+CUSTOMIZATION:
+- Change size: Modify canvas width/height
+- Change L/C: Call updateLightness() and updateChroma()
+- Change position: Modify CSS
+
+═══════════════════════════════════════════════════════════════
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Hue Wheel Component</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 2rem;
+            background: oklch(15% 0.01 250);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: oklch(95% 0.01 250);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .component-container {
+            background: oklch(18% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        #oklchHueWheel {
+            display: block;
+            cursor: crosshair;
+            border: 2px solid oklch(40% 0.02 250);
+            border-radius: 50%;
+            margin: 0 auto;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .control-value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(30% 0.02 250);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            border: none;
+        }
+
+        .preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 10px;
+            border: 2px solid oklch(40% 0.02 250);
+            margin-top: 1rem;
+        }
+
+        .output {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            color: oklch(85% 0.02 250);
+            background: oklch(12% 0.01 250);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            white-space: pre;
+        }
+
+        .code-block {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.8rem;
+            color: oklch(80% 0.02 250);
+            overflow-x: auto;
+        }
+
+        .code-title {
+            color: oklch(75% 0.15 240);
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="component-container">
+        <h1>🎨 OKLCH Hue Wheel</h1>
+        <p class="description">
+            A 2D circular selector for hue in the OKLCH color space.
+            Click or drag to select any hue from 0° to 360°.
+            The wheel shows the hue spectrum at the current lightness and chroma values.
+        </p>
+
+        <canvas id="oklchHueWheel" width="300" height="300"></canvas>
+
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Lightness (L)</span>
+                    <span class="control-value" id="lightnessValue">0.60</span>
+                </div>
+                <input type="range" id="lightnessSlider" min="0" max="100" value="60">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Chroma (C)</span>
+                    <span class="control-value" id="chromaValue">0.15</span>
+                </div>
+                <input type="range" id="chromaSlider" min="0" max="37" value="15">
+            </div>
+
+            <div class="control-group">
+                <div class="control-label">
+                    <span>Selected Hue (H)</span>
+                    <span class="control-value" id="hueValue">240°</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="preview" class="preview"></div>
+
+        <div class="output" id="output">oklch(0.60 0.15 240)</div>
+
+        <div class="code-block">
+            <div class="code-title">// Integration Example:</div>
+const wheel = document.querySelector('#oklchHueWheel');
+wheel.addEventListener('huechange', (e) => {
+    console.log('Hue:', e.detail.hue);
+    console.log('OKLCH:', e.detail.oklch);
+});
+        </div>
+    </div>
+
+    <script type="module">
+        // State
+        const state = {
+            lightness: 0.60,
+            chroma: 0.15,
+            hue: 240,
+            isDragging: false
+        };
+
+        // Canvas setup
+        const canvas = document.getElementById('oklchHueWheel');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = canvas.width / 2 - 10;
+
+        // Draw hue wheel
+        function drawHueWheel() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw hue spectrum
+            for (let angle = 0; angle < 360; angle += 1) {
+                const startAngle = (angle - 90) * Math.PI / 180;
+                const endAngle = (angle + 1 - 90) * Math.PI / 180;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+
+                ctx.fillStyle = `oklch(${state.lightness} ${state.chroma} ${angle})`;
+                ctx.fill();
+            }
+
+            // Draw center circle (white)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'oklch(95% 0.01 250)';
+            ctx.fill();
+
+            // Draw selected hue indicator
+            const selectedAngle = (state.hue - 90) * Math.PI / 180;
+            const indicatorX = centerX + Math.cos(selectedAngle) * radius * 0.65;
+            const indicatorY = centerY + Math.sin(selectedAngle) * radius * 0.65;
+
+            ctx.beginPath();
+            ctx.arc(indicatorX, indicatorY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = 'oklch(100% 0 0)';
+            ctx.strokeStyle = 'oklch(0% 0 0)';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Get hue from mouse position
+        function getHueFromPosition(x, y) {
+            const rect = canvas.getBoundingClientRect();
+            const canvasX = x - rect.left;
+            const canvasY = y - rect.top;
+
+            const dx = canvasX - centerX;
+            const dy = canvasY - centerY;
+
+            let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+            if (angle < 0) angle += 360;
+
+            return Math.round(angle) % 360;
+        }
+
+        // Update state and UI
+        function updateHue(hue) {
+            state.hue = hue;
+            drawHueWheel();
+            updateOutput();
+            dispatchHueChange();
+        }
+
+        function updateOutput() {
+            const oklch = `oklch(${state.lightness.toFixed(2)} ${state.chroma.toFixed(2)} ${state.hue})`;
+            document.getElementById('output').textContent = oklch;
+            document.getElementById('preview').style.background = oklch;
+            document.getElementById('hueValue').textContent = `${state.hue}°`;
+        }
+
+        // Dispatch custom event
+        function dispatchHueChange() {
+            const event = new CustomEvent('huechange', {
+                detail: {
+                    hue: state.hue,
+                    lightness: state.lightness,
+                    chroma: state.chroma,
+                    oklch: `oklch(${state.lightness.toFixed(2)} ${state.chroma.toFixed(2)} ${state.hue})`
+                }
+            });
+            canvas.dispatchEvent(event);
+        }
+
+        // Mouse events
+        canvas.addEventListener('mousedown', (e) => {
+            state.isDragging = true;
+            const hue = getHueFromPosition(e.clientX, e.clientY);
+            updateHue(hue);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (state.isDragging) {
+                const hue = getHueFromPosition(e.clientX, e.clientY);
+                updateHue(hue);
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            state.isDragging = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            state.isDragging = false;
+        });
+
+        // Lightness slider
+        const lightnessSlider = document.getElementById('lightnessSlider');
+        lightnessSlider.addEventListener('input', (e) => {
+            state.lightness = parseFloat(e.target.value) / 100;
+            document.getElementById('lightnessValue').textContent = state.lightness.toFixed(2);
+            drawHueWheel();
+            updateOutput();
+        });
+
+        // Chroma slider
+        const chromaSlider = document.getElementById('chromaSlider');
+        chromaSlider.addEventListener('input', (e) => {
+            state.chroma = parseFloat(e.target.value) / 100;
+            document.getElementById('chromaValue').textContent = state.chroma.toFixed(2);
+            drawHueWheel();
+            updateOutput();
+        });
+
+        // Initial draw
+        drawHueWheel();
+        updateOutput();
+
+        console.log('✅ OKLCH Hue Wheel loaded successfully!');
+    </script>
+</body>
+</html>

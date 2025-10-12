@@ -1,0 +1,75 @@
+groups:
+  - name: central_mcp_alerts
+    interval: 30s
+    rules:
+      # System health alerts
+      - alert: HighCPUUsage
+        expr: node_cpu_seconds_total{mode="idle"} < 20
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for 5 minutes"
+
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes > 0.9
+        for: 5m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 90% for 5 minutes"
+
+      - alert: DiskSpaceRunningOut
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: system
+        annotations:
+          summary: "Disk space running low"
+          description: "Less than 10% disk space available"
+
+      # Central-MCP specific alerts
+      - alert: AutoProactiveLoopDown
+        expr: central_mcp_loop_execution_count{loop_name=~".*"} == 0
+        for: 10m
+        labels:
+          severity: critical
+          component: auto-proactive
+        annotations:
+          summary: "Auto-Proactive loop stopped"
+          description: "Loop {{ $labels.loop_name }} has not executed in 10 minutes"
+
+      - alert: NoActiveAgents
+        expr: central_mcp_active_agents_total == 0
+        for: 15m
+        labels:
+          severity: warning
+          component: agents
+        annotations:
+          summary: "No active agents detected"
+          description: "No agents have connected in 15 minutes"
+
+      - alert: HighTaskFailureRate
+        expr: rate(central_mcp_task_completions_total{status="failed"}[5m]) > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          component: tasks
+        annotations:
+          summary: "High task failure rate"
+          description: "More than 20% of tasks are failing"
+
+      - alert: CentralMCPDown
+        expr: up{job="central-mcp"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          component: system
+        annotations:
+          summary: "Central-MCP is down"
+          description: "Central-MCP server is not responding"

@@ -1,0 +1,2379 @@
+{
+  "functions": [
+    {
+      "name": "apply",
+      "line": 4694,
+      "type": "function",
+      "code_snippet": "apply: function(elements, colorGroup) {"
+    },
+    {
+      "name": "apply",
+      "line": 4709,
+      "type": "function",
+      "code_snippet": "apply: function(elements, property, value) {"
+    },
+    {
+      "name": "apply",
+      "line": 4725,
+      "type": "function",
+      "code_snippet": "apply: function(elements, property, value) {"
+    },
+    {
+      "name": "apply",
+      "line": 4740,
+      "type": "function",
+      "code_snippet": "apply: function(elements, property, value) {"
+    },
+    {
+      "name": "apply",
+      "line": 4749,
+      "type": "function",
+      "code_snippet": "apply: function(elements, groupName) {"
+    },
+    {
+      "name": "initUniversalSelector",
+      "line": 4889,
+      "type": "function",
+      "code_snippet": "function initUniversalSelector() {"
+    },
+    {
+      "name": "updateUniversalSelectionUI",
+      "line": 4949,
+      "type": "function",
+      "code_snippet": "function updateUniversalSelectionUI() {"
+    },
+    {
+      "name": "selectColorGroup",
+      "line": 4992,
+      "type": "function",
+      "code_snippet": "function selectColorGroup(group) {"
+    },
+    {
+      "name": "setSelectionMode",
+      "line": 5055,
+      "type": "function",
+      "code_snippet": "function setSelectionMode(mode) {"
+    },
+    {
+      "name": "initPropertySliders",
+      "line": 5123,
+      "type": "function",
+      "code_snippet": "function initPropertySliders() {"
+    },
+    {
+      "name": "initSlider",
+      "line": 5149,
+      "type": "function",
+      "code_snippet": "function initSlider(id, property, unit) {"
+    },
+    {
+      "name": "initDropdown",
+      "line": 5176,
+      "type": "function",
+      "code_snippet": "function initDropdown(id, property) {"
+    },
+    {
+      "name": "initShapeBorderRadiusSlider",
+      "line": 5193,
+      "type": "function",
+      "code_snippet": "function initShapeBorderRadiusSlider() {"
+    },
+    {
+      "name": "deltaValue",
+      "line": 5230,
+      "type": "function",
+      "code_snippet": "const deltaValue = (deltaX / sliderWidth) * range;"
+    },
+    {
+      "name": "clearSelection",
+      "line": 5249,
+      "type": "function",
+      "code_snippet": "function clearSelection() {"
+    },
+    {
+      "name": "resetStyles",
+      "line": 5270,
+      "type": "function",
+      "code_snippet": "function resetStyles() {"
+    },
+    {
+      "name": "saveCustomGroup",
+      "line": 5291,
+      "type": "function",
+      "code_snippet": "function saveCustomGroup() {"
+    },
+    {
+      "name": "clearShapeSelection",
+      "line": 5316,
+      "type": "function",
+      "code_snippet": "function clearShapeSelection() {"
+    },
+    {
+      "name": "resetShapeRadius",
+      "line": 5321,
+      "type": "function",
+      "code_snippet": "function resetShapeRadius() {"
+    },
+    {
+      "name": "memoize",
+      "line": 5385,
+      "type": "function",
+      "code_snippet": "function memoize(fn, maxSize = 1000) {"
+    },
+    {
+      "name": "memoized",
+      "line": 5388,
+      "type": "function",
+      "code_snippet": "const memoized = function(...args) {"
+    },
+    {
+      "name": "sanitizeNumber",
+      "line": 5411,
+      "type": "function",
+      "code_snippet": "function sanitizeNumber(value, min, max, defaultValue = min) {"
+    },
+    {
+      "name": "debounce",
+      "line": 5424,
+      "type": "function",
+      "code_snippet": "function debounce(func, wait = 100) {"
+    },
+    {
+      "name": "executedFunction",
+      "line": 5426,
+      "type": "function",
+      "code_snippet": "return function executedFunction(...args) {"
+    },
+    {
+      "name": "later",
+      "line": 5427,
+      "type": "function",
+      "code_snippet": "const later = () => {"
+    },
+    {
+      "name": "sanitizeColorValue",
+      "line": 5436,
+      "type": "function",
+      "code_snippet": "function sanitizeColorValue(colorObj) {"
+    },
+    {
+      "name": "sanitizeString",
+      "line": 5445,
+      "type": "function",
+      "code_snippet": "function sanitizeString(str, maxLength = 1000) {"
+    },
+    {
+      "name": "sanitizeJSON",
+      "line": 5458,
+      "type": "function",
+      "code_snippet": "function sanitizeJSON(jsonStr) {"
+    },
+    {
+      "name": "validatePaletteData",
+      "line": 5474,
+      "type": "function",
+      "code_snippet": "function validatePaletteData(data) {"
+    },
+    {
+      "name": "initSliders",
+      "line": 5505,
+      "type": "function",
+      "code_snippet": "function initSliders() {"
+    },
+    {
+      "name": "updateSliderValue",
+      "line": 5561,
+      "type": "function",
+      "code_snippet": "const updateSliderValue = () => {"
+    },
+    {
+      "name": "deltaValue",
+      "line": 5629,
+      "type": "function",
+      "code_snippet": "const deltaValue = (deltaX / sliderWidth) * range;"
+    },
+    {
+      "name": "init2DPickers",
+      "line": 5649,
+      "type": "function",
+      "code_snippet": "function init2DPickers() {"
+    },
+    {
+      "name": "drawHueWheel",
+      "line": 5667,
+      "type": "function",
+      "code_snippet": "function drawHueWheel() {"
+    },
+    {
+      "name": "startAngle",
+      "line": 5672,
+      "type": "function",
+      "code_snippet": "const startAngle = (angle - 90) * Math.PI / 180;"
+    },
+    {
+      "name": "endAngle",
+      "line": 5673,
+      "type": "function",
+      "code_snippet": "const endAngle = (angle + 1 - 90) * Math.PI / 180;"
+    },
+    {
+      "name": "selectedAngle",
+      "line": 5690,
+      "type": "function",
+      "code_snippet": "const selectedAngle = (currentColor.h - 90) * Math.PI / 180;"
+    },
+    {
+      "name": "getHueFromPosition",
+      "line": 5703,
+      "type": "function",
+      "code_snippet": "function getHueFromPosition(x, y) {"
+    },
+    {
+      "name": "drawChromaLightness",
+      "line": 5753,
+      "type": "function",
+      "code_snippet": "function drawChromaLightness() {"
+    },
+    {
+      "name": "c",
+      "line": 5759,
+      "type": "function",
+      "code_snippet": "const c = (x / clSize) * 0.37; // left = 0, right = 0.37"
+    },
+    {
+      "name": "idx",
+      "line": 5762,
+      "type": "function",
+      "code_snippet": "const idx = (y * clSize + x) * 4;"
+    },
+    {
+      "name": "crossX",
+      "line": 5773,
+      "type": "function",
+      "code_snippet": "const crossX = (currentColor.c / 0.37) * clSize;"
+    },
+    {
+      "name": "crossY",
+      "line": 5774,
+      "type": "function",
+      "code_snippet": "const crossY = (1 - currentColor.l) * clSize;"
+    },
+    {
+      "name": "getCLFromPosition",
+      "line": 5792,
+      "type": "function",
+      "code_snippet": "function getCLFromPosition(x, y) {"
+    },
+    {
+      "name": "init2DPickerToggles",
+      "line": 5840,
+      "type": "function",
+      "code_snippet": "function init2DPickerToggles() {"
+    },
+    {
+      "name": "oklchToRgb",
+      "line": 5895,
+      "type": "function",
+      "code_snippet": "function oklchToRgb(l, c, h) {"
+    },
+    {
+      "name": "init3DViewer",
+      "line": 5906,
+      "type": "function",
+      "code_snippet": "async function init3DViewer() {"
+    },
+    {
+      "name": "onGamutEdge",
+      "line": 5971,
+      "type": "function",
+      "code_snippet": "function onGamutEdge(r, g, b) {"
+    },
+    {
+      "name": "getModelData",
+      "line": 5976,
+      "type": "function",
+      "code_snippet": "function getModelData() {"
+    },
+    {
+      "name": "generateMesh",
+      "line": 6011,
+      "type": "function",
+      "code_snippet": "function generateMesh(scene) {"
+    },
+    {
+      "name": "animate",
+      "line": 6093,
+      "type": "function",
+      "code_snippet": "function animate() {"
+    },
+    {
+      "name": "updateSafeZone",
+      "line": 6121,
+      "type": "function",
+      "code_snippet": "function updateSafeZone() {"
+    },
+    {
+      "name": "hueRad",
+      "line": 6257,
+      "type": "function",
+      "code_snippet": "const hueRad = (h * Math.PI) / 180;"
+    },
+    {
+      "name": "fy",
+      "line": 6262,
+      "type": "function",
+      "code_snippet": "const fy = (l + 16) / 116;"
+    },
+    {
+      "name": "toHex",
+      "line": 6289,
+      "type": "function",
+      "code_snippet": "const toHex = (n) => Math.round(n * 255).toString(16).padStart(2, '0');"
+    },
+    {
+      "name": "initColorGroupCards",
+      "line": 6310,
+      "type": "function",
+      "code_snippet": "function initColorGroupCards() {"
+    },
+    {
+      "name": "encodeToURL",
+      "line": 6506,
+      "type": "function",
+      "code_snippet": "function encodeToURL() {"
+    },
+    {
+      "name": "decodeFromURL",
+      "line": 6518,
+      "type": "function",
+      "code_snippet": "function decodeFromURL(base64) {"
+    },
+    {
+      "name": "updateURLWithPalette",
+      "line": 6542,
+      "type": "function",
+      "code_snippet": "function updateURLWithPalette() {"
+    },
+    {
+      "name": "loadPaletteFromURL",
+      "line": 6549,
+      "type": "function",
+      "code_snippet": "function loadPaletteFromURL() {"
+    },
+    {
+      "name": "scheduleURLUpdate",
+      "line": 6595,
+      "type": "function",
+      "code_snippet": "function scheduleURLUpdate() {"
+    },
+    {
+      "name": "initViewToggle",
+      "line": 6616,
+      "type": "function",
+      "code_snippet": "function initViewToggle() {"
+    },
+    {
+      "name": "initMockupTabs",
+      "line": 6643,
+      "type": "function",
+      "code_snippet": "function initMockupTabs() {"
+    },
+    {
+      "name": "enforceComplianceAndSync",
+      "line": 6699,
+      "type": "function",
+      "code_snippet": "function enforceComplianceAndSync(color, group) {"
+    },
+    {
+      "name": "SAPC",
+      "line": 6840,
+      "type": "function",
+      "code_snippet": "const SAPC = (Math.pow(Ysbg, 0.56) - Math.pow(Ystxt, 0.57)) * 1.14;"
+    },
+    {
+      "name": "transformColorForMode",
+      "line": 6990,
+      "type": "function",
+      "code_snippet": "function transformColorForMode(color, group, targetMode) {"
+    },
+    {
+      "name": "switchMode",
+      "line": 7054,
+      "type": "function",
+      "code_snippet": "function switchMode(mode) {"
+    },
+    {
+      "name": "updateModeIndicator",
+      "line": 7101,
+      "type": "function",
+      "code_snippet": "function updateModeIndicator() {"
+    },
+    {
+      "name": "calculateContrastFromObjects",
+      "line": 7116,
+      "type": "function",
+      "code_snippet": "function calculateContrastFromObjects(color1, color2) {"
+    },
+    {
+      "name": "updateScaffoldTheme",
+      "line": 7130,
+      "type": "function",
+      "code_snippet": "function updateScaffoldTheme() {"
+    },
+    {
+      "name": "updateScaffoldButtonLabel",
+      "line": 7142,
+      "type": "function",
+      "code_snippet": "function updateScaffoldButtonLabel() {"
+    },
+    {
+      "name": "initScaffoldToggle",
+      "line": 7155,
+      "type": "function",
+      "code_snippet": "function initScaffoldToggle() {"
+    },
+    {
+      "name": "updateOklchCodeDisplay",
+      "line": 7179,
+      "type": "function",
+      "code_snippet": "function updateOklchCodeDisplay(l, c, h) {"
+    },
+    {
+      "name": "updateModeButtonLabel",
+      "line": 7201,
+      "type": "function",
+      "code_snippet": "function updateModeButtonLabel() {"
+    },
+    {
+      "name": "initModeToggle",
+      "line": 7214,
+      "type": "function",
+      "code_snippet": "function initModeToggle() {"
+    },
+    {
+      "name": "initTemplateControls",
+      "line": 7255,
+      "type": "function",
+      "code_snippet": "function initTemplateControls() {"
+    },
+    {
+      "name": "initAnimationControls",
+      "line": 7324,
+      "type": "function",
+      "code_snippet": "function initAnimationControls() {"
+    },
+    {
+      "name": "initColorSliders",
+      "line": 7346,
+      "type": "function",
+      "code_snippet": "function initColorSliders() {"
+    },
+    {
+      "name": "onSliderChange",
+      "line": 7370,
+      "type": "function",
+      "code_snippet": "function onSliderChange(changedParam) {"
+    },
+    {
+      "name": "initComplianceToggles",
+      "line": 7434,
+      "type": "function",
+      "code_snippet": "function initComplianceToggles() {"
+    },
+    {
+      "name": "updateAutoSyncStatus",
+      "line": 7482,
+      "type": "function",
+      "code_snippet": "function updateAutoSyncStatus() {"
+    },
+    {
+      "name": "animateColorSlide",
+      "line": 7547,
+      "type": "function",
+      "code_snippet": "function animateColorSlide(group, targetColor, customDuration = null) {"
+    },
+    {
+      "name": "easeInOutCubic",
+      "line": 7585,
+      "type": "function",
+      "code_snippet": "function easeInOutCubic(t) {"
+    },
+    {
+      "name": "animate",
+      "line": 7589,
+      "type": "function",
+      "code_snippet": "function animate(currentTime) {"
+    },
+    {
+      "name": "calculateWCAGCompliantColor",
+      "line": 7656,
+      "type": "function",
+      "code_snippet": "function calculateWCAGCompliantColor(group) {"
+    },
+    {
+      "name": "calculateAPCACompliantColor",
+      "line": 7699,
+      "type": "function",
+      "code_snippet": "function calculateAPCACompliantColor(group) {"
+    },
+    {
+      "name": "scanDOMForTextViolations",
+      "line": 7747,
+      "type": "function",
+      "code_snippet": "function scanDOMForTextViolations(mode) {"
+    },
+    {
+      "name": "parseComputedColor",
+      "line": 7830,
+      "type": "function",
+      "code_snippet": "function parseComputedColor(cssColor) {"
+    },
+    {
+      "name": "getImmediateBackground",
+      "line": 7863,
+      "type": "function",
+      "code_snippet": "function getImmediateBackground(element) {"
+    },
+    {
+      "name": "calculateMinimalAdjustment",
+      "line": 7886,
+      "type": "function",
+      "code_snippet": "function calculateMinimalAdjustment(textColor, bgColor, mode, targetContrast) {"
+    },
+    {
+      "name": "applyComplianceFixes",
+      "line": 7933,
+      "type": "function",
+      "code_snippet": "function applyComplianceFixes(violations) {"
+    },
+    {
+      "name": "fixWCAGViolations",
+      "line": 7964,
+      "type": "function",
+      "code_snippet": "function fixWCAGViolations() {"
+    },
+    {
+      "name": "fixAPCAViolations",
+      "line": 7972,
+      "type": "function",
+      "code_snippet": "function fixAPCAViolations() {"
+    },
+    {
+      "name": "optimizeReadability",
+      "line": 7980,
+      "type": "function",
+      "code_snippet": "function optimizeReadability() {"
+    },
+    {
+      "name": "calculateHarmony",
+      "line": 8022,
+      "type": "function",
+      "code_snippet": "function calculateHarmony(harmonyType, baseColor) {"
+    },
+    {
+      "name": "applyHarmonyToPalette",
+      "line": 8127,
+      "type": "function",
+      "code_snippet": "function applyHarmonyToPalette() {"
+    },
+    {
+      "name": "initColorHarmony",
+      "line": 8143,
+      "type": "function",
+      "code_snippet": "function initColorHarmony() {"
+    },
+    {
+      "name": "updateHarmonyPreview",
+      "line": 8158,
+      "type": "function",
+      "code_snippet": "function updateHarmonyPreview() {"
+    },
+    {
+      "name": "showNotification",
+      "line": 8183,
+      "type": "function",
+      "code_snippet": "function showNotification(message, duration = 3000) {"
+    },
+    {
+      "name": "showFloatingLog",
+      "line": 8246,
+      "type": "function",
+      "code_snippet": "function showFloatingLog(message, duration = 1000, type = 'info') {"
+    },
+    {
+      "name": "customAlert",
+      "line": 8323,
+      "type": "function",
+      "code_snippet": "function customAlert(message, title = 'Alert') {"
+    },
+    {
+      "name": "customConfirm",
+      "line": 8354,
+      "type": "function",
+      "code_snippet": "function customConfirm(message, title = 'Confirm') {"
+    },
+    {
+      "name": "customPrompt",
+      "line": 8389,
+      "type": "function",
+      "code_snippet": "function customPrompt(message, title = 'Input', defaultValue = '') {"
+    },
+    {
+      "name": "customSelect",
+      "line": 8446,
+      "type": "function",
+      "code_snippet": "function customSelect(message, options, title = 'Select') {"
+    },
+    {
+      "name": "closeCustomModal",
+      "line": 8502,
+      "type": "function",
+      "code_snippet": "function closeCustomModal(result) {"
+    },
+    {
+      "name": "closeCustomModalWithInput",
+      "line": 8515,
+      "type": "function",
+      "code_snippet": "function closeCustomModalWithInput() {"
+    },
+    {
+      "name": "announceToScreenReader",
+      "line": 8551,
+      "type": "function",
+      "code_snippet": "function announceToScreenReader(message) {"
+    },
+    {
+      "name": "showFloatingLogWithAria",
+      "line": 8566,
+      "type": "function",
+      "code_snippet": "function showFloatingLogWithAria(message, duration = 1000) {"
+    },
+    {
+      "name": "toggleSettingsPanel",
+      "line": 8588,
+      "type": "function",
+      "code_snippet": "function toggleSettingsPanel() {"
+    },
+    {
+      "name": "toggleSetting",
+      "line": 8603,
+      "type": "function",
+      "code_snippet": "function toggleSetting(settingName) {"
+    },
+    {
+      "name": "saveSettings",
+      "line": 8637,
+      "type": "function",
+      "code_snippet": "function saveSettings() {"
+    },
+    {
+      "name": "loadSettings",
+      "line": 8645,
+      "type": "function",
+      "code_snippet": "function loadSettings() {"
+    },
+    {
+      "name": "updateSettingsUI",
+      "line": 8661,
+      "type": "function",
+      "code_snippet": "function updateSettingsUI() {"
+    },
+    {
+      "name": "applySettings",
+      "line": 8681,
+      "type": "function",
+      "code_snippet": "function applySettings() {"
+    },
+    {
+      "name": "resetSettings",
+      "line": 8703,
+      "type": "function",
+      "code_snippet": "function resetSettings() {"
+    },
+    {
+      "name": "clearPalette",
+      "line": 8726,
+      "type": "function",
+      "code_snippet": "function clearPalette() {"
+    },
+    {
+      "name": "exportAllDataAndRefresh",
+      "line": 8753,
+      "type": "function",
+      "code_snippet": "function exportAllDataAndRefresh() {"
+    },
+    {
+      "name": "runDiagnosticScan",
+      "line": 8880,
+      "type": "function",
+      "code_snippet": "function runDiagnosticScan() {"
+    },
+    {
+      "name": "parseOKLCHFromComputed",
+      "line": 8969,
+      "type": "function",
+      "code_snippet": "function parseOKLCHFromComputed(colorStr) {"
+    },
+    {
+      "name": "buildTopologyGraph",
+      "line": 9000,
+      "type": "function",
+      "code_snippet": "function buildTopologyGraph(pairs) {"
+    },
+    {
+      "name": "calculateInfluenceStrength",
+      "line": 9046,
+      "type": "function",
+      "code_snippet": "function calculateInfluenceStrength(pair1, pair2) {"
+    },
+    {
+      "name": "analyzePatterns",
+      "line": 9063,
+      "type": "function",
+      "code_snippet": "function analyzePatterns(atoms, pairs, topology) {"
+    },
+    {
+      "name": "displayDiagnosticResults",
+      "line": 9153,
+      "type": "function",
+      "code_snippet": "function displayDiagnosticResults(view) {"
+    },
+    {
+      "name": "renderAtomsView",
+      "line": 9184,
+      "type": "function",
+      "code_snippet": "function renderAtomsView() {"
+    },
+    {
+      "name": "renderTopologyView",
+      "line": 9239,
+      "type": "function",
+      "code_snippet": "function renderTopologyView() {"
+    },
+    {
+      "name": "renderPatternsView",
+      "line": 9295,
+      "type": "function",
+      "code_snippet": "function renderPatternsView() {"
+    },
+    {
+      "name": "renderWeightsView",
+      "line": 9388,
+      "type": "function",
+      "code_snippet": "function renderWeightsView() {"
+    },
+    {
+      "name": "updateTrajectoryWeight",
+      "line": 9430,
+      "type": "function",
+      "code_snippet": "function updateTrajectoryWeight(colorGroup, param, value) {"
+    },
+    {
+      "name": "toggleCommandmentCategory",
+      "line": 9441,
+      "type": "function",
+      "code_snippet": "function toggleCommandmentCategory(button) {"
+    },
+    {
+      "name": "expandAllCommandments",
+      "line": 9465,
+      "type": "function",
+      "code_snippet": "function expandAllCommandments() {"
+    },
+    {
+      "name": "collapseAllCommandments",
+      "line": 9485,
+      "type": "function",
+      "code_snippet": "function collapseAllCommandments() {"
+    },
+    {
+      "name": "generateRandomCompliantPalette",
+      "line": 9575,
+      "type": "function",
+      "code_snippet": "function generateRandomCompliantPalette() {"
+    },
+    {
+      "name": "initRandomPalette",
+      "line": 9701,
+      "type": "function",
+      "code_snippet": "function initRandomPalette() {"
+    },
+    {
+      "name": "initValidationButton",
+      "line": 9710,
+      "type": "function",
+      "code_snippet": "function initValidationButton() {"
+    },
+    {
+      "name": "runGlobalValidation",
+      "line": 9717,
+      "type": "function",
+      "code_snippet": "function runGlobalValidation() {"
+    },
+    {
+      "name": "showValidationReport",
+      "line": 9730,
+      "type": "function",
+      "code_snippet": "function showValidationReport(results) {"
+    },
+    {
+      "name": "generateViolationsList",
+      "line": 9830,
+      "type": "function",
+      "code_snippet": "function generateViolationsList(results, violationsByGroup) {"
+    },
+    {
+      "name": "initRegistryButton",
+      "line": 9875,
+      "type": "function",
+      "code_snippet": "function initRegistryButton() {"
+    },
+    {
+      "name": "openRegistryPanel",
+      "line": 9882,
+      "type": "function",
+      "code_snippet": "function openRegistryPanel() {"
+    },
+    {
+      "name": "generateRegistryPanelHTML",
+      "line": 9931,
+      "type": "function",
+      "code_snippet": "function generateRegistryPanelHTML(snapshot, stats) {"
+    },
+    {
+      "name": "generateOverviewContent",
+      "line": 9993,
+      "type": "function",
+      "code_snippet": "function generateOverviewContent(snapshot, stats) {"
+    },
+    {
+      "name": "generateCategoryCard",
+      "line": 10008,
+      "type": "function",
+      "code_snippet": "function generateCategoryCard(title, data, accentColor) {"
+    },
+    {
+      "name": "attachRegistryPanelEvents",
+      "line": 10024,
+      "type": "function",
+      "code_snippet": "function attachRegistryPanelEvents(overlay, snapshot) {"
+    },
+    {
+      "name": "initTemplateLibrary",
+      "line": 10284,
+      "type": "function",
+      "code_snippet": "function initTemplateLibrary() {"
+    },
+    {
+      "name": "showTemplatePreview",
+      "line": 10315,
+      "type": "function",
+      "code_snippet": "function showTemplatePreview(templateId) {"
+    },
+    {
+      "name": "hideTemplatePreview",
+      "line": 10350,
+      "type": "function",
+      "code_snippet": "function hideTemplatePreview() {"
+    },
+    {
+      "name": "showTemplateLayers",
+      "line": 10357,
+      "type": "function",
+      "code_snippet": "function showTemplateLayers() {"
+    },
+    {
+      "name": "hideTemplateLayers",
+      "line": 10364,
+      "type": "function",
+      "code_snippet": "function hideTemplateLayers() {"
+    },
+    {
+      "name": "enableImportButton",
+      "line": 10371,
+      "type": "function",
+      "code_snippet": "function enableImportButton() {"
+    },
+    {
+      "name": "disableImportButton",
+      "line": 10382,
+      "type": "function",
+      "code_snippet": "function disableImportButton() {"
+    },
+    {
+      "name": "importTemplate",
+      "line": 10393,
+      "type": "function",
+      "code_snippet": "function importTemplate(templateId) {"
+    },
+    {
+      "name": "applyNonColorLayers",
+      "line": 10447,
+      "type": "function",
+      "code_snippet": "function applyNonColorLayers(template, selectedLayers) {"
+    },
+    {
+      "name": "initScaffoldButtons",
+      "line": 10524,
+      "type": "function",
+      "code_snippet": "function initScaffoldButtons() {"
+    },
+    {
+      "name": "applyToScaffold",
+      "line": 10537,
+      "type": "function",
+      "code_snippet": "function applyToScaffold() {"
+    },
+    {
+      "name": "resetScaffold",
+      "line": 10592,
+      "type": "function",
+      "code_snippet": "function resetScaffold() {"
+    },
+    {
+      "name": "initHotspotSystem",
+      "line": 10661,
+      "type": "function",
+      "code_snippet": "function initHotspotSystem() {"
+    },
+    {
+      "name": "handleSwipeGesture",
+      "line": 10743,
+      "type": "function",
+      "code_snippet": "function handleSwipeGesture() {"
+    },
+    {
+      "name": "updateFilteredHotspots",
+      "line": 10760,
+      "type": "function",
+      "code_snippet": "function updateFilteredHotspots() {"
+    },
+    {
+      "name": "lightnessMin",
+      "line": 10768,
+      "type": "function",
+      "code_snippet": "const lightnessMin = (parseInt(document.getElementById('lightness-min')?.value || 0)) / 100;"
+    },
+    {
+      "name": "lightnessMax",
+      "line": 10769,
+      "type": "function",
+      "code_snippet": "const lightnessMax = (parseInt(document.getElementById('lightness-max')?.value || 100)) / 100;"
+    },
+    {
+      "name": "chromaMin",
+      "line": 10770,
+      "type": "function",
+      "code_snippet": "const chromaMin = (parseInt(document.getElementById('chroma-min')?.value || 0)) / 100;"
+    },
+    {
+      "name": "chromaMax",
+      "line": 10771,
+      "type": "function",
+      "code_snippet": "const chromaMax = (parseInt(document.getElementById('chroma-max')?.value || 37)) / 100;"
+    },
+    {
+      "name": "tolerance",
+      "line": 10781,
+      "type": "function",
+      "code_snippet": "const tolerance = (explorationMode / 100) * 0.3; // Up to 30% tolerance at max adventure"
+    },
+    {
+      "name": "updateHotspotPreviews",
+      "line": 10800,
+      "type": "function",
+      "code_snippet": "function updateHotspotPreviews() {"
+    },
+    {
+      "name": "index",
+      "line": 10813,
+      "type": "function",
+      "code_snippet": "const index = (currentHotspotIndex + i) % filteredHotspots.length;"
+    },
+    {
+      "name": "generateHotspotColorBar",
+      "line": 10838,
+      "type": "function",
+      "code_snippet": "function generateHotspotColorBar(hotspot) {"
+    },
+    {
+      "name": "navigatePrevHotspot",
+      "line": 10845,
+      "type": "function",
+      "code_snippet": "function navigatePrevHotspot() {"
+    },
+    {
+      "name": "navigateNextHotspot",
+      "line": 10852,
+      "type": "function",
+      "code_snippet": "function navigateNextHotspot() {"
+    },
+    {
+      "name": "jumpToRandomHotspot",
+      "line": 10859,
+      "type": "function",
+      "code_snippet": "function jumpToRandomHotspot() {"
+    },
+    {
+      "name": "applyHotspot",
+      "line": 10873,
+      "type": "function",
+      "code_snippet": "function applyHotspot(hotspot) {"
+    },
+    {
+      "name": "initWidgetSystem",
+      "line": 10918,
+      "type": "function",
+      "code_snippet": "function initWidgetSystem() {"
+    },
+    {
+      "name": "toggleWidgetMode",
+      "line": 10940,
+      "type": "function",
+      "code_snippet": "function toggleWidgetMode() {"
+    },
+    {
+      "name": "handleDragStart",
+      "line": 11003,
+      "type": "function",
+      "code_snippet": "function handleDragStart(e) {"
+    },
+    {
+      "name": "handleDragOver",
+      "line": 11010,
+      "type": "function",
+      "code_snippet": "function handleDragOver(e) {"
+    },
+    {
+      "name": "handleDragEnter",
+      "line": 11018,
+      "type": "function",
+      "code_snippet": "function handleDragEnter(e) {"
+    },
+    {
+      "name": "handleDragLeave",
+      "line": 11025,
+      "type": "function",
+      "code_snippet": "function handleDragLeave(e) {"
+    },
+    {
+      "name": "handleDrop",
+      "line": 11032,
+      "type": "function",
+      "code_snippet": "function handleDrop(e) {"
+    },
+    {
+      "name": "handleDragEnd",
+      "line": 11061,
+      "type": "function",
+      "code_snippet": "function handleDragEnd(e) {"
+    },
+    {
+      "name": "saveWidgetOrder",
+      "line": 11071,
+      "type": "function",
+      "code_snippet": "function saveWidgetOrder() {"
+    },
+    {
+      "name": "loadWidgetOrder",
+      "line": 11085,
+      "type": "function",
+      "code_snippet": "function loadWidgetOrder() {"
+    },
+    {
+      "name": "resetWidgetOrder",
+      "line": 11123,
+      "type": "function",
+      "code_snippet": "function resetWidgetOrder() {"
+    },
+    {
+      "name": "getColorName",
+      "line": 11130,
+      "type": "function",
+      "code_snippet": "function getColorName(l, c, h) {"
+    },
+    {
+      "name": "initCopyToClipboard",
+      "line": 11177,
+      "type": "function",
+      "code_snippet": "function initCopyToClipboard() {"
+    },
+    {
+      "name": "updateColorLineDisplay",
+      "line": 11219,
+      "type": "function",
+      "code_snippet": "function updateColorLineDisplay(l = currentColor.l, c = currentColor.c, h = currentColor.h) {"
+    },
+    {
+      "name": "updateSpotlightAccent",
+      "line": 11233,
+      "type": "function",
+      "code_snippet": "function updateSpotlightAccent() {"
+    },
+    {
+      "name": "captureState",
+      "line": 11264,
+      "type": "function",
+      "code_snippet": "function captureState() {"
+    },
+    {
+      "name": "applyCSSVariablesFromPalette",
+      "line": 11284,
+      "type": "function",
+      "code_snippet": "function applyCSSVariablesFromPalette() {"
+    },
+    {
+      "name": "undo",
+      "line": 11297,
+      "type": "function",
+      "code_snippet": "function undo() {"
+    },
+    {
+      "name": "redo",
+      "line": 11322,
+      "type": "function",
+      "code_snippet": "function redo() {"
+    },
+    {
+      "name": "savePaletteToStorage",
+      "line": 11406,
+      "type": "function",
+      "code_snippet": "function savePaletteToStorage() {"
+    },
+    {
+      "name": "loadPaletteFromStorage",
+      "line": 11427,
+      "type": "function",
+      "code_snippet": "function loadPaletteFromStorage() {"
+    },
+    {
+      "name": "updateLastSavedDisplay",
+      "line": 11474,
+      "type": "function",
+      "code_snippet": "function updateLastSavedDisplay() {"
+    },
+    {
+      "name": "markDirty",
+      "line": 11502,
+      "type": "function",
+      "code_snippet": "function markDirty() {"
+    },
+    {
+      "name": "toggleSidebar",
+      "line": 11556,
+      "type": "function",
+      "code_snippet": "function toggleSidebar() {"
+    },
+    {
+      "name": "initSidebarResize",
+      "line": 11568,
+      "type": "function",
+      "code_snippet": "function initSidebarResize() {"
+    },
+    {
+      "name": "updateLayout",
+      "line": 11581,
+      "type": "function",
+      "code_snippet": "function updateLayout(sidebarWidth) {"
+    },
+    {
+      "name": "canvasOffset",
+      "line": 11595,
+      "type": "function",
+      "code_snippet": "const canvasOffset = (viewerWidth / 2) - sidebarMiddle;"
+    },
+    {
+      "name": "getClosestColorName",
+      "line": 12764,
+      "type": "function",
+      "code_snippet": "function getClosestColorName(oklch) {"
+    },
+    {
+      "name": "getGroupDisplayName",
+      "line": 12804,
+      "type": "function",
+      "code_snippet": "function getGroupDisplayName(groupName) {"
+    },
+    {
+      "name": "sortPairsByStandardOrder",
+      "line": 12853,
+      "type": "function",
+      "code_snippet": "function sortPairsByStandardOrder(pairs) {"
+    },
+    {
+      "name": "updateAllColorNames",
+      "line": 12893,
+      "type": "function",
+      "code_snippet": "function updateAllColorNames() {"
+    },
+    {
+      "name": "initColorPaletteMap",
+      "line": 12985,
+      "type": "function",
+      "code_snippet": "function initColorPaletteMap() {"
+    },
+    {
+      "name": "updateColorPaletteMap",
+      "line": 12997,
+      "type": "function",
+      "code_snippet": "function updateColorPaletteMap() {"
+    },
+    {
+      "name": "selectColorForCentralControl",
+      "line": 13350,
+      "type": "function",
+      "code_snippet": "function selectColorForCentralControl(groupName, color) {"
+    },
+    {
+      "name": "updateCentralControlDisplay",
+      "line": 13374,
+      "type": "function",
+      "code_snippet": "function updateCentralControlDisplay(groupName, color) {"
+    },
+    {
+      "name": "updateCentralSliderFromColor",
+      "line": 13400,
+      "type": "function",
+      "code_snippet": "function updateCentralSliderFromColor(color) {"
+    },
+    {
+      "name": "initCentralControlSystem",
+      "line": 13426,
+      "type": "function",
+      "code_snippet": "function initCentralControlSystem() {"
+    },
+    {
+      "name": "init3DSliceVisualizer",
+      "line": 13497,
+      "type": "function",
+      "code_snippet": "async function init3DSliceVisualizer() {"
+    },
+    {
+      "name": "createColorSpace",
+      "line": 13538,
+      "type": "function",
+      "code_snippet": "function createColorSpace() {"
+    },
+    {
+      "name": "l",
+      "line": 13556,
+      "type": "function",
+      "code_snippet": "const l = (y + 0.5); // Map -0.5 to 0.5 \u2192 0 to 1"
+    },
+    {
+      "name": "h",
+      "line": 13558,
+      "type": "function",
+      "code_snippet": "const h = (Math.atan2(z, x) * 180 / Math.PI + 360) % 360;"
+    },
+    {
+      "name": "updateSlice",
+      "line": 13586,
+      "type": "function",
+      "code_snippet": "function updateSlice(param, value) {"
+    },
+    {
+      "name": "h",
+      "line": 13619,
+      "type": "function",
+      "code_snippet": "const h = (Math.atan2(z, x) * 180 / Math.PI + 360) % 360;"
+    },
+    {
+      "name": "l",
+      "line": 13644,
+      "type": "function",
+      "code_snippet": "const l = (y + 0.5);"
+    },
+    {
+      "name": "animate",
+      "line": 13656,
+      "type": "function",
+      "code_snippet": "function animate() {"
+    },
+    {
+      "name": "onWindowResize",
+      "line": 13664,
+      "type": "function",
+      "code_snippet": "function onWindowResize() {"
+    },
+    {
+      "name": "update3DSliceFromCentralControl",
+      "line": 13685,
+      "type": "function",
+      "code_snippet": "function update3DSliceFromCentralControl() {"
+    },
+    {
+      "name": "needsDarker",
+      "line": 13725,
+      "type": "function",
+      "code_snippet": "const needsDarker = (targetL + source\u0394) - bg.l < 0.15;"
+    },
+    {
+      "name": "updateColorParameter",
+      "line": 14217,
+      "type": "function",
+      "code_snippet": "function updateColorParameter(group, param, value) {"
+    },
+    {
+      "name": "checkCounterWeightBalance",
+      "line": 14285,
+      "type": "function",
+      "code_snippet": "function checkCounterWeightBalance() {"
+    },
+    {
+      "name": "navigateToColorGroup",
+      "line": 14304,
+      "type": "function",
+      "code_snippet": "function navigateToColorGroup(group) {"
+    }
+  ],
+  "dependencies": {
+    "initUniversalSelector": [
+      "selectColorGroup",
+      "updateUniversalSelectionUI"
+    ],
+    "updateUniversalSelectionUI": [
+      "selectColorGroup",
+      "announceToScreenReader"
+    ],
+    "selectColorGroup": [
+      "getClosestColorName",
+      "updateColorLineDisplay",
+      "updateOklchCodeDisplay",
+      "updateScaffoldTheme",
+      "announceToScreenReader",
+      "getGroupDisplayName",
+      "updateSpotlightAccent"
+    ],
+    "setSelectionMode": [
+      "showFloatingLog",
+      "clearSelection",
+      "announceToScreenReader",
+      "updateUniversalSelectionUI"
+    ],
+    "initPropertySliders": [
+      "initSlider",
+      "initDropdown"
+    ],
+    "initSlider": [
+      "announceToScreenReader"
+    ],
+    "initDropdown": [
+      "announceToScreenReader"
+    ],
+    "initShapeBorderRadiusSlider": [
+      "announceToScreenReader"
+    ],
+    "clearSelection": [
+      "showFloatingLog",
+      "announceToScreenReader",
+      "updateUniversalSelectionUI"
+    ],
+    "resetStyles": [
+      "showFloatingLog",
+      "announceToScreenReader"
+    ],
+    "saveCustomGroup": [
+      "showFloatingLog",
+      "announceToScreenReader"
+    ],
+    "clearShapeSelection": [
+      "clearSelection"
+    ],
+    "resetShapeRadius": [
+      "resetStyles",
+      "setSelectionMode"
+    ],
+    "memoized": [
+      "apply"
+    ],
+    "sanitizeColorValue": [
+      "sanitizeNumber"
+    ],
+    "validatePaletteData": [
+      "sanitizeColorValue"
+    ],
+    "initSliders": [
+      "scheduleURLUpdate",
+      "updateColorLineDisplay",
+      "updateOklchCodeDisplay",
+      "debounce",
+      "enforceComplianceAndSync",
+      "updateScaffoldTheme",
+      "updateSafeZone",
+      "updateAllColorNames",
+      "announceToScreenReader",
+      "updateSpotlightAccent"
+    ],
+    "updateSliderValue": [
+      "updateColorLineDisplay",
+      "sanitizeNumber",
+      "updateOklchCodeDisplay"
+    ],
+    "deltaValue": [
+      "updateSliderValue"
+    ],
+    "getHueFromPosition": [
+      "drawHueWheel"
+    ],
+    "c": [
+      "oklchToRgb"
+    ],
+    "getCLFromPosition": [
+      "drawChromaLightness",
+      "drawHueWheel"
+    ],
+    "init2DPickerToggles": [
+      "oklchToRgb"
+    ],
+    "init3DViewer": [
+      "showFloatingLog"
+    ],
+    "getModelData": [
+      "onGamutEdge"
+    ],
+    "generateMesh": [
+      "getModelData"
+    ],
+    "updateSafeZone": [
+      "memoize",
+      "optimizeReadability",
+      "fixWCAGViolations",
+      "fixAPCAViolations"
+    ],
+    "toHex": [
+      "memoize"
+    ],
+    "initColorGroupCards": [
+      "selectColorGroup",
+      "customSelect",
+      "showFloatingLog",
+      "customAlert",
+      "customPrompt"
+    ],
+    "decodeFromURL": [
+      "showFloatingLog",
+      "sanitizeJSON",
+      "sanitizeString",
+      "validatePaletteData"
+    ],
+    "updateURLWithPalette": [
+      "encodeToURL"
+    ],
+    "loadPaletteFromURL": [
+      "selectColorGroup",
+      "encodeToURL",
+      "showFloatingLog",
+      "updateModeButtonLabel",
+      "applyCSSVariablesFromPalette",
+      "decodeFromURL"
+    ],
+    "scheduleURLUpdate": [
+      "customAlert",
+      "customConfirm",
+      "updateURLWithPalette",
+      "loadPaletteFromURL"
+    ],
+    "enforceComplianceAndSync": [
+      "transformColorForMode",
+      "memoize",
+      "calculateContrastFromObjects",
+      "updateModeIndicator"
+    ],
+    "transformColorForMode": [
+      "l",
+      "c",
+      "calculateContrastFromObjects",
+      "h"
+    ],
+    "switchMode": [
+      "transformColorForMode",
+      "selectColorGroup",
+      "updateSafeZone",
+      "drawChromaLightness",
+      "updateAllColorNames",
+      "announceToScreenReader",
+      "updateModeIndicator",
+      "drawHueWheel"
+    ],
+    "updateModeIndicator": [
+      "updateModeButtonLabel"
+    ],
+    "initScaffoldToggle": [
+      "updateScaffoldButtonLabel",
+      "updateScaffoldTheme",
+      "showNotification"
+    ],
+    "initModeToggle": [
+      "updateModeButtonLabel",
+      "showNotification",
+      "updateScaffoldTheme",
+      "switchMode"
+    ],
+    "initTemplateControls": [
+      "switchMode"
+    ],
+    "onSliderChange": [
+      "updateColorLineDisplay",
+      "updateOklchCodeDisplay",
+      "updateColorParameter",
+      "updateScaffoldTheme",
+      "updateSafeZone",
+      "drawChromaLightness",
+      "updateSpotlightAccent",
+      "drawHueWheel"
+    ],
+    "initComplianceToggles": [
+      "selectColorGroup",
+      "updateAutoSyncStatus"
+    ],
+    "updateAutoSyncStatus": [
+      "animateColorSlide",
+      "animate"
+    ],
+    "animate": [
+      "transformColorForMode",
+      "updateColorLineDisplay",
+      "updateOklchCodeDisplay",
+      "easeInOutCubic",
+      "updateColorPaletteMap",
+      "updateSafeZone",
+      "drawChromaLightness",
+      "drawHueWheel"
+    ],
+    "calculateWCAGCompliantColor": [
+      "calculateContrastFromObjects"
+    ],
+    "scanDOMForTextViolations": [
+      "parseComputedColor",
+      "getImmediateBackground",
+      "calculateContrastFromObjects"
+    ],
+    "getImmediateBackground": [
+      "parseComputedColor"
+    ],
+    "calculateMinimalAdjustment": [
+      "calculateContrastFromObjects"
+    ],
+    "applyComplianceFixes": [
+      "calculateMinimalAdjustment",
+      "showNotification"
+    ],
+    "fixWCAGViolations": [
+      "applyComplianceFixes",
+      "scanDOMForTextViolations"
+    ],
+    "fixAPCAViolations": [
+      "applyComplianceFixes",
+      "scanDOMForTextViolations"
+    ],
+    "optimizeReadability": [
+      "applyComplianceFixes",
+      "selectColorGroup",
+      "animateColorSlide",
+      "calculateHarmony",
+      "scanDOMForTextViolations"
+    ],
+    "calculateHarmony": [
+      "applyHarmonyToPalette"
+    ],
+    "applyHarmonyToPalette": [
+      "selectColorGroup",
+      "animateColorSlide",
+      "calculateHarmony"
+    ],
+    "initColorHarmony": [
+      "updateHarmonyPreview"
+    ],
+    "updateHarmonyPreview": [
+      "calculateHarmony"
+    ],
+    "showFloatingLog": [
+      "customAlert"
+    ],
+    "customAlert": [
+      "customConfirm",
+      "closeCustomModal"
+    ],
+    "customConfirm": [
+      "customPrompt",
+      "closeCustomModal"
+    ],
+    "customPrompt": [
+      "customSelect",
+      "closeCustomModalWithInput",
+      "closeCustomModal"
+    ],
+    "customSelect": [
+      "closeCustomModal"
+    ],
+    "closeCustomModalWithInput": [
+      "announceToScreenReader",
+      "closeCustomModal"
+    ],
+    "showFloatingLogWithAria": [
+      "announceToScreenReader"
+    ],
+    "toggleSettingsPanel": [
+      "announceToScreenReader"
+    ],
+    "toggleSetting": [
+      "saveSettings",
+      "announceToScreenReader",
+      "applySettings"
+    ],
+    "loadSettings": [
+      "applySettings",
+      "updateSettingsUI"
+    ],
+    "resetSettings": [
+      "showFloatingLogWithAria",
+      "announceToScreenReader",
+      "applySettings",
+      "updateSettingsUI",
+      "saveSettings"
+    ],
+    "clearPalette": [
+      "announceToScreenReader",
+      "showFloatingLogWithAria"
+    ],
+    "exportAllDataAndRefresh": [
+      "showNotification"
+    ],
+    "runDiagnosticScan": [
+      "displayDiagnosticResults",
+      "analyzePatterns",
+      "showNotification",
+      "buildTopologyGraph",
+      "parseOKLCHFromComputed"
+    ],
+    "buildTopologyGraph": [
+      "calculateInfluenceStrength"
+    ],
+    "displayDiagnosticResults": [
+      "renderTopologyView",
+      "renderPatternsView",
+      "renderAtomsView",
+      "renderWeightsView"
+    ],
+    "renderWeightsView": [
+      "updateTrajectoryWeight"
+    ],
+    "updateTrajectoryWeight": [
+      "showNotification"
+    ],
+    "expandAllCommandments": [
+      "showNotification"
+    ],
+    "collapseAllCommandments": [
+      "displayDiagnosticResults",
+      "showNotification",
+      "toggleSettingsPanel",
+      "applySettings",
+      "saveSettings",
+      "loadSettings"
+    ],
+    "generateRandomCompliantPalette": [
+      "selectColorGroup",
+      "getClosestColorName",
+      "updateColorParameter",
+      "showNotification",
+      "updateColorPaletteMap",
+      "updateAllColorNames"
+    ],
+    "runGlobalValidation": [
+      "showValidationReport",
+      "updateColorPaletteMap"
+    ],
+    "showValidationReport": [
+      "generateViolationsList"
+    ],
+    "openRegistryPanel": [
+      "attachRegistryPanelEvents",
+      "generateRegistryPanelHTML"
+    ],
+    "generateRegistryPanelHTML": [
+      "generateOverviewContent"
+    ],
+    "generateOverviewContent": [
+      "generateCategoryCard"
+    ],
+    "attachRegistryPanelEvents": [
+      "generateOverviewContent",
+      "openRegistryPanel"
+    ],
+    "initTemplateLibrary": [
+      "showTemplatePreview",
+      "importTemplate",
+      "hideTemplateLayers",
+      "showTemplateLayers",
+      "hideTemplatePreview",
+      "enableImportButton",
+      "disableImportButton"
+    ],
+    "importTemplate": [
+      "selectColorGroup",
+      "showNotification",
+      "animateColorSlide",
+      "applyNonColorLayers"
+    ],
+    "applyToScaffold": [
+      "showNotification"
+    ],
+    "resetScaffold": [
+      "showNotification"
+    ],
+    "initHotspotSystem": [
+      "updateFilteredHotspots",
+      "updateHotspotPreviews",
+      "handleSwipeGesture"
+    ],
+    "handleSwipeGesture": [
+      "showFloatingLog",
+      "navigateNextHotspot",
+      "navigatePrevHotspot"
+    ],
+    "index": [
+      "generateHotspotColorBar",
+      "applyHotspot"
+    ],
+    "generateHotspotColorBar": [
+      "calculateHarmony"
+    ],
+    "navigatePrevHotspot": [
+      "updateHotspotPreviews",
+      "applyHotspot"
+    ],
+    "navigateNextHotspot": [
+      "updateHotspotPreviews",
+      "applyHotspot"
+    ],
+    "jumpToRandomHotspot": [
+      "showNotification",
+      "updateHotspotPreviews",
+      "applyHotspot"
+    ],
+    "applyHotspot": [
+      "selectColorGroup",
+      "showNotification",
+      "animateColorSlide",
+      "calculateHarmony"
+    ],
+    "initWidgetSystem": [
+      "loadWidgetOrder"
+    ],
+    "toggleWidgetMode": [
+      "showNotification",
+      "saveWidgetOrder"
+    ],
+    "initCopyToClipboard": [
+      "getColorName"
+    ],
+    "applyCSSVariablesFromPalette": [
+      "updateAllColorNames"
+    ],
+    "undo": [
+      "selectColorGroup",
+      "applyCSSVariablesFromPalette",
+      "showFloatingLogWithAria"
+    ],
+    "redo": [
+      "selectColorGroup",
+      "captureState",
+      "savePaletteToStorage",
+      "showFloatingLogWithAria",
+      "showFloatingLog",
+      "applyCSSVariablesFromPalette",
+      "undo"
+    ],
+    "savePaletteToStorage": [
+      "showFloatingLog",
+      "updateLastSavedDisplay"
+    ],
+    "loadPaletteFromStorage": [
+      "selectColorGroup",
+      "sanitizeNumber",
+      "validatePaletteData",
+      "sanitizeString",
+      "updateLastSavedDisplay",
+      "sanitizeJSON",
+      "showFloatingLog",
+      "updateModeButtonLabel",
+      "applyCSSVariablesFromPalette"
+    ],
+    "markDirty": [
+      "loadPaletteFromStorage",
+      "updateLastSavedDisplay",
+      "updateOklchCodeDisplay",
+      "savePaletteToStorage"
+    ],
+    "toggleSidebar": [
+      "announceToScreenReader"
+    ],
+    "canvasOffset": [
+      "init2DPickerToggles",
+      "initColorGroupCards",
+      "initRandomPalette",
+      "initRegistryButton",
+      "initColorSliders",
+      "updateLayout",
+      "initTemplateLibrary",
+      "initUniversalSelector",
+      "init3DViewer",
+      "initColorHarmony",
+      "initHotspotSystem",
+      "initMockupTabs",
+      "init2DPickers",
+      "initSliders",
+      "initPropertySliders",
+      "initComplianceToggles",
+      "initAnimationControls",
+      "initViewToggle",
+      "initTemplateControls",
+      "initWidgetSystem",
+      "initScaffoldToggle",
+      "initValidationButton",
+      "initModeToggle",
+      "initScaffoldButtons"
+    ],
+    "updateAllColorNames": [
+      "updateCentralControlDisplay",
+      "getGroupDisplayName",
+      "getClosestColorName"
+    ],
+    "initColorPaletteMap": [
+      "updateAllColorNames",
+      "updateColorPaletteMap"
+    ],
+    "updateColorPaletteMap": [
+      "getGroupDisplayName",
+      "selectColorForCentralControl",
+      "sortPairsByStandardOrder",
+      "getClosestColorName"
+    ],
+    "selectColorForCentralControl": [
+      "selectColorGroup",
+      "updateCentralControlDisplay"
+    ],
+    "updateCentralControlDisplay": [
+      "updateCentralSliderFromColor",
+      "getGroupDisplayName",
+      "getClosestColorName"
+    ],
+    "initCentralControlSystem": [
+      "selectColorForCentralControl",
+      "updateCentralSliderFromColor",
+      "init3DSliceVisualizer",
+      "update3DSliceFromCentralControl",
+      "updateColorParameter"
+    ],
+    "h": [
+      "createColorSpace",
+      "oklchToRgb"
+    ],
+    "l": [
+      "oklchToRgb"
+    ],
+    "onWindowResize": [
+      "updateSlice"
+    ],
+    "update3DSliceFromCentralControl": [
+      "updateSlice"
+    ],
+    "needsDarker": [
+      "getClosestColorName",
+      "showNotification",
+      "calculateContrastFromObjects",
+      "updateAllColorNames",
+      "getGroupDisplayName"
+    ],
+    "updateColorParameter": [
+      "updateOklchCodeDisplay",
+      "checkCounterWeightBalance",
+      "updateCentralControlDisplay",
+      "updateColorPaletteMap",
+      "drawChromaLightness",
+      "drawHueWheel"
+    ],
+    "navigateToColorGroup": [
+      "selectColorGroup",
+      "initSidebarResize",
+      "initColorPaletteMap",
+      "updateSafeZone",
+      "initCentralControlSystem",
+      "updateAutoSyncStatus",
+      "initCopyToClipboard"
+    ]
+  },
+  "categories": {
+    "Transformations": [
+      "apply",
+      "apply",
+      "apply",
+      "apply",
+      "apply",
+      "applyComplianceFixes",
+      "applyHarmonyToPalette",
+      "applyNonColorLayers",
+      "applyToScaffold",
+      "applyHotspot",
+      "applyCSSVariablesFromPalette"
+    ],
+    "Initialization": [
+      "initUniversalSelector",
+      "initPropertySliders",
+      "initSlider",
+      "initDropdown",
+      "initShapeBorderRadiusSlider",
+      "initSliders",
+      "init2DPickers",
+      "init2DPickerToggles",
+      "init3DViewer",
+      "initColorGroupCards",
+      "initViewToggle",
+      "initMockupTabs",
+      "initScaffoldToggle",
+      "initModeToggle",
+      "initTemplateControls",
+      "initAnimationControls",
+      "initColorSliders",
+      "initComplianceToggles",
+      "initColorHarmony",
+      "initRandomPalette",
+      "initValidationButton",
+      "initRegistryButton",
+      "initTemplateLibrary",
+      "initScaffoldButtons",
+      "initHotspotSystem",
+      "initWidgetSystem",
+      "initCopyToClipboard",
+      "initSidebarResize",
+      "initColorPaletteMap",
+      "initCentralControlSystem",
+      "init3DSliceVisualizer"
+    ],
+    "State Updates": [
+      "updateUniversalSelectionUI",
+      "updateSliderValue",
+      "updateSafeZone",
+      "updateURLWithPalette",
+      "scheduleURLUpdate",
+      "updateModeIndicator",
+      "updateScaffoldTheme",
+      "updateScaffoldButtonLabel",
+      "updateOklchCodeDisplay",
+      "updateModeButtonLabel",
+      "updateAutoSyncStatus",
+      "updateHarmonyPreview",
+      "updateSettingsUI",
+      "updateTrajectoryWeight",
+      "updateFilteredHotspots",
+      "updateHotspotPreviews",
+      "updateColorLineDisplay",
+      "updateSpotlightAccent",
+      "updateLastSavedDisplay",
+      "updateLayout",
+      "updateAllColorNames",
+      "updateColorPaletteMap",
+      "updateCentralControlDisplay",
+      "updateCentralSliderFromColor",
+      "updateSlice",
+      "update3DSliceFromCentralControl",
+      "updateColorParameter"
+    ],
+    "Other": [
+      "selectColorGroup",
+      "deltaValue",
+      "clearSelection",
+      "saveCustomGroup",
+      "clearShapeSelection",
+      "memoize",
+      "memoized",
+      "sanitizeNumber",
+      "debounce",
+      "executedFunction",
+      "later",
+      "sanitizeColorValue",
+      "sanitizeString",
+      "sanitizeJSON",
+      "deltaValue",
+      "startAngle",
+      "endAngle",
+      "selectedAngle",
+      "c",
+      "idx",
+      "crossX",
+      "crossY",
+      "oklchToRgb",
+      "onGamutEdge",
+      "animate",
+      "hueRad",
+      "fy",
+      "toHex",
+      "encodeToURL",
+      "decodeFromURL",
+      "loadPaletteFromURL",
+      "SAPC",
+      "transformColorForMode",
+      "switchMode",
+      "onSliderChange",
+      "animateColorSlide",
+      "easeInOutCubic",
+      "animate",
+      "scanDOMForTextViolations",
+      "fixWCAGViolations",
+      "fixAPCAViolations",
+      "optimizeReadability",
+      "customAlert",
+      "customConfirm",
+      "customPrompt",
+      "customSelect",
+      "closeCustomModal",
+      "closeCustomModalWithInput",
+      "announceToScreenReader",
+      "clearPalette",
+      "runDiagnosticScan",
+      "buildTopologyGraph",
+      "analyzePatterns",
+      "displayDiagnosticResults",
+      "expandAllCommandments",
+      "collapseAllCommandments",
+      "runGlobalValidation",
+      "openRegistryPanel",
+      "attachRegistryPanelEvents",
+      "lightnessMin",
+      "lightnessMax",
+      "chromaMin",
+      "chromaMax",
+      "tolerance",
+      "index",
+      "navigatePrevHotspot",
+      "navigateNextHotspot",
+      "jumpToRandomHotspot",
+      "captureState",
+      "undo",
+      "redo",
+      "savePaletteToStorage",
+      "loadPaletteFromStorage",
+      "markDirty",
+      "sortPairsByStandardOrder",
+      "selectColorForCentralControl",
+      "createColorSpace",
+      "l",
+      "h",
+      "h",
+      "l",
+      "animate",
+      "onWindowResize",
+      "needsDarker",
+      "checkCounterWeightBalance",
+      "navigateToColorGroup"
+    ],
+    "Setters": [
+      "setSelectionMode",
+      "resetStyles",
+      "resetShapeRadius",
+      "toggleSettingsPanel",
+      "toggleSetting",
+      "saveSettings",
+      "loadSettings",
+      "applySettings",
+      "resetSettings",
+      "resetScaffold",
+      "canvasOffset"
+    ],
+    "Validation": [
+      "validatePaletteData"
+    ],
+    "Canvas/Graphics": [
+      "drawHueWheel",
+      "drawChromaLightness"
+    ],
+    "Getters": [
+      "getHueFromPosition",
+      "getCLFromPosition",
+      "getModelData",
+      "getImmediateBackground",
+      "toggleWidgetMode",
+      "saveWidgetOrder",
+      "loadWidgetOrder",
+      "resetWidgetOrder",
+      "getColorName",
+      "getClosestColorName",
+      "getGroupDisplayName"
+    ],
+    "Generators": [
+      "generateMesh",
+      "generateRandomCompliantPalette",
+      "generateViolationsList",
+      "generateRegistryPanelHTML",
+      "generateOverviewContent",
+      "generateCategoryCard",
+      "generateHotspotColorBar"
+    ],
+    "Synchronization": [
+      "enforceComplianceAndSync"
+    ],
+    "Calculations": [
+      "calculateContrastFromObjects",
+      "calculateWCAGCompliantColor",
+      "calculateAPCACompliantColor",
+      "calculateMinimalAdjustment",
+      "calculateHarmony",
+      "calculateInfluenceStrength"
+    ],
+    "Parsing": [
+      "parseComputedColor",
+      "parseOKLCHFromComputed"
+    ],
+    "UI Display": [
+      "showNotification",
+      "showFloatingLog",
+      "showFloatingLogWithAria",
+      "showValidationReport",
+      "showTemplatePreview",
+      "hideTemplatePreview",
+      "showTemplateLayers",
+      "hideTemplateLayers"
+    ],
+    "Export/Import": [
+      "exportAllDataAndRefresh",
+      "enableImportButton",
+      "disableImportButton",
+      "importTemplate"
+    ],
+    "Rendering": [
+      "renderAtomsView",
+      "renderTopologyView",
+      "renderPatternsView",
+      "renderWeightsView"
+    ],
+    "UI Controls": [
+      "toggleCommandmentCategory",
+      "toggleSidebar"
+    ],
+    "Event Handlers": [
+      "handleSwipeGesture",
+      "handleDragStart",
+      "handleDragOver",
+      "handleDragEnter",
+      "handleDragLeave",
+      "handleDrop",
+      "handleDragEnd"
+    ]
+  },
+  "complexity_scores": {
+    "apply": 5,
+    "initUniversalSelector": 7,
+    "updateUniversalSelectionUI": 6,
+    "selectColorGroup": 3,
+    "setSelectionMode": 9,
+    "initPropertySliders": 6,
+    "initSlider": 8,
+    "initDropdown": 6,
+    "initShapeBorderRadiusSlider": 3,
+    "deltaValue": 2,
+    "clearSelection": 8,
+    "resetStyles": 9,
+    "saveCustomGroup": 7,
+    "clearShapeSelection": 7,
+    "resetShapeRadius": 6,
+    "memoize": 6,
+    "memoized": 6,
+    "sanitizeNumber": 5,
+    "debounce": 4,
+    "executedFunction": 6,
+    "later": 6,
+    "sanitizeColorValue": 12,
+    "sanitizeString": 15,
+    "sanitizeJSON": 14,
+    "validatePaletteData": 13,
+    "initSliders": 3,
+    "updateSliderValue": 8,
+    "init2DPickers": 2,
+    "drawHueWheel": 3,
+    "startAngle": 2,
+    "endAngle": 2,
+    "selectedAngle": 3,
+    "getHueFromPosition": 3,
+    "drawChromaLightness": 4,
+    "c": 2,
+    "idx": 2,
+    "crossX": 2,
+    "crossY": 2,
+    "getCLFromPosition": 3,
+    "init2DPickerToggles": 6,
+    "oklchToRgb": 5,
+    "init3DViewer": 6,
+    "onGamutEdge": 13,
+    "getModelData": 8,
+    "generateMesh": 2,
+    "animate": 6,
+    "updateSafeZone": 11,
+    "hueRad": 4,
+    "fy": 4,
+    "toHex": 8,
+    "initColorGroupCards": 6,
+    "encodeToURL": 5,
+    "decodeFromURL": 7,
+    "updateURLWithPalette": 5,
+    "loadPaletteFromURL": 5,
+    "scheduleURLUpdate": 7,
+    "initViewToggle": 7,
+    "initMockupTabs": 4,
+    "enforceComplianceAndSync": 25,
+    "SAPC": 5,
+    "transformColorForMode": 16,
+    "switchMode": 7,
+    "updateModeIndicator": 7,
+    "calculateContrastFromObjects": 7,
+    "updateScaffoldTheme": 6,
+    "updateScaffoldButtonLabel": 6,
+    "initScaffoldToggle": 6,
+    "updateOklchCodeDisplay": 7,
+    "updateModeButtonLabel": 5,
+    "initModeToggle": 6,
+    "initTemplateControls": 13,
+    "initAnimationControls": 8,
+    "initColorSliders": 8,
+    "onSliderChange": 7,
+    "initComplianceToggles": 10,
+    "updateAutoSyncStatus": 10,
+    "animateColorSlide": 7,
+    "easeInOutCubic": 8,
+    "calculateWCAGCompliantColor": 8,
+    "calculateAPCACompliantColor": 8,
+    "scanDOMForTextViolations": 12,
+    "parseComputedColor": 10,
+    "getImmediateBackground": 14,
+    "calculateMinimalAdjustment": 10,
+    "applyComplianceFixes": 2,
+    "fixWCAGViolations": 1,
+    "fixAPCAViolations": 1,
+    "optimizeReadability": 2,
+    "calculateHarmony": 5,
+    "applyHarmonyToPalette": 5,
+    "initColorHarmony": 6,
+    "updateHarmonyPreview": 4,
+    "showNotification": 5,
+    "showFloatingLog": 5,
+    "customAlert": 3,
+    "customConfirm": 2,
+    "customPrompt": 4,
+    "customSelect": 1,
+    "closeCustomModal": 4,
+    "closeCustomModalWithInput": 4,
+    "announceToScreenReader": 4,
+    "showFloatingLogWithAria": 4,
+    "toggleSettingsPanel": 5,
+    "toggleSetting": 5,
+    "saveSettings": 5,
+    "loadSettings": 7,
+    "updateSettingsUI": 9,
+    "applySettings": 7,
+    "resetSettings": 5,
+    "clearPalette": 4,
+    "exportAllDataAndRefresh": 2,
+    "runDiagnosticScan": 5,
+    "parseOKLCHFromComputed": 6,
+    "buildTopologyGraph": 5,
+    "calculateInfluenceStrength": 11,
+    "analyzePatterns": 12,
+    "displayDiagnosticResults": 7,
+    "renderAtomsView": 6,
+    "renderTopologyView": 3,
+    "renderPatternsView": 4,
+    "renderWeightsView": 4,
+    "updateTrajectoryWeight": 2,
+    "toggleCommandmentCategory": 2,
+    "expandAllCommandments": 3,
+    "collapseAllCommandments": 6,
+    "generateRandomCompliantPalette": 4,
+    "initRandomPalette": 3,
+    "initValidationButton": 2,
+    "runGlobalValidation": 1,
+    "showValidationReport": 1,
+    "generateViolationsList": 3,
+    "initRegistryButton": 2,
+    "openRegistryPanel": 1,
+    "generateRegistryPanelHTML": 1,
+    "generateOverviewContent": 1,
+    "generateCategoryCard": 1,
+    "attachRegistryPanelEvents": 4,
+    "initTemplateLibrary": 9,
+    "showTemplatePreview": 6,
+    "hideTemplatePreview": 7,
+    "showTemplateLayers": 6,
+    "hideTemplateLayers": 6,
+    "enableImportButton": 5,
+    "disableImportButton": 5,
+    "importTemplate": 4,
+    "applyNonColorLayers": 17,
+    "initScaffoldButtons": 5,
+    "applyToScaffold": 3,
+    "resetScaffold": 2,
+    "initHotspotSystem": 8,
+    "handleSwipeGesture": 13,
+    "updateFilteredHotspots": 15,
+    "lightnessMin": 15,
+    "lightnessMax": 14,
+    "chromaMin": 13,
+    "chromaMax": 12,
+    "tolerance": 10,
+    "updateHotspotPreviews": 5,
+    "index": 4,
+    "generateHotspotColorBar": 5,
+    "navigatePrevHotspot": 5,
+    "navigateNextHotspot": 5,
+    "jumpToRandomHotspot": 4,
+    "applyHotspot": 3,
+    "initWidgetSystem": 3,
+    "toggleWidgetMode": 2,
+    "handleDragStart": 9,
+    "handleDragOver": 9,
+    "handleDragEnter": 8,
+    "handleDragLeave": 6,
+    "handleDrop": 5,
+    "handleDragEnd": 3,
+    "saveWidgetOrder": 5,
+    "loadWidgetOrder": 8,
+    "resetWidgetOrder": 29,
+    "getColorName": 30,
+    "initCopyToClipboard": 2,
+    "updateColorLineDisplay": 5,
+    "updateSpotlightAccent": 6,
+    "captureState": 5,
+    "applyCSSVariablesFromPalette": 4,
+    "undo": 3,
+    "redo": 17,
+    "savePaletteToStorage": 9,
+    "loadPaletteFromStorage": 10,
+    "updateLastSavedDisplay": 9,
+    "markDirty": 6,
+    "toggleSidebar": 7,
+    "initSidebarResize": 7,
+    "updateLayout": 6,
+    "canvasOffset": 5,
+    "getClosestColorName": 6,
+    "getGroupDisplayName": 3,
+    "sortPairsByStandardOrder": 4,
+    "updateAllColorNames": 10,
+    "initColorPaletteMap": 4,
+    "updateColorPaletteMap": 9,
+    "selectColorForCentralControl": 6,
+    "updateCentralControlDisplay": 7,
+    "updateCentralSliderFromColor": 5,
+    "initCentralControlSystem": 6,
+    "init3DSliceVisualizer": 2,
+    "createColorSpace": 3,
+    "l": 4,
+    "h": 4,
+    "updateSlice": 9,
+    "onWindowResize": 6,
+    "update3DSliceFromCentralControl": 5,
+    "needsDarker": 2,
+    "updateColorParameter": 10,
+    "checkCounterWeightBalance": 4,
+    "navigateToColorGroup": 2
+  }
+}

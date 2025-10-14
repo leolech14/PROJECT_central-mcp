@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Live Dependency System - Real-Time Color Cascading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Active color groups - update in real-time */
+            --group-primary: oklch(0.60 0.18 260);
+            --group-secondary: oklch(0.55 0.15 200);
+            --group-background: oklch(0.98 0.02 250);
+            --group-text: oklch(0.18 0.02 250);
+            --group-surface: oklch(0.95 0.01 250);
+            --group-accent: oklch(0.70 0.12 40);
+        }
+
+        body {
+            background: var(--group-background);
+            color: var(--group-text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            transition: all 0.15s ease;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr 350px;
+            height: 100vh;
+        }
+
+        /* ========== LEFT: COLOR GROUP CONTROLS ========== */
+        .controls-panel {
+            background: var(--group-surface);
+            border-right: 2px solid oklch(from var(--group-background) l c h / 0.5);
+            padding: 2rem;
+            overflow-y: auto;
+            transition: all 0.15s ease;
+        }
+
+        .controls-header {
+            margin-bottom: 2rem;
+        }
+
+        .controls-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--group-text);
+        }
+
+        .mode-badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--group-primary);
+            color: var(--group-background);
+        }
+
+        .threshold-indicator {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: oklch(from var(--group-background) calc(l - 0.05) c h);
+            border-radius: 8px;
+            border: 2px solid var(--group-primary);
+            font-size: 0.85rem;
+            color: var(--group-text);
+        }
+
+        .color-group {
+            background: oklch(from var(--group-background) calc(l - 0.03) c h);
+            border: 2px solid oklch(from var(--group-text) l c h / 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.15s ease;
+        }
+
+        .color-group.active {
+            border-color: var(--group-primary);
+            box-shadow: 0 0 20px oklch(from var(--group-primary) l c h / 0.3);
+        }
+
+        .group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .group-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--group-text);
+        }
+
+        .group-scope {
+            font-size: 0.7rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--group-primary);
+            color: var(--group-background);
+        }
+
+        .group-preview {
+            width: 100%;
+            height: 50px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 2px solid oklch(from var(--group-text) l c h / 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .group-preview:hover {
+            transform: scale(1.02);
+            border-color: var(--group-primary);
+        }
+
+        .slider-control {
+            margin-bottom: 0.8rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            color: var(--group-text);
+        }
+
+        .slider-value {
+            font-family: 'SF Mono', monospace;
+            color: var(--group-primary);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(from var(--group-text) l c h / 0.2);
+            appearance: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--group-primary);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--group-primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .dependency-info {
+            font-size: 0.75rem;
+            color: oklch(from var(--group-text) calc(l + 0.2) c h);
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: oklch(from var(--group-background) calc(l - 0.02) c h);
+            border-radius: 4px;
+            border-left: 3px solid var(--group-accent);
+        }
+
+        /* ========== CENTER: LIVE UI PREVIEW ========== */
+        .preview-panel {
+            padding: 2rem;
+            overflow-y: auto;
+            transition: all 0.15s ease;
+        }
+
+        .preview-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .preview-header h2 {
+            font-size: 2rem;
+            color: var(--group-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .preview-subtitle {
+            color: oklch(from var(--group-text) calc(l + 0.2) c h);
+        }
+
+        .ui-grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        /* Sample UI Components */
+        .ui-section {
+            background: var(--group-surface);
+            border: 2px solid oklch(from var(--group-text) l c h / 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.15s ease;
+        }
+
+        .ui-section h3 {
+            color: var(--group-text);
+            margin-bottom: 1.5rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--group-primary);
+            color: var(--group-background);
+        }
+
+        .btn-primary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: var(--group-secondary);
+            color: var(--group-background);
+        }
+
+        .btn-secondary:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-accent {
+            background: var(--group-accent);
+            color: var(--group-text);
+        }
+
+        .btn-accent:hover {
+            filter: brightness(1.1);
+        }
+
+        .card {
+            background: var(--group-surface);
+            border: 2px solid oklch(from var(--group-text) l c h / 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.15s ease;
+        }
+
+        .card h4 {
+            color: var(--group-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--group-text);
+            line-height: 1.6;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 2px solid oklch(from var(--group-text) l c h / 0.2);
+            background: var(--group-background);
+            color: var(--group-text);
+            font-family: inherit;
+            margin-bottom: 1rem;
+            transition: all 0.15s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--group-primary);
+        }
+
+        /* ========== RIGHT: DEPENDENCY MAP ========== */
+        .dependency-panel {
+            background: var(--group-surface);
+            border-left: 2px solid oklch(from var(--group-background) l c h / 0.5);
+            padding: 2rem;
+            overflow-y: auto;
+            transition: all 0.15s ease;
+        }
+
+        .dependency-panel h2 {
+            font-size: 1.3rem;
+            color: var(--group-text);
+            margin-bottom: 1.5rem;
+        }
+
+        .dependency-map {
+            font-size: 0.8rem;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .dependency-rule {
+            background: oklch(from var(--group-background) calc(l - 0.03) c h);
+            border-left: 3px solid var(--group-accent);
+            padding: 0.8rem;
+            margin-bottom: 0.8rem;
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .dependency-rule.active {
+            border-left-color: var(--group-primary);
+            background: oklch(from var(--group-primary) l c h / 0.1);
+        }
+
+        .rule-source {
+            color: var(--group-primary);
+            font-weight: 600;
+        }
+
+        .rule-arrow {
+            color: var(--group-accent);
+            margin: 0 0.5rem;
+        }
+
+        .rule-target {
+            color: var(--group-secondary);
+        }
+
+        .rule-direction {
+            color: oklch(from var(--group-text) calc(l + 0.2) c h);
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+        }
+
+        .threshold-line {
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right,
+                oklch(0% 0 0) 0%,
+                oklch(0% 0 0) 49%,
+                var(--group-accent) 50%,
+                var(--group-accent) 51%,
+                oklch(100% 0 0) 100%
+            );
+            border-radius: 2px;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .threshold-marker {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 24px;
+            background: var(--group-accent);
+            border-radius: 4px;
+        }
+
+        .component-map {
+            margin-top: 2rem;
+        }
+
+        .component-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.6rem;
+            margin-bottom: 0.5rem;
+            background: oklch(from var(--group-background) calc(l - 0.02) c h);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            transition: all 0.15s ease;
+        }
+
+        .component-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid oklch(from var(--group-text) l c h / 0.3);
+        }
+
+        .component-name {
+            color: var(--group-text);
+        }
+
+        .component-group-tag {
+            margin-left: auto;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            background: var(--group-primary);
+            color: var(--group-background);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- LEFT: Color Group Controls -->
+        <div class="controls-panel">
+            <div class="controls-header">
+                <h1>🎨 Color Groups</h1>
+                <span class="mode-badge" id="modeBadge">☀️ Light Mode</span>
+            </div>
+
+            <div class="threshold-indicator" id="thresholdIndicator">
+                <strong>Threshold Watch:</strong> Background L = <span id="bgLightness">0.98</span>
+                <br>Mode will flip at L = 0.50
+            </div>
+
+            <!-- Primary Group -->
+            <div class="color-group" id="group-primary">
+                <div class="group-header">
+                    <div class="group-name">Primary</div>
+                    <div class="group-scope">GLOBAL</div>
+                </div>
+                <div class="group-preview" style="background: var(--group-primary);" onclick="selectGroup('primary')"></div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Lightness</span>
+                        <span class="slider-value" id="primary-l-value">0.60</span>
+                    </div>
+                    <input type="range" id="primary-l" min="0" max="100" value="60" oninput="updateGroup('primary', 'l', this.value)">
+                </div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Chroma</span>
+                        <span class="slider-value" id="primary-c-value">0.18</span>
+                    </div>
+                    <input type="range" id="primary-c" min="0" max="37" value="18" oninput="updateGroup('primary', 'c', this.value)">
+                </div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Hue</span>
+                        <span class="slider-value" id="primary-h-value">260°</span>
+                    </div>
+                    <input type="range" id="primary-h" min="0" max="360" value="260" oninput="updateGroup('primary', 'h', this.value)">
+                </div>
+
+                <div class="dependency-info">
+                    ↗️ <strong>Cascades to:</strong> Secondary (+60°), Accent (-30°)
+                </div>
+            </div>
+
+            <!-- Background Group -->
+            <div class="color-group" id="group-background">
+                <div class="group-header">
+                    <div class="group-name">Background</div>
+                    <div class="group-scope">GLOBAL</div>
+                </div>
+                <div class="group-preview" style="background: var(--group-background); border: 2px solid var(--group-text);" onclick="selectGroup('background')"></div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Lightness</span>
+                        <span class="slider-value" id="background-l-value">0.98</span>
+                    </div>
+                    <input type="range" id="background-l" min="0" max="100" value="98" oninput="updateGroup('background', 'l', this.value)">
+                </div>
+
+                <div class="dependency-info">
+                    ⚡ <strong>Triggers:</strong> Mode flip at 0.50, Text auto-contrast, Surface offset
+                </div>
+            </div>
+
+            <!-- Text Group -->
+            <div class="color-group" id="group-text">
+                <div class="group-header">
+                    <div class="group-name">Text</div>
+                    <div class="group-scope">GLOBAL</div>
+                </div>
+                <div class="group-preview" style="background: var(--group-text);" onclick="selectGroup('text')"></div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Lightness (Auto-Constrained)</span>
+                        <span class="slider-value" id="text-l-value">0.18</span>
+                    </div>
+                    <input type="range" id="text-l" min="0" max="100" value="18" oninput="updateGroup('text', 'l', this.value)" disabled>
+                </div>
+
+                <div class="dependency-info">
+                    🔒 <strong>Auto-enforced:</strong> 4.5:1 contrast with background
+                </div>
+            </div>
+
+            <!-- Accent Group -->
+            <div class="color-group" id="group-accent">
+                <div class="group-header">
+                    <div class="group-name">Accent</div>
+                    <div class="group-scope">COMPONENT</div>
+                </div>
+                <div class="group-preview" style="background: var(--group-accent);" onclick="selectGroup('accent')"></div>
+
+                <div class="slider-control">
+                    <div class="slider-label">
+                        <span>Lightness</span>
+                        <span class="slider-value" id="accent-l-value">0.70</span>
+                    </div>
+                    <input type="range" id="accent-l" min="0" max="100" value="70" oninput="updateGroup('accent', 'l', this.value)">
+                </div>
+
+                <div class="dependency-info">
+                    📌 <strong>Scope:</strong> Only badges, highlights, notifications
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTER: Live UI Preview -->
+        <div class="preview-panel">
+            <div class="preview-header">
+                <h2>Live Preview</h2>
+                <p class="preview-subtitle">Watch colors cascade as you slide →</p>
+            </div>
+
+            <div class="ui-grid">
+                <!-- Buttons Section -->
+                <div class="ui-section">
+                    <h3>Buttons (Primary Group)</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary">Primary Action</button>
+                        <button class="btn btn-secondary">Secondary Action</button>
+                        <button class="btn btn-accent">Accent Action</button>
+                    </div>
+                </div>
+
+                <!-- Cards Section -->
+                <div class="ui-section">
+                    <h3>Cards (Surface Group)</h3>
+                    <div class="card">
+                        <h4>Card Title (Primary Group)</h4>
+                        <p>Card body text uses the Text Group. Notice how it maintains contrast with the Surface Group background.</p>
+                    </div>
+                    <div class="card">
+                        <h4>Another Card</h4>
+                        <p>All cards share the same Surface Group color. Change it once, update everywhere.</p>
+                    </div>
+                </div>
+
+                <!-- Forms Section -->
+                <div class="ui-section">
+                    <h3>Forms (Text Group)</h3>
+                    <input type="text" class="input-field" placeholder="Your name (Text Group)">
+                    <input type="email" class="input-field" placeholder="Email address (Text Group)">
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Dependency Map -->
+        <div class="dependency-panel">
+            <h2>📊 Live Dependencies</h2>
+
+            <div class="dependency-map">
+                <div class="dependency-rule" id="dep-primary-secondary">
+                    <span class="rule-source">Primary</span>
+                    <span class="rule-arrow">→</span>
+                    <span class="rule-target">Secondary</span>
+                    <div class="rule-direction">H(+60°), C(×0.85), L(-0.05)</div>
+                </div>
+
+                <div class="dependency-rule" id="dep-primary-accent">
+                    <span class="rule-source">Primary</span>
+                    <span class="rule-arrow">→</span>
+                    <span class="rule-target">Accent</span>
+                    <div class="rule-direction">H(-30°), C(×0.75), L(+0.10)</div>
+                </div>
+
+                <div class="dependency-rule" id="dep-background-text">
+                    <span class="rule-source">Background</span>
+                    <span class="rule-arrow">⇄</span>
+                    <span class="rule-target">Text</span>
+                    <div class="rule-direction">Ensure 4.5:1 contrast (auto-adjust)</div>
+                </div>
+
+                <div class="dependency-rule" id="dep-background-surface">
+                    <span class="rule-source">Background</span>
+                    <span class="rule-arrow">→</span>
+                    <span class="rule-target">Surface</span>
+                    <div class="rule-direction">L(-0.03) IF light | L(+0.05) IF dark</div>
+                </div>
+
+                <div class="dependency-rule" id="dep-background-mode">
+                    <span class="rule-source">Background</span>
+                    <span class="rule-arrow">⚡</span>
+                    <span class="rule-target">Mode Flip</span>
+                    <div class="rule-direction">Trigger at L = 0.50 (threshold)</div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; font-size: 1.1rem; color: var(--group-text);">Threshold</h3>
+            <div class="threshold-line">
+                <div class="threshold-marker"></div>
+            </div>
+            <p style="font-size: 0.75rem; color: oklch(from var(--group-text) calc(l + 0.2) c h); text-align: center;">
+                Light ← 0.50 → Dark
+            </p>
+
+            <div class="component-map">
+                <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--group-text);">Component Mapping</h3>
+
+                <div class="component-item">
+                    <div class="component-color-dot" style="background: var(--group-primary);"></div>
+                    <span class="component-name">All Buttons</span>
+                    <span class="component-group-tag">Primary</span>
+                </div>
+
+                <div class="component-item">
+                    <div class="component-color-dot" style="background: var(--group-text);"></div>
+                    <span class="component-name">Body Text</span>
+                    <span class="component-group-tag">Text</span>
+                </div>
+
+                <div class="component-item">
+                    <div class="component-color-dot" style="background: var(--group-surface);"></div>
+                    <span class="component-name">All Cards</span>
+                    <span class="component-group-tag">Surface</span>
+                </div>
+
+                <div class="component-item">
+                    <div class="component-color-dot" style="background: var(--group-accent);"></div>
+                    <span class="component-name">Badges</span>
+                    <span class="component-group-tag">Accent</span>
+                </div>
+
+                <div class="component-item">
+                    <div class="component-color-dot" style="background: var(--group-background);"></div>
+                    <span class="component-name">Page BG</span>
+                    <span class="component-group-tag">Background</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Color state
+        const colorGroups = {
+            primary: { l: 0.60, c: 0.18, h: 260 },
+            secondary: { l: 0.55, c: 0.15, h: 200 },
+            background: { l: 0.98, c: 0.02, h: 250 },
+            text: { l: 0.18, c: 0.02, h: 250 },
+            surface: { l: 0.95, c: 0.01, h: 250 },
+            accent: { l: 0.70, c: 0.12, h: 40 }
+        };
+
+        let currentMode = 'light';
+        let activeGroup = null;
+
+        // OKLCH to luminance
+        function oklchToLuminance(l) {
+            return Math.pow(l, 2.2);
+        }
+
+        function calculateContrast(l1, l2) {
+            const lum1 = oklchToLuminance(l1);
+            const lum2 = oklchToLuminance(l2);
+            const lighter = Math.max(lum1, lum2);
+            const darker = Math.min(lum1, lum2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function findContrastingLightness(refL, minContrast = 4.5) {
+            const refY = oklchToLuminance(refL);
+            const lighterY = (minContrast * (refY + 0.05)) - 0.05;
+            const darkerY = ((refY + 0.05) / minContrast) - 0.05;
+            const lighterL = Math.sqrt(Math.min(1, lighterY));
+            const darkerL = Math.sqrt(Math.max(0, darkerY));
+
+            if (currentMode === 'light') {
+                return Math.min(darkerL, 0.30);
+            } else {
+                return Math.max(lighterL, 0.85);
+            }
+        }
+
+        function updateGroup(groupName, component, value) {
+            const normalizedValue = component === 'h' ?
+                parseInt(value) :
+                parseFloat(value) / 100;
+
+            colorGroups[groupName][component] = normalizedValue;
+
+            // Update display
+            document.getElementById(`${groupName}-${component}-value`).textContent =
+                component === 'h' ? `${normalizedValue}°` : normalizedValue.toFixed(2);
+
+            // CASCADE DEPENDENCIES
+            cascadeDependencies(groupName);
+
+            // Apply to UI
+            applyColors();
+
+            // Highlight active dependency
+            highlightDependency(groupName);
+        }
+
+        function cascadeDependencies(sourceGroup) {
+            if (sourceGroup === 'primary') {
+                // Primary → Secondary (analogous +60°)
+                colorGroups.secondary.h = (colorGroups.primary.h + 60) % 360;
+                colorGroups.secondary.c = colorGroups.primary.c * 0.85;
+                colorGroups.secondary.l = Math.max(0, colorGroups.primary.l - 0.05);
+
+                // Primary → Accent (split -30°)
+                colorGroups.accent.h = (colorGroups.primary.h - 30 + 360) % 360;
+                colorGroups.accent.c = colorGroups.primary.c * 0.75;
+                colorGroups.accent.l = Math.min(1, colorGroups.primary.l + 0.10);
+            }
+
+            if (sourceGroup === 'background') {
+                // Check mode threshold
+                const newMode = colorGroups.background.l > 0.5 ? 'light' : 'dark';
+                if (newMode !== currentMode) {
+                    currentMode = newMode;
+                    onModeFlip();
+                }
+
+                // Background → Text (ensure contrast)
+                colorGroups.text.l = findContrastingLightness(colorGroups.background.l, 4.5);
+
+                // Background → Surface (offset)
+                if (currentMode === 'light') {
+                    colorGroups.surface.l = Math.max(0, colorGroups.background.l - 0.03);
+                } else {
+                    colorGroups.surface.l = Math.min(1, colorGroups.background.l + 0.05);
+                }
+
+                // Update threshold indicator
+                document.getElementById('bgLightness').textContent = colorGroups.background.l.toFixed(2);
+            }
+        }
+
+        function onModeFlip() {
+            console.log(`🔄 Mode flipped to: ${currentMode}`);
+
+            const badge = document.getElementById('modeBadge');
+            badge.textContent = currentMode === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode';
+
+            // Re-cascade all dependencies with new mode
+            cascadeDependencies('background');
+        }
+
+        function applyColors() {
+            // Update CSS variables
+            for (const [name, color] of Object.entries(colorGroups)) {
+                const oklch = `oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(0)})`;
+                document.documentElement.style.setProperty(`--group-${name}`, oklch);
+            }
+        }
+
+        function highlightDependency(sourceGroup) {
+            // Remove all highlights
+            document.querySelectorAll('.dependency-rule').forEach(el => el.classList.remove('active'));
+
+            // Highlight relevant dependencies
+            if (sourceGroup === 'primary') {
+                document.getElementById('dep-primary-secondary').classList.add('active');
+                document.getElementById('dep-primary-accent').classList.add('active');
+            }
+
+            if (sourceGroup === 'background') {
+                document.getElementById('dep-background-text').classList.add('active');
+                document.getElementById('dep-background-surface').classList.add('active');
+                document.getElementById('dep-background-mode').classList.add('active');
+            }
+        }
+
+        function selectGroup(groupName) {
+            // Remove all active states
+            document.querySelectorAll('.color-group').forEach(el => el.classList.remove('active'));
+
+            // Add active state
+            document.getElementById(`group-${groupName}`).classList.add('active');
+            activeGroup = groupName;
+        }
+
+        // Initialize
+        applyColors();
+
+        console.log('✅ Live Dependency System loaded!');
+        console.log('🎨 Slide any color → Watch cascading updates');
+        console.log('⚡ Background L < 0.50 → Mode flips to dark');
+        console.log('🔒 Text automatically maintains 4.5:1 contrast');
+    </script>
+</body>
+</html>

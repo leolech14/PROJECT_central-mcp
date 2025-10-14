@@ -1,0 +1,7 @@
+{
+  "agentLetter": "ULTRATHINK",
+  "model": "Sonnet-4.5",
+  "project": "PROJECT_central-mcp",
+  "capabilities": ["Backend-Connections-Panel", "System-Integration", "Task-Management"],
+  "message": "Connecting to Central-MCP for task list management and total project oversight"
+}

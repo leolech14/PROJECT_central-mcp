@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH 3D + Auto-Constrained System - UNIFIED</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: oklch(12% 0.01 250);
+            color: oklch(95% 0.01 250);
+            overflow: hidden;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* Left Panel: 3D Controls */
+        #controls3d {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: oklch(18% 0.01 250 / 0.92);
+            border: 2px solid oklch(35% 0.02 250);
+            border-radius: 16px;
+            padding: 1.5rem;
+            min-width: 300px;
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        /* Right Panel: Constraint System */
+        #constraintPanel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: oklch(18% 0.01 250 / 0.92);
+            border: 2px solid oklch(35% 0.02 250);
+            border-radius: 16px;
+            padding: 1.5rem;
+            min-width: 320px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: oklch(80% 0.08 240);
+        }
+
+        .control-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(30% 0.02 250);
+            appearance: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            position: relative;
+            z-index: 3;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Legal Zone Overlay */
+        .legal-zone {
+            position: absolute;
+            bottom: 0;
+            height: 6px;
+            background: oklch(60% 0.15 140 / 0.3);
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Warning Indicator */
+        .warning {
+            display: none;
+            font-size: 0.8rem;
+            color: oklch(70% 0.18 30);
+            margin-top: 0.3rem;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .warning.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Color Preview */
+        .color-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 12px;
+            border: 2px solid oklch(40% 0.02 250);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            position: relative;
+        }
+
+        /* Relationship Indicator */
+        .relationship {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: oklch(22% 0.01 250 / 0.5);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .relationship .ratio {
+            font-family: 'SF Mono', monospace;
+            font-weight: bold;
+        }
+
+        .relationship.pass {
+            border-left: 3px solid oklch(65% 0.15 140);
+        }
+
+        .relationship.fail {
+            border-left: 3px solid oklch(65% 0.18 30);
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-badge.pass {
+            background: oklch(60% 0.15 140 / 0.3);
+            color: oklch(80% 0.15 140);
+        }
+
+        .status-badge.fail {
+            background: oklch(60% 0.18 30 / 0.3);
+            color: oklch(80% 0.18 30);
+        }
+
+        .info {
+            font-size: 0.8rem;
+            color: oklch(65% 0.02 250);
+            line-height: 1.5;
+            margin-top: 1rem;
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: oklch(18% 0.01 250 / 0.95);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 100;
+            border: 2px solid oklch(35% 0.02 250);
+        }
+
+        #loadingTitle {
+            font-size: 1.5rem;
+            color: oklch(75% 0.15 240);
+            margin-bottom: 1rem;
+        }
+
+        #progress {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas3d"></canvas>
+
+    <!-- Left Panel: 3D Visualization Controls -->
+    <div id="controls3d">
+        <h1>🎨 OKLCH 3D Space</h1>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness (L)</span>
+                <span class="value" id="value3dL">0.60</span>
+            </div>
+            <input type="range" id="slider3dL" min="0" max="100" value="60">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Chroma (C)</span>
+                <span class="value" id="value3dC">0.15</span>
+            </div>
+            <input type="range" id="slider3dC" min="0" max="37" value="15">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Hue (H)</span>
+                <span class="value" id="value3dH">240°</span>
+            </div>
+            <input type="range" id="slider3dH" min="0" max="360" value="240">
+        </div>
+
+        <div class="color-preview" id="preview3d"></div>
+
+        <div class="info">
+            🖱️ <strong>Drag</strong> to rotate<br>
+            🔍 <strong>Scroll</strong> to zoom<br>
+            🎯 <strong>Evil Martians</strong> 3D code
+        </div>
+    </div>
+
+    <!-- Right Panel: Constraint System -->
+    <div id="constraintPanel">
+        <h1>🛡️ Auto-Constrained</h1>
+
+        <h2>Background</h2>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness</span>
+                <span class="value" id="valueBgL">0.15</span>
+            </div>
+            <input type="range" id="sliderBgL" min="0" max="100" value="15">
+        </div>
+
+        <h2>Text Color (WCAG 4.5:1)</h2>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness</span>
+                <span class="value" id="valueTextL">0.95</span>
+            </div>
+            <div class="legal-zone" id="legalZoneText"></div>
+            <input type="range" id="sliderTextL" min="0" max="100" value="95">
+            <div class="warning" id="warningText">⚠️ Blocked by WCAG AA (4.5:1)</div>
+        </div>
+
+        <div class="color-preview" id="previewText">
+            Sample Text
+        </div>
+
+        <h2>Relationships</h2>
+        <div id="relationships"></div>
+
+        <div class="info">
+            🛡️ <strong>Guardrails</strong> prevent illegal colors<br>
+            ✨ <strong>Auto-adjustment</strong> on background change<br>
+            📊 <strong>Real-time</strong> WCAG validation
+        </div>
+    </div>
+
+    <div id="loading">
+        <div id="loadingTitle">🚀 Loading OKLCH System</div>
+        <div id="progress">Initializing...</div>
+    </div>
+
+    <script type="module">
+        const log = (msg) => {
+            document.getElementById('progress').textContent = msg;
+            console.log(msg);
+        };
+
+        // ========================================
+        // CONSTRAINT ENGINE (from operational system)
+        // ========================================
+
+        const state = {
+            bg: { l: 0.15, c: 0.01, h: 250 },
+            text: { l: 0.95, c: 0.01, h: 250 }
+        };
+
+        // OKLCH to relative luminance for WCAG
+        function oklchToLuminance(l) {
+            return Math.pow(l, 2);
+        }
+
+        // WCAG Contrast Ratio
+        function getContrastRatio(l1, l2) {
+            const y1 = oklchToLuminance(l1);
+            const y2 = oklchToLuminance(l2);
+            const lighter = Math.max(y1, y2);
+            const darker = Math.min(y1, y2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        // Calculate legal lightness range
+        function getLegalLightnessRange(bgL, minContrast = 4.5) {
+            const bgY = oklchToLuminance(bgL);
+            const lighterY = (minContrast * (bgY + 0.05)) - 0.05;
+            const darkerY = ((bgY + 0.05) / minContrast) - 0.05;
+
+            return {
+                min: Math.max(0, Math.sqrt(Math.max(0, darkerY))),
+                max: Math.min(1, Math.sqrt(Math.min(1, lighterY)))
+            };
+        }
+
+        // Update legal zone visualization
+        function updateLegalZone() {
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+            const zone = document.getElementById('legalZoneText');
+            const slider = document.getElementById('sliderTextL');
+            const sliderWidth = slider.offsetWidth;
+
+            zone.style.left = (legalRange.min * sliderWidth) + 'px';
+            zone.style.width = ((legalRange.max - legalRange.min) * sliderWidth) + 'px';
+        }
+
+        // Enforce text constraints
+        function enforceTextConstraints() {
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+            const warning = document.getElementById('warningText');
+
+            if (state.text.l < legalRange.min) {
+                state.text.l = legalRange.min;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+                warning.classList.add('active');
+                setTimeout(() => warning.classList.remove('active'), 1000);
+            } else if (state.text.l > legalRange.max) {
+                state.text.l = legalRange.max;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+                warning.classList.add('active');
+                setTimeout(() => warning.classList.remove('active'), 1000);
+            }
+        }
+
+        // Update relationship display
+        function updateRelationships() {
+            const ratio = getContrastRatio(state.bg.l, state.text.l);
+            const pass = ratio >= 4.5;
+
+            const html = `
+                <div class="relationship ${pass ? 'pass' : 'fail'}">
+                    <span>Background → Text</span>
+                    <span class="ratio">${ratio.toFixed(1)}:1</span>
+                    <span class="status-badge ${pass ? 'pass' : 'fail'}">${pass ? '✓ PASS' : '✗ FAIL'}</span>
+                </div>
+            `;
+
+            document.getElementById('relationships').innerHTML = html;
+        }
+
+        // Update constraint UI
+        function updateConstraintUI() {
+            // Update values
+            document.getElementById('valueBgL').textContent = state.bg.l.toFixed(2);
+            document.getElementById('valueTextL').textContent = state.text.l.toFixed(2);
+
+            // Update preview
+            const bgColor = `oklch(${state.bg.l} ${state.bg.c} ${state.bg.h})`;
+            const textColor = `oklch(${state.text.l} ${state.text.c} ${state.text.h})`;
+
+            const preview = document.getElementById('previewText');
+            preview.style.background = bgColor;
+            preview.style.color = textColor;
+
+            // Update legal zone
+            updateLegalZone();
+
+            // Update relationships
+            updateRelationships();
+        }
+
+        // ========================================
+        // 3D VISUALIZATION (Evil Martians' code)
+        // ========================================
+
+        try {
+            log('Loading Three.js...');
+            const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
+            const { OrbitControls } = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js');
+
+            log('Loading Culori...');
+            const culoriModule = await import('https://cdn.jsdelivr.net/npm/culori@3.3.0/+esm');
+            const { converter } = culoriModule;
+            const toOklch = converter('oklch');
+            const toRgb = converter('rgb');
+
+            log('Loading Delaunator...');
+            const delaunatorModule = await import('https://cdn.jsdelivr.net/npm/delaunator@5.0.1/+esm');
+            const Delaunator = delaunatorModule.default || delaunatorModule.Delaunator || delaunatorModule;
+
+            log('Generating 3D model...');
+
+            const L_MAX_COLOR = 1;
+            const C_MAX = 0.37;
+
+            // Evil Martians' exact functions
+            function onGamutEdge(r, g, b) {
+                return r === 0 || g === 0 || b === 0 || r > 0.99 || g > 0.99 || b > 0.99;
+            }
+
+            function getModelData() {
+                let coordinates = [];
+                let colors = [];
+
+                for (let x = 0; x <= 1; x += 0.05) {
+                    for (let y = 0; y <= 1; y += 0.05) {
+                        for (let z = 0; z <= 1; z += 0.05) {
+                            if (onGamutEdge(x, y, z)) {
+                                let edgeRgb = { mode: 'rgb', r: x, g: y, b: z };
+                                let to = toOklch(edgeRgb);
+
+                                if (to.h !== undefined) {
+                                    colors.push(edgeRgb.r, edgeRgb.g, edgeRgb.b);
+                                    coordinates.push(
+                                        new THREE.Vector3(
+                                            to.l / L_MAX_COLOR,
+                                            to.c / (C_MAX * 2),
+                                            to.h / 360
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let bounds = [[0,0,0],[0,0,1],[1,0,0],[1,1,0],[1,0,1],[1,0,1],[1,1,1]];
+                for (let i of bounds) {
+                    coordinates.push(new THREE.Vector3(...i));
+                    colors.push(i[0], i[0], i[0]);
+                }
+
+                return [coordinates, colors];
+            }
+
+            function generateMesh(scene) {
+                scene.clear();
+
+                let [coordinates, colors] = getModelData();
+                let top = new THREE.BufferGeometry().setFromPoints(coordinates);
+                top.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                top.center();
+
+                const points2D = coordinates.map(c => [c.x, c.z]);
+                const delaunay = Delaunator.from(points2D);
+                top.setIndex(Array.from(delaunay.triangles));
+                top.computeVertexNormals();
+
+                let material = new THREE.MeshBasicMaterial({
+                    side: THREE.DoubleSide,
+                    vertexColors: true
+                });
+
+                let l = new THREE.Vector2(0, 1);
+                let c = new THREE.Vector2(0, 1);
+                let h = new THREE.Vector2(0, 1);
+
+                material.onBeforeCompile = shader => {
+                    shader.uniforms.sliceL = { value: l };
+                    shader.uniforms.sliceC = { value: c };
+                    shader.uniforms.sliceH = { value: h };
+
+                    shader.vertexShader = `varying vec3 vPos;\n${shader.vertexShader}`.replace(
+                        `#include <begin_vertex>`,
+                        `#include <begin_vertex>\nvPos = transformed;`
+                    );
+
+                    shader.fragmentShader = `
+                        #define ss(a, b, c) smoothstep(a, b, c)
+                        uniform vec2 sliceL, sliceC, sliceH;
+                        varying vec3 vPos;
+                        ${shader.fragmentShader}
+                    `.replace(
+                        `#include <dithering_fragment>`,
+                        `#include <dithering_fragment>
+                        vec3 col = vec3(0.5, 0.5, 0.5);
+                        float width = 0.0025;
+                        float l = ss(width, 0., abs(vPos.x + sliceL.y));
+                        float c = ss(width, 0., abs(vPos.y + sliceC.y));
+                        float h = ss(width, 0., abs(vPos.z - sliceH.y));
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, l);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, c);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, h);`
+                    );
+                };
+
+                let topMesh = new THREE.Mesh(top, material);
+                topMesh.translateY(0.3);
+                scene.add(topMesh);
+
+                let bottom = new THREE.PlaneGeometry(1, 1, 1, 20);
+                let bottomColors = [];
+                let bottomSteps = bottom.attributes.position.array.length / 6;
+                for (let i = 0; i <= bottomSteps; i += 1) {
+                    let lchL = (L_MAX_COLOR * i) / bottomSteps;
+                    let rgbL = toRgb({ mode: 'oklch', l: lchL, c: 0, h: 0 }).r;
+                    bottomColors.push(rgbL, rgbL, rgbL, rgbL, rgbL, rgbL);
+                }
+                bottom.setAttribute('color', new THREE.Float32BufferAttribute(bottomColors, 3));
+                bottom.translate(0, 0, -0.2);
+                bottom.rotateZ(Math.PI * 0.5);
+                bottom.rotateX(-Math.PI * 0.5);
+                let bottomMesh = new THREE.Mesh(bottom, material);
+                scene.add(bottomMesh);
+
+                return color => {
+                    l.set(0, -color.l + 0.5);
+                    c.set(0, (0.5 * -color.c) / C_MAX + 0.5);
+                    h.set(0, 0.0028 * color.h - (color.h > 350 ? 0.51 : 0.5));
+                };
+            }
+
+            log('Setting up scene...');
+
+            const canvas = document.getElementById('canvas3d');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, canvas });
+
+            renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.position.set(0.79, 0, 0.79);
+            camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enablePan = true;
+            controls.enableZoom = true;
+            controls.minDistance = 0.9;
+            controls.maxDistance = 3;
+
+            const updateSlices = generateMesh(scene);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // ========================================
+            // UI EVENT HANDLERS (unified system)
+            // ========================================
+
+            // 3D Controls
+            const slider3dL = document.getElementById('slider3dL');
+            const slider3dC = document.getElementById('slider3dC');
+            const slider3dH = document.getElementById('slider3dH');
+
+            function update3D() {
+                const l = parseFloat(slider3dL.value) / 100;
+                const c = parseFloat(slider3dC.value) / 100;
+                const h = parseFloat(slider3dH.value);
+
+                document.getElementById('value3dL').textContent = l.toFixed(2);
+                document.getElementById('value3dC').textContent = c.toFixed(2);
+                document.getElementById('value3dH').textContent = h.toFixed(0) + '°';
+
+                const color = `oklch(${l} ${c} ${h})`;
+                document.getElementById('preview3d').style.background = color;
+
+                updateSlices({ l, c, h });
+            }
+
+            slider3dL.addEventListener('input', update3D);
+            slider3dC.addEventListener('input', update3D);
+            slider3dH.addEventListener('input', update3D);
+
+            // Constraint Controls
+            const sliderBgL = document.getElementById('sliderBgL');
+            const sliderTextL = document.getElementById('sliderTextL');
+
+            sliderBgL.addEventListener('input', (e) => {
+                state.bg.l = parseFloat(e.target.value) / 100;
+                enforceTextConstraints();
+                updateConstraintUI();
+            });
+
+            sliderTextL.addEventListener('input', (e) => {
+                let requested = parseFloat(e.target.value) / 100;
+                const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+
+                if (requested < legalRange.min) {
+                    requested = legalRange.min;
+                    e.target.value = requested * 100;
+                    document.getElementById('warningText').classList.add('active');
+                    setTimeout(() => document.getElementById('warningText').classList.remove('active'), 1000);
+                } else if (requested > legalRange.max) {
+                    requested = legalRange.max;
+                    e.target.value = requested * 100;
+                    document.getElementById('warningText').classList.add('active');
+                    setTimeout(() => document.getElementById('warningText').classList.remove('active'), 1000);
+                }
+
+                state.text.l = requested;
+                updateConstraintUI();
+            });
+
+            // Initialize
+            log('Starting...');
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                animate();
+                update3D();
+                updateConstraintUI();
+                console.log('✅ UNIFIED OKLCH SYSTEM READY!');
+            }, 100);
+
+        } catch (error) {
+            log(`ERROR: ${error.message}`);
+            console.error('Full error:', error);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Hyper-Dimensional Color System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: oklch(12% 0.01 250);
+            color: oklch(95% 0.01 250);
+            font-family: 'SF Mono', Consolas, monospace;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg,
+                oklch(75% 0.20 0),
+                oklch(75% 0.20 60),
+                oklch(75% 0.20 120),
+                oklch(75% 0.20 180),
+                oklch(75% 0.20 240),
+                oklch(75% 0.20 300),
+                oklch(75% 0.20 360)
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: oklch(70% 0.02 250);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: oklch(60% 0.02 250);
+        }
+
+        .dimension-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+        }
+
+        .dimension-panel {
+            background: oklch(18% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .dimension-title {
+            font-size: 1.3rem;
+            color: oklch(85% 0.02 250);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .option-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .option-card {
+            background: oklch(15% 0.01 250);
+            border: 2px solid oklch(25% 0.02 250);
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-card:hover {
+            border-color: oklch(60% 0.18 260);
+            transform: translateY(-2px);
+        }
+
+        .option-card.selected {
+            border-color: oklch(70% 0.20 260);
+            background: oklch(20% 0.02 260);
+            box-shadow: 0 0 20px oklch(60% 0.18 260 / 0.3);
+        }
+
+        .option-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .option-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: oklch(90% 0.02 250);
+        }
+
+        .option-badge {
+            background: oklch(25% 0.02 250);
+            color: oklch(75% 0.15 240);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+        }
+
+        .option-description {
+            color: oklch(70% 0.02 250);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .option-preview {
+            display: flex;
+            gap: 0.5rem;
+            height: 30px;
+        }
+
+        .color-bar {
+            flex: 1;
+            border-radius: 4px;
+        }
+
+        .matrix-view {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: oklch(18% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .matrix-header {
+            font-size: 1.5rem;
+            color: oklch(90% 0.02 250);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 150px repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .matrix-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: oklch(80% 0.02 250);
+            font-weight: 600;
+        }
+
+        .matrix-cell {
+            background: oklch(15% 0.01 250);
+            border: 2px solid oklch(25% 0.02 250);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .matrix-cell:hover {
+            border-color: oklch(60% 0.18 260);
+            transform: scale(1.02);
+        }
+
+        .matrix-cell.active {
+            border-color: oklch(70% 0.20 260);
+            background: oklch(20% 0.02 260);
+        }
+
+        .weight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+        }
+
+        .weight-name {
+            color: oklch(70% 0.02 250);
+        }
+
+        .weight-value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        .generated-system {
+            background: oklch(15% 0.01 250);
+            border: 2px solid oklch(30% 0.02 250);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .system-title {
+            font-size: 1.3rem;
+            color: oklch(85% 0.02 250);
+            margin-bottom: 1.5rem;
+        }
+
+        .color-family-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .family-card {
+            background: oklch(12% 0.01 250);
+            border: 1px solid oklch(25% 0.02 250);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .family-name {
+            font-size: 1rem;
+            color: oklch(80% 0.02 250);
+            margin-bottom: 1rem;
+        }
+
+        .family-colors {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .family-color-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .family-color-swatch {
+            width: 40px;
+            height: 25px;
+            border-radius: 4px;
+            border: 1px solid oklch(30% 0.02 250);
+        }
+
+        .family-color-label {
+            font-size: 0.75rem;
+            color: oklch(75% 0.02 250);
+        }
+
+        .action-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: oklch(60% 0.18 260);
+            color: oklch(98% 0.01 250);
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: oklch(25% 0.02 250);
+            color: oklch(90% 0.02 250);
+            border: 1px solid oklch(35% 0.02 250);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌌 Hyper-Dimensional Color System</h1>
+        <div class="tagline">Semantic Elements × Classical Palettes × Counter-Weights</div>
+        <div class="subtitle">Pick dimensions → Instant professional color system</div>
+    </div>
+
+    <div class="dimension-selector">
+        <!-- DIMENSION 1: Semantic Purpose -->
+        <div class="dimension-panel">
+            <div class="dimension-title">📐 Dimension 1: Semantic Purpose</div>
+            <div class="option-grid">
+                <div class="option-card" onclick="selectSemantic('general')" id="semantic-general">
+                    <div class="option-header">
+                        <div class="option-name">General UI</div>
+                        <div class="option-badge">Balanced</div>
+                    </div>
+                    <div class="option-description">
+                        All-purpose design system. Buttons, cards, inputs, typography.
+                        Balanced weights for versatile applications.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(60% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(55% 0.15 200);"></div>
+                        <div class="color-bar" style="background: oklch(70% 0.12 40);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectSemantic('dashboard')" id="semantic-dashboard">
+                    <div class="option-header">
+                        <div class="option-name">Dashboard/Analytics</div>
+                        <div class="option-badge">Data-Dense</div>
+                    </div>
+                    <div class="option-description">
+                        Optimized for data visualization. Chart-friendly palettes.
+                        High contrast for readability. Multiple accent colors.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(55% 0.20 220);"></div>
+                        <div class="color-bar" style="background: oklch(65% 0.18 140);"></div>
+                        <div class="color-bar" style="background: oklch(70% 0.16 40);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.17 320);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectSemantic('marketing')" id="semantic-marketing">
+                    <div class="option-header">
+                        <div class="option-name">Marketing/Landing</div>
+                        <div class="option-badge">Bold</div>
+                    </div>
+                    <div class="option-description">
+                        High energy, high chroma. Strong CTAs.
+                        Optimized for conversion and attention-grabbing.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(65% 0.25 300);"></div>
+                        <div class="color-bar" style="background: oklch(70% 0.22 40);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.20 200);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectSemantic('editorial')" id="semantic-editorial">
+                    <div class="option-header">
+                        <div class="option-name">Editorial/Content</div>
+                        <div class="option-badge">Readable</div>
+                    </div>
+                    <div class="option-description">
+                        Long-form reading optimized. Subtle accents.
+                        High contrast text. Low chroma for eye comfort.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(50% 0.10 260);"></div>
+                        <div class="color-bar" style="background: oklch(98% 0.02 250);"></div>
+                        <div class="color-bar" style="background: oklch(15% 0.01 250);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIMENSION 2: Classical Palette -->
+        <div class="dimension-panel">
+            <div class="dimension-title">🎨 Dimension 2: Classical Palette</div>
+            <div class="option-grid">
+                <div class="option-card" onclick="selectPalette('monochromatic')" id="palette-monochromatic">
+                    <div class="option-header">
+                        <div class="option-name">Monochromatic</div>
+                        <div class="option-badge">Harmony</div>
+                    </div>
+                    <div class="option-description">
+                        Single hue, multiple lightness/chroma.
+                        Maximum harmony, minimal color tension.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(70% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(50% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(40% 0.18 260);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectPalette('analogous')" id="palette-analogous">
+                    <div class="option-header">
+                        <div class="option-name">Analogous</div>
+                        <div class="option-badge">Natural</div>
+                    </div>
+                    <div class="option-description">
+                        Adjacent hues (±30-60°). Natural, cohesive.
+                        Common in nature. Easy on the eyes.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(60% 0.18 240);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 280);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectPalette('complementary')" id="palette-complementary">
+                    <div class="option-header">
+                        <div class="option-name">Complementary</div>
+                        <div class="option-badge">Contrast</div>
+                    </div>
+                    <div class="option-description">
+                        Opposite hues (180°). Maximum contrast.
+                        High energy, attention-grabbing.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(60% 0.18 260);"></div>
+                        <div class="color-bar" style="background: oklch(70% 0.15 80);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectPalette('triadic')" id="palette-triadic">
+                    <div class="option-header">
+                        <div class="option-name">Triadic</div>
+                        <div class="option-badge">Vibrant</div>
+                    </div>
+                    <div class="option-description">
+                        Three evenly-spaced hues (120° apart).
+                        Vibrant, balanced, energetic.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(60% 0.18 0);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 120);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 240);"></div>
+                    </div>
+                </div>
+
+                <div class="option-card" onclick="selectPalette('tetradic')" id="palette-tetradic">
+                    <div class="option-header">
+                        <div class="option-name">Tetradic (Square)</div>
+                        <div class="option-badge">Rich</div>
+                    </div>
+                    <div class="option-description">
+                        Four evenly-spaced hues (90° apart).
+                        Rich variety, requires balancing.
+                    </div>
+                    <div class="option-preview">
+                        <div class="color-bar" style="background: oklch(60% 0.18 0);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 90);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 180);"></div>
+                        <div class="color-bar" style="background: oklch(60% 0.18 270);"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Matrix View -->
+    <div class="matrix-view">
+        <div class="matrix-header">🔍 Weight Matrix Explorer</div>
+        <p style="text-align: center; color: oklch(70% 0.02 250); margin-bottom: 2rem; font-size: 0.9rem;">
+            Each cell shows pre-configured weight relationships for that combination
+        </p>
+
+        <div class="matrix-grid">
+            <!-- Header row -->
+            <div class="matrix-label"></div>
+            <div class="matrix-label">Monochromatic</div>
+            <div class="matrix-label">Analogous</div>
+            <div class="matrix-label">Complementary</div>
+            <div class="matrix-label">Triadic</div>
+            <div class="matrix-label">Tetradic</div>
+
+            <!-- General UI row -->
+            <div class="matrix-label">General UI</div>
+            <div class="matrix-cell" onclick="selectMatrix('general', 'monochromatic')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Secondary</span><span class="weight-value">90%</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">80%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('general', 'analogous')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Secondary</span><span class="weight-value">85% +60°</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">75% -30°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('general', 'complementary')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">80% +180°</span></div>
+                <div class="weight-item"><span class="weight-name">Balance</span><span class="weight-value">60%/40%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('general', 'triadic')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">50%</span></div>
+                <div class="weight-item"><span class="weight-name">Secondary</span><span class="weight-value">30% +120°</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">20% +240°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('general', 'tetradic')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">40%</span></div>
+                <div class="weight-item"><span class="weight-name">Secondary</span><span class="weight-value">30% +90°</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">20% +180°</span></div>
+            </div>
+
+            <!-- Dashboard row -->
+            <div class="matrix-label">Dashboard</div>
+            <div class="matrix-cell" onclick="selectMatrix('dashboard', 'monochromatic')">
+                <div class="weight-item"><span class="weight-name">Data1</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Data2</span><span class="weight-value">85%</span></div>
+                <div class="weight-item"><span class="weight-name">Data3</span><span class="weight-value">70%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('dashboard', 'analogous')">
+                <div class="weight-item"><span class="weight-name">Chart1</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Chart2</span><span class="weight-value">90% +40°</span></div>
+                <div class="weight-item"><span class="weight-name">Chart3</span><span class="weight-value">80% -40°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('dashboard', 'complementary')">
+                <div class="weight-item"><span class="weight-name">Positive</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Negative</span><span class="weight-value">90% +180°</span></div>
+                <div class="weight-item"><span class="weight-name">Neutral</span><span class="weight-value">50%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('dashboard', 'triadic')">
+                <div class="weight-item"><span class="weight-name">KPI1</span><span class="weight-value">45%</span></div>
+                <div class="weight-item"><span class="weight-name">KPI2</span><span class="weight-value">35% +120°</span></div>
+                <div class="weight-item"><span class="weight-name">KPI3</span><span class="weight-value">20% +240°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('dashboard', 'tetradic')">
+                <div class="weight-item"><span class="weight-name">Metric1</span><span class="weight-value">35%</span></div>
+                <div class="weight-item"><span class="weight-name">Metric2</span><span class="weight-value">30% +90°</span></div>
+                <div class="weight-item"><span class="weight-name">Metric3</span><span class="weight-value">25% +180°</span></div>
+            </div>
+
+            <!-- Marketing row -->
+            <div class="matrix-label">Marketing</div>
+            <div class="matrix-cell" onclick="selectMatrix('marketing', 'monochromatic')">
+                <div class="weight-item"><span class="weight-name">CTA</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Hero</span><span class="weight-value">95%</span></div>
+                <div class="weight-item"><span class="weight-name">Support</span><span class="weight-value">75%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('marketing', 'analogous')">
+                <div class="weight-item"><span class="weight-name">CTA</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Hero</span><span class="weight-value">90% +50°</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">85% -30°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('marketing', 'complementary')">
+                <div class="weight-item"><span class="weight-name">CTA</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Contrast</span><span class="weight-value">95% +180°</span></div>
+                <div class="weight-item"><span class="weight-name">Balance</span><span class="weight-value">70%/30%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('marketing', 'triadic')">
+                <div class="weight-item"><span class="weight-name">Primary</span><span class="weight-value">55%</span></div>
+                <div class="weight-item"><span class="weight-name">Secondary</span><span class="weight-value">30% +120°</span></div>
+                <div class="weight-item"><span class="weight-name">Accent</span><span class="weight-value">15% +240°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('marketing', 'tetradic')">
+                <div class="weight-item"><span class="weight-name">Hero</span><span class="weight-value">45%</span></div>
+                <div class="weight-item"><span class="weight-name">CTA</span><span class="weight-value">35% +90°</span></div>
+                <div class="weight-item"><span class="weight-name">Feature</span><span class="weight-value">20% +180°</span></div>
+            </div>
+
+            <!-- Editorial row -->
+            <div class="matrix-label">Editorial</div>
+            <div class="matrix-cell" onclick="selectMatrix('editorial', 'monochromatic')">
+                <div class="weight-item"><span class="weight-name">Text</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Quote</span><span class="weight-value">80%</span></div>
+                <div class="weight-item"><span class="weight-name">Link</span><span class="weight-value">95%</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('editorial', 'analogous')">
+                <div class="weight-item"><span class="weight-name">Body</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Link</span><span class="weight-value">85% +45°</span></div>
+                <div class="weight-item"><span class="weight-name">Quote</span><span class="weight-value">70% -30°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('editorial', 'complementary')">
+                <div class="weight-item"><span class="weight-name">Text</span><span class="weight-value">100%</span></div>
+                <div class="weight-item"><span class="weight-name">Link</span><span class="weight-value">80% +180°</span></div>
+                <div class="weight-item"><span class="weight-name">Subtle</span><span class="weight-value">True</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('editorial', 'triadic')">
+                <div class="weight-item"><span class="weight-name">Heading</span><span class="weight-value">40%</span></div>
+                <div class="weight-item"><span class="weight-name">Link</span><span class="weight-value">35% +120°</span></div>
+                <div class="weight-item"><span class="weight-name">Quote</span><span class="weight-value">25% +240°</span></div>
+            </div>
+            <div class="matrix-cell" onclick="selectMatrix('editorial', 'tetradic')">
+                <div class="weight-item"><span class="weight-name">Text</span><span class="weight-value">50%</span></div>
+                <div class="weight-item"><span class="weight-name">Link</span><span class="weight-value">25% +90°</span></div>
+                <div class="weight-item"><span class="weight-name">Quote</span><span class="weight-value">15% +180°</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generated System -->
+    <div class="matrix-view">
+        <div class="generated-system">
+            <div class="system-title">🎨 Generated Color System</div>
+            <p style="color: oklch(70% 0.02 250); margin-bottom: 2rem; font-size: 0.9rem;">
+                Based on: <strong id="selectedCombo">General UI × Analogous</strong>
+            </p>
+
+            <div class="color-family-grid" id="generatedFamilies"></div>
+
+            <div class="action-bar">
+                <button class="btn" onclick="generateSystem()">⚡ Generate System</button>
+                <button class="btn btn-secondary" onclick="exportSystem()">💾 Export JSON</button>
+                <button class="btn btn-secondary" onclick="exportCSS()">🎨 Export CSS</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let selectedSemantic = 'general';
+        let selectedPalette = 'analogous';
+
+        // Weight configurations for each combination
+        const weightMatrix = {
+            'general-monochromatic': {
+                primary: { l: 0.60, c: 0.18, h: 260, weight: 1.0 },
+                secondary: { l: 0.55, c: 0.18, h: 260, weight: 0.9 },
+                accent: { l: 0.70, c: 0.18, h: 260, weight: 0.8 }
+            },
+            'general-analogous': {
+                primary: { l: 0.60, c: 0.18, h: 260, weight: 1.0 },
+                secondary: { l: 0.55, c: 0.15, h: 320, weight: 0.85 },
+                accent: { l: 0.70, c: 0.12, h: 230, weight: 0.75 }
+            },
+            'general-complementary': {
+                primary: { l: 0.60, c: 0.18, h: 260, weight: 0.6 },
+                accent: { l: 0.70, c: 0.15, h: 80, weight: 0.4 }
+            },
+            'general-triadic': {
+                primary: { l: 0.60, c: 0.18, h: 0, weight: 0.5 },
+                secondary: { l: 0.60, c: 0.18, h: 120, weight: 0.3 },
+                accent: { l: 0.60, c: 0.18, h: 240, weight: 0.2 }
+            },
+            // ... (more configurations)
+        };
+
+        function selectSemantic(type) {
+            selectedSemantic = type;
+            document.querySelectorAll('[id^="semantic-"]').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`semantic-${type}`).classList.add('selected');
+            updateCombo();
+        }
+
+        function selectPalette(type) {
+            selectedPalette = type;
+            document.querySelectorAll('[id^="palette-"]').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`palette-${type}`).classList.add('selected');
+            updateCombo();
+        }
+
+        function selectMatrix(semantic, palette) {
+            selectedSemantic = semantic;
+            selectedPalette = palette;
+            updateCombo();
+        }
+
+        function updateCombo() {
+            const comboName = `${selectedSemantic.charAt(0).toUpperCase() + selectedSemantic.slice(1)} × ${selectedPalette.charAt(0).toUpperCase() + selectedPalette.slice(1)}`;
+            document.getElementById('selectedCombo').textContent = comboName;
+        }
+
+        function generateSystem() {
+            const key = `${selectedSemantic}-${selectedPalette}`;
+            const weights = weightMatrix[key] || weightMatrix['general-analogous'];
+
+            const families = Object.entries(weights).map(([name, config]) => ({
+                name,
+                colors: generateColorFamily(config)
+            }));
+
+            displayFamilies(families);
+        }
+
+        function generateColorFamily(config) {
+            return {
+                base: config,
+                light: { ...config, l: Math.min(1, config.l + 0.10) },
+                dark: { ...config, l: Math.max(0, config.l - 0.10) },
+                muted: { ...config, c: Math.max(0, config.c - 0.08) }
+            };
+        }
+
+        function displayFamilies(families) {
+            const container = document.getElementById('generatedFamilies');
+            container.innerHTML = '';
+
+            families.forEach(family => {
+                const card = document.createElement('div');
+                card.className = 'family-card';
+
+                const name = document.createElement('div');
+                name.className = 'family-name';
+                name.textContent = family.name.charAt(0).toUpperCase() + family.name.slice(1);
+
+                const colors = document.createElement('div');
+                colors.className = 'family-colors';
+
+                Object.entries(family.colors).forEach(([variant, color]) => {
+                    const item = document.createElement('div');
+                    item.className = 'family-color-item';
+
+                    const swatch = document.createElement('div');
+                    swatch.className = 'family-color-swatch';
+                    swatch.style.background = `oklch(${color.l.toFixed(2)} ${color.c.toFixed(2)} ${color.h})`;
+
+                    const label = document.createElement('div');
+                    label.className = 'family-color-label';
+                    label.textContent = variant;
+
+                    item.appendChild(swatch);
+                    item.appendChild(label);
+                    colors.appendChild(item);
+                });
+
+                card.appendChild(name);
+                card.appendChild(colors);
+                container.appendChild(card);
+            });
+        }
+
+        function exportSystem() {
+            alert('✅ Export system as JSON (implementation pending)');
+        }
+
+        function exportCSS() {
+            alert('✅ Export system as CSS (implementation pending)');
+        }
+
+        // Initialize
+        selectSemantic('general');
+        selectPalette('analogous');
+        generateSystem();
+
+        console.log('✅ Hyper-Dimensional Color System loaded!');
+        console.log('🌌 Select semantic purpose + classical palette');
+        console.log('⚡ Click "Generate System" for instant professional colors');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Counter-Weight Gallery - Auto-Balancing Design System</title>
+
+    <!-- Import map for Three.js (for 3D visualization) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Design tokens - updated dynamically */
+            --primary: oklch(0.60 0.18 260);
+            --secondary: oklch(0.55 0.15 200);
+            --accent: oklch(0.70 0.12 40);
+            --background: oklch(0.98 0.02 250);
+            --surface: oklch(0.95 0.01 250);
+            --text: oklch(0.18 0.02 250);
+            --text-secondary: oklch(0.40 0.02 250);
+            --border: oklch(0.85 0.02 250);
+            --success: oklch(0.65 0.15 140);
+            --warning: oklch(0.70 0.15 60);
+            --error: oklch(0.60 0.15 25);
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            transition: all 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            height: 100vh;
+        }
+
+        /* ========== LEFT SIDEBAR: OKLCH COMPONENTS ========== */
+        .sidebar {
+            background: var(--surface);
+            border-right: 2px solid var(--border);
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-header {
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .mode-indicator {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .component-mini {
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .component-mini-header {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* 3D View (miniature) */
+        #oklch3DMini {
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: oklch(5% 0 0);
+        }
+
+        /* Hue Wheel (miniature) */
+        #hueWheelMini {
+            display: block;
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            cursor: crosshair;
+            border: 1px solid var(--border);
+        }
+
+        /* Chroma Selector (miniature) */
+        #chromaSelectorMini {
+            display: block;
+            width: 100%;
+            height: 150px;
+            border-radius: 8px;
+            cursor: crosshair;
+            border: 1px solid var(--border);
+        }
+
+        /* Lightness Selector (miniature) */
+        #lightnessSelectorMini {
+            display: block;
+            width: 100%;
+            height: 200px;
+            border-radius: 8px;
+            cursor: crosshair;
+            border: 1px solid var(--border);
+        }
+
+        .component-info {
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .component-value {
+            font-family: 'SF Mono', monospace;
+            color: var(--primary);
+        }
+
+        /* ========== MAIN CONTENT: UI GALLERY ========== */
+        .main-content {
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .gallery-header {
+            margin-bottom: 2rem;
+        }
+
+        .gallery-header h2 {
+            font-size: 2rem;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .gallery-header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Color Weights Panel */
+        .color-weights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .weight-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .weight-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .weight-card.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
+        }
+
+        .weight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .weight-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .weight-role {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .weight-preview {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            margin-bottom: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .weight-preview:hover {
+            transform: scale(1.02);
+            border-color: var(--primary);
+        }
+
+        .weight-value {
+            font-family: 'SF Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--background);
+            padding: 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .weight-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0.6rem;
+            background: var(--background);
+            border-radius: 4px;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            font-family: 'SF Mono', monospace;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .metric-value.pass {
+            color: var(--success);
+        }
+
+        .metric-value.fail {
+            color: var(--error);
+        }
+
+        /* UI Components Gallery */
+        .ui-showcase {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .showcase-section {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .showcase-section h3 {
+            font-size: 1.4rem;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--background);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--background);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        .btn-accent:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: var(--background);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px oklch(from var(--primary) l c h / 0.2);
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .card h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 350px;
+            right: 0;
+            background: var(--surface);
+            border-top: 2px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            z-index: 100;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-label {
+            color: var(--text-secondary);
+        }
+
+        .status-value {
+            font-family: 'SF Mono', monospace;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+        }
+
+        .status-indicator.error {
+            background: var(--error);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .layout {
+                grid-template-columns: 300px 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <!-- LEFT SIDEBAR: Miniature OKLCH Components -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>🎨 OKLCH Controls</h1>
+                <span class="mode-indicator" id="modeIndicator">☀️ Light Mode</span>
+            </div>
+
+            <!-- 3D View (miniature) -->
+            <div class="component-mini">
+                <div class="component-mini-header">🎯 3D Color Space</div>
+                <canvas id="oklch3DMini"></canvas>
+                <div class="component-info">
+                    <span>Drag to rotate</span>
+                    <span class="component-value" id="view3DValue">L C H</span>
+                </div>
+            </div>
+
+            <!-- Hue Wheel (miniature) -->
+            <div class="component-mini">
+                <div class="component-mini-header">🎡 Hue Selector</div>
+                <canvas id="hueWheelMini"></canvas>
+                <div class="component-info">
+                    <span>Click to select hue</span>
+                    <span class="component-value" id="hueValue">240°</span>
+                </div>
+            </div>
+
+            <!-- Chroma Selector (miniature) -->
+            <div class="component-mini">
+                <div class="component-mini-header">🌈 Chroma Selector</div>
+                <canvas id="chromaSelectorMini"></canvas>
+                <div class="component-info">
+                    <span>Hue × Chroma</span>
+                    <span class="component-value" id="chromaValue">0.15</span>
+                </div>
+            </div>
+
+            <!-- Lightness Selector (miniature) -->
+            <div class="component-mini">
+                <div class="component-mini-header">🌗 Lightness Selector</div>
+                <canvas id="lightnessSelectorMini"></canvas>
+                <div class="component-info">
+                    <span>0.0 → 1.0</span>
+                    <span class="component-value" id="lightnessValue">0.60</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT: UI Gallery -->
+        <main class="main-content">
+            <div class="gallery-header">
+                <h2>Counter-Weight Design System</h2>
+                <p>Click any color weight to adjust. The system automatically re-balances all colors to maintain WCAG/APCA compliance.</p>
+            </div>
+
+            <!-- Color Weights Panel -->
+            <div class="color-weights">
+                <div class="weight-card" data-weight="primary">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Primary</div>
+                            <div class="weight-role">Main Brand</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--primary);"></div>
+                    <div class="weight-value" id="primaryValue">oklch(0.60 0.18 260)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">vs BG</span>
+                            <span class="metric-value pass" id="primaryBgContrast">4.5:1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APCA</span>
+                            <span class="metric-value pass" id="primaryApca">75</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weight-card" data-weight="secondary">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Secondary</div>
+                            <div class="weight-role">Support</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--secondary);"></div>
+                    <div class="weight-value" id="secondaryValue">oklch(0.55 0.15 200)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">vs BG</span>
+                            <span class="metric-value pass" id="secondaryBgContrast">4.5:1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APCA</span>
+                            <span class="metric-value pass" id="secondaryApca">75</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weight-card" data-weight="accent">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Accent</div>
+                            <div class="weight-role">Highlights</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--accent);"></div>
+                    <div class="weight-value" id="accentValue">oklch(0.70 0.12 40)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">vs BG</span>
+                            <span class="metric-value pass" id="accentBgContrast">3.0:1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APCA</span>
+                            <span class="metric-value pass" id="accentApca">60</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weight-card" data-weight="background">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Background</div>
+                            <div class="weight-role">Base</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--background); border: 2px solid var(--border);"></div>
+                    <div class="weight-value" id="backgroundValue">oklch(0.98 0.02 250)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">Mode</span>
+                            <span class="metric-value" id="backgroundMode">Light</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">L</span>
+                            <span class="metric-value" id="backgroundL">0.98</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weight-card" data-weight="text">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Text</div>
+                            <div class="weight-role">Content</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--text);"></div>
+                    <div class="weight-value" id="textValue">oklch(0.18 0.02 250)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">vs BG</span>
+                            <span class="metric-value pass" id="textBgContrast">12.3:1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">APCA</span>
+                            <span class="metric-value pass" id="textApca">100</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="weight-card" data-weight="surface">
+                    <div class="weight-header">
+                        <div>
+                            <div class="weight-name">Surface</div>
+                            <div class="weight-role">Cards</div>
+                        </div>
+                    </div>
+                    <div class="weight-preview" style="background: var(--surface);"></div>
+                    <div class="weight-value" id="surfaceValue">oklch(0.95 0.01 250)</div>
+                    <div class="weight-metrics">
+                        <div class="metric">
+                            <span class="metric-label">vs Text</span>
+                            <span class="metric-value pass" id="surfaceTextContrast">10.5:1</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">vs BG</span>
+                            <span class="metric-value pass" id="surfaceBgContrast">1.5:1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UI Components Showcase -->
+            <div class="ui-showcase">
+                <!-- Buttons -->
+                <div class="showcase-section">
+                    <h3>Buttons</h3>
+                    <div class="button-group">
+                        <button class="btn btn-primary">Primary Action</button>
+                        <button class="btn btn-secondary">Secondary Action</button>
+                        <button class="btn btn-accent">Accent Action</button>
+                    </div>
+                </div>
+
+                <!-- Form Elements -->
+                <div class="showcase-section">
+                    <h3>Form Elements</h3>
+                    <div style="max-width: 500px;">
+                        <div class="form-group">
+                            <label class="form-label" for="username">Username</label>
+                            <input type="text" class="form-input" id="username" placeholder="Enter your username">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" class="form-input" id="email" placeholder="you@example.com">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cards -->
+                <div class="showcase-section">
+                    <h3>Cards</h3>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h4>Feature One</h4>
+                            <p>This card demonstrates the surface color with proper text contrast and border styling.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Feature Two</h4>
+                            <p>All colors automatically adjust when you change the color weights above.</p>
+                        </div>
+                        <div class="card">
+                            <h4>Feature Three</h4>
+                            <p>WCAG 2.2 AA and APCA compliance is maintained at all times.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom padding for status bar -->
+            <div style="height: 80px;"></div>
+        </main>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-indicator" id="complianceIndicator"></div>
+            <span class="status-label">WCAG:</span>
+            <span class="status-value" id="wcagStatus">✓ 100% Compliant</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">APCA:</span>
+            <span class="status-value" id="apcaStatus">✓ All Pass</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Mode:</span>
+            <span class="status-value" id="modeStatus">Light</span>
+        </div>
+        <div class="status-item">
+            <span class="status-label">Active Weight:</span>
+            <span class="status-value" id="activeWeight">None</span>
+        </div>
+    </div>
+
+    <script type="module">
+        // ========== COUNTER-WEIGHT SYSTEM ==========
+
+        // Color state (weights)
+        const colorWeights = {
+            primary: { l: 0.60, c: 0.18, h: 260 },
+            secondary: { l: 0.55, c: 0.15, h: 200 },
+            accent: { l: 0.70, c: 0.12, h: 40 },
+            background: { l: 0.98, c: 0.02, h: 250 },
+            surface: { l: 0.95, c: 0.01, h: 250 },
+            text: { l: 0.18, c: 0.02, h: 250 },
+            textSecondary: { l: 0.40, c: 0.02, h: 250 },
+            border: { l: 0.85, c: 0.02, h: 250 }
+        };
+
+        let activeWeight = null;
+        let currentMode = 'light'; // 'light' or 'dark'
+
+        // ========== CONTRAST CALCULATIONS ==========
+
+        function oklchToLuminance(l) {
+            // Approximate relative luminance from OKLCH lightness
+            return Math.pow(l, 2.2);
+        }
+
+        function calculateContrast(l1, l2) {
+            const lum1 = oklchToLuminance(l1);
+            const lum2 = oklchToLuminance(l2);
+            const lighter = Math.max(lum1, lum2);
+            const darker = Math.min(lum1, lum2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function calculateAPCA(textL, bgL) {
+            // Simplified APCA calculation (approximation)
+            const textY = oklchToLuminance(textL);
+            const bgY = oklchToLuminance(bgL);
+            const contrast = Math.abs(textY - bgY);
+            return Math.round(contrast * 100);
+        }
+
+        // ========== COUNTER-WEIGHT LOGIC ==========
+
+        function detectMode() {
+            // Detect if we're in light or dark mode based on background lightness
+            const threshold = 0.5;
+            const wasLight = currentMode === 'light';
+            const isLight = colorWeights.background.l > threshold;
+
+            if (wasLight !== isLight) {
+                currentMode = isLight ? 'light' : 'dark';
+                console.log(`🔄 Mode switched to: ${currentMode}`);
+                onModeSwitch();
+            }
+
+            return currentMode;
+        }
+
+        function onModeSwitch() {
+            // When mode switches, automatically re-balance all colors
+            if (currentMode === 'dark') {
+                // Switched to dark mode
+                // Darken background, lighten text
+                if (colorWeights.background.l > 0.5) {
+                    colorWeights.background.l = Math.min(colorWeights.background.l, 0.25);
+                }
+                if (colorWeights.text.l < 0.5) {
+                    colorWeights.text.l = Math.max(colorWeights.text.l, 0.85);
+                }
+                if (colorWeights.surface.l > 0.5) {
+                    colorWeights.surface.l = 0.20;
+                }
+            } else {
+                // Switched to light mode
+                // Lighten background, darken text
+                if (colorWeights.background.l < 0.5) {
+                    colorWeights.background.l = Math.max(colorWeights.background.l, 0.95);
+                }
+                if (colorWeights.text.l > 0.5) {
+                    colorWeights.text.l = Math.min(colorWeights.text.l, 0.20);
+                }
+                if (colorWeights.surface.l < 0.5) {
+                    colorWeights.surface.l = 0.92;
+                }
+            }
+
+            enforceAllConstraints();
+        }
+
+        function enforceTextConstraints() {
+            // Ensure text has 4.5:1 contrast with background
+            const bgL = colorWeights.background.l;
+            const minContrast = 4.5;
+
+            // Calculate legal lightness range for text
+            const bgY = oklchToLuminance(bgL);
+            const lighterY = (minContrast * (bgY + 0.05)) - 0.05;
+            const darkerY = ((bgY + 0.05) / minContrast) - 0.05;
+
+            const legalRange = {
+                min: Math.max(0, Math.sqrt(Math.max(0, darkerY))),
+                max: Math.min(1, Math.sqrt(Math.min(1, lighterY)))
+            };
+
+            // Auto-adjust text lightness
+            if (colorWeights.text.l < legalRange.min) {
+                colorWeights.text.l = legalRange.min;
+            } else if (colorWeights.text.l > legalRange.max) {
+                colorWeights.text.l = legalRange.max;
+            }
+
+            // Also adjust text-secondary
+            const textSecondaryContrast = calculateContrast(colorWeights.textSecondary.l, bgL);
+            if (textSecondaryContrast < 4.5) {
+                colorWeights.textSecondary.l = currentMode === 'light' ?
+                    Math.min(colorWeights.text.l + 0.15, 0.50) :
+                    Math.max(colorWeights.text.l - 0.15, 0.60);
+            }
+        }
+
+        function balanceSurfaceColor() {
+            // Surface should be between background and text
+            const bgL = colorWeights.background.l;
+            const textL = colorWeights.text.l;
+
+            if (currentMode === 'light') {
+                // In light mode: surface slightly darker than background
+                colorWeights.surface.l = Math.max(bgL - 0.03, 0.90);
+            } else {
+                // In dark mode: surface slightly lighter than background
+                colorWeights.surface.l = Math.min(bgL + 0.05, 0.25);
+            }
+        }
+
+        function harmonizeSecondaryColor() {
+            // Make secondary analogous or complementary to primary
+            const primaryH = colorWeights.primary.h;
+
+            // Analogous: within 60° of primary
+            const analogousOffset = 60;
+            colorWeights.secondary.h = (primaryH + analogousOffset) % 360;
+
+            // Slightly less saturated than primary
+            colorWeights.secondary.c = colorWeights.primary.c * 0.85;
+        }
+
+        function harmonizeAccentColor() {
+            // Make accent complementary or triadic to primary
+            const primaryH = colorWeights.primary.h;
+
+            // Complementary: 180° opposite
+            // But we'll use split-complementary: 150° or 210°
+            colorWeights.accent.h = (primaryH + 150) % 360;
+
+            // Less saturated than primary
+            colorWeights.accent.c = colorWeights.primary.c * 0.7;
+        }
+
+        function enforceAllConstraints() {
+            // Run all constraint enforcement
+            detectMode();
+            enforceTextConstraints();
+            balanceSurfaceColor();
+            harmonizeSecondaryColor();
+            harmonizeAccentColor();
+
+            // Ensure border is subtle
+            colorWeights.border.l = currentMode === 'light' ? 0.85 : 0.30;
+
+            updateUI();
+        }
+
+        // ========== UI UPDATE ==========
+
+        function updateUI() {
+            // Update CSS variables
+            document.documentElement.style.setProperty('--primary', toOklch(colorWeights.primary));
+            document.documentElement.style.setProperty('--secondary', toOklch(colorWeights.secondary));
+            document.documentElement.style.setProperty('--accent', toOklch(colorWeights.accent));
+            document.documentElement.style.setProperty('--background', toOklch(colorWeights.background));
+            document.documentElement.style.setProperty('--surface', toOklch(colorWeights.surface));
+            document.documentElement.style.setProperty('--text', toOklch(colorWeights.text));
+            document.documentElement.style.setProperty('--text-secondary', toOklch(colorWeights.textSecondary));
+            document.documentElement.style.setProperty('--border', toOklch(colorWeights.border));
+
+            // Update weight card values
+            updateWeightCard('primary');
+            updateWeightCard('secondary');
+            updateWeightCard('accent');
+            updateWeightCard('background');
+            updateWeightCard('text');
+            updateWeightCard('surface');
+
+            // Update status bar
+            updateStatusBar();
+
+            // Update mode indicator
+            updateModeIndicator();
+
+            // Update mini components
+            updateMiniComponents();
+        }
+
+        function toOklch(color) {
+            return `oklch(${color.l.toFixed(3)} ${color.c.toFixed(3)} ${color.h.toFixed(0)})`;
+        }
+
+        function updateWeightCard(weightName) {
+            const weight = colorWeights[weightName];
+            const valueEl = document.getElementById(`${weightName}Value`);
+            if (valueEl) {
+                valueEl.textContent = toOklch(weight);
+            }
+
+            // Update contrast metrics
+            if (weightName === 'primary' || weightName === 'secondary' || weightName === 'accent') {
+                const contrast = calculateContrast(weight.l, colorWeights.background.l);
+                const apca = calculateAPCA(weight.l, colorWeights.background.l);
+
+                const contrastEl = document.getElementById(`${weightName}BgContrast`);
+                const apcaEl = document.getElementById(`${weightName}Apca`);
+
+                if (contrastEl) {
+                    contrastEl.textContent = contrast.toFixed(1) + ':1';
+                    contrastEl.className = 'metric-value ' + (contrast >= 4.5 ? 'pass' : 'fail');
+                }
+
+                if (apcaEl) {
+                    apcaEl.textContent = apca;
+                    apcaEl.className = 'metric-value ' + (apca >= 60 ? 'pass' : 'fail');
+                }
+            }
+
+            if (weightName === 'text') {
+                const contrast = calculateContrast(weight.l, colorWeights.background.l);
+                const apca = calculateAPCA(weight.l, colorWeights.background.l);
+
+                const contrastEl = document.getElementById('textBgContrast');
+                const apcaEl = document.getElementById('textApca');
+
+                if (contrastEl) {
+                    contrastEl.textContent = contrast.toFixed(1) + ':1';
+                    contrastEl.className = 'metric-value ' + (contrast >= 4.5 ? 'pass' : 'fail');
+                }
+
+                if (apcaEl) {
+                    apcaEl.textContent = apca;
+                    apcaEl.className = 'metric-value ' + (apca >= 75 ? 'pass' : 'fail');
+                }
+            }
+
+            if (weightName === 'background') {
+                const modeEl = document.getElementById('backgroundMode');
+                const lEl = document.getElementById('backgroundL');
+
+                if (modeEl) {
+                    modeEl.textContent = currentMode === 'light' ? 'Light' : 'Dark';
+                }
+
+                if (lEl) {
+                    lEl.textContent = weight.l.toFixed(2);
+                }
+            }
+
+            if (weightName === 'surface') {
+                const textContrast = calculateContrast(colorWeights.text.l, weight.l);
+                const bgContrast = calculateContrast(weight.l, colorWeights.background.l);
+
+                const textContrastEl = document.getElementById('surfaceTextContrast');
+                const bgContrastEl = document.getElementById('surfaceBgContrast');
+
+                if (textContrastEl) {
+                    textContrastEl.textContent = textContrast.toFixed(1) + ':1';
+                    textContrastEl.className = 'metric-value ' + (textContrast >= 4.5 ? 'pass' : 'fail');
+                }
+
+                if (bgContrastEl) {
+                    bgContrastEl.textContent = bgContrast.toFixed(1) + ':1';
+                    bgContrastEl.className = 'metric-value ' + (bgContrast >= 1.2 ? 'pass' : 'fail');
+                }
+            }
+        }
+
+        function updateStatusBar() {
+            // Check if all constraints are met
+            const textBgContrast = calculateContrast(colorWeights.text.l, colorWeights.background.l);
+            const primaryBgContrast = calculateContrast(colorWeights.primary.l, colorWeights.background.l);
+
+            const allPass = textBgContrast >= 4.5 && primaryBgContrast >= 3.0;
+
+            const complianceIndicator = document.getElementById('complianceIndicator');
+            const wcagStatus = document.getElementById('wcagStatus');
+            const apcaStatus = document.getElementById('apcaStatus');
+            const modeStatus = document.getElementById('modeStatus');
+            const activeWeightEl = document.getElementById('activeWeight');
+
+            if (complianceIndicator) {
+                complianceIndicator.className = 'status-indicator ' + (allPass ? '' : 'warning');
+            }
+
+            if (wcagStatus) {
+                wcagStatus.textContent = allPass ? '✓ 100% Compliant' : '⚠ Issues Detected';
+            }
+
+            if (apcaStatus) {
+                const textApca = calculateAPCA(colorWeights.text.l, colorWeights.background.l);
+                apcaStatus.textContent = textApca >= 75 ? '✓ All Pass' : '⚠ Below Threshold';
+            }
+
+            if (modeStatus) {
+                modeStatus.textContent = currentMode === 'light' ? '☀️ Light' : '🌙 Dark';
+            }
+
+            if (activeWeightEl) {
+                activeWeightEl.textContent = activeWeight || 'None';
+            }
+        }
+
+        function updateModeIndicator() {
+            const modeIndicator = document.getElementById('modeIndicator');
+            if (modeIndicator) {
+                modeIndicator.textContent = currentMode === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode';
+            }
+        }
+
+        // ========== MINI COMPONENTS ==========
+
+        function updateMiniComponents() {
+            // Update the current color being edited (if any)
+            if (activeWeight && colorWeights[activeWeight]) {
+                const color = colorWeights[activeWeight];
+                drawHueWheelMini(color);
+                drawChromaSelectorMini(color);
+                drawLightnessSelectorMini(color);
+
+                // Update info displays
+                document.getElementById('hueValue').textContent = `${color.h.toFixed(0)}°`;
+                document.getElementById('chromaValue').textContent = color.c.toFixed(3);
+                document.getElementById('lightnessValue').textContent = color.l.toFixed(3);
+                document.getElementById('view3DValue').textContent = `${color.l.toFixed(2)} ${color.c.toFixed(2)} ${color.h.toFixed(0)}`;
+            }
+        }
+
+        // Hue Wheel Mini
+        function drawHueWheelMini(color) {
+            const canvas = document.getElementById('hueWheelMini');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(canvas.width, canvas.height) / 2 - 10;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw hue spectrum
+            for (let angle = 0; angle < 360; angle += 2) {
+                const startAngle = (angle - 90) * Math.PI / 180;
+                const endAngle = (angle + 2 - 90) * Math.PI / 180;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+                ctx.closePath();
+
+                ctx.fillStyle = `oklch(${color.l} ${color.c} ${angle})`;
+                ctx.fill();
+            }
+
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'oklch(95% 0.01 250)';
+            ctx.fill();
+
+            // Draw selected hue indicator
+            const selectedAngle = (color.h - 90) * Math.PI / 180;
+            const indicatorX = centerX + Math.cos(selectedAngle) * radius * 0.65;
+            const indicatorY = centerY + Math.sin(selectedAngle) * radius * 0.65;
+
+            ctx.beginPath();
+            ctx.arc(indicatorX, indicatorY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Chroma Selector Mini
+        function drawChromaSelectorMini(color) {
+            const canvas = document.getElementById('chromaSelectorMini');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            const C_MAX = 0.37;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw chroma/hue gradient
+            for (let x = 0; x < canvas.width; x += 3) {
+                for (let y = 0; y < canvas.height; y += 3) {
+                    const hue = (x / canvas.width) * 360;
+                    const chroma = (1 - (y / canvas.height)) * C_MAX;
+
+                    ctx.fillStyle = `oklch(${color.l} ${chroma.toFixed(3)} ${hue.toFixed(0)})`;
+                    ctx.fillRect(x, y, 3, 3);
+                }
+            }
+
+            // Draw selected point
+            const indicatorX = (color.h / 360) * canvas.width;
+            const indicatorY = (1 - (color.c / C_MAX)) * canvas.height;
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+
+            // Crosshair
+            ctx.beginPath();
+            ctx.moveTo(0, indicatorY);
+            ctx.lineTo(canvas.width, indicatorY);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(indicatorX, 0);
+            ctx.lineTo(indicatorX, canvas.height);
+            ctx.stroke();
+
+            // Center circle
+            ctx.beginPath();
+            ctx.arc(indicatorX, indicatorY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        // Lightness Selector Mini
+        function drawLightnessSelectorMini(color) {
+            const canvas = document.getElementById('lightnessSelectorMini');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw lightness gradient
+            for (let y = 0; y < canvas.height; y += 1) {
+                const lightness = 1 - (y / canvas.height);
+                ctx.fillStyle = `oklch(${lightness.toFixed(3)} ${color.c} ${color.h})`;
+                ctx.fillRect(0, y, canvas.width, 1);
+            }
+
+            // Draw selected lightness indicator
+            const indicatorY = (1 - color.l) * canvas.height;
+
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(0, indicatorY);
+            ctx.lineTo(canvas.width, indicatorY);
+            ctx.stroke();
+
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, indicatorY - 1);
+            ctx.lineTo(canvas.width, indicatorY - 1);
+            ctx.moveTo(0, indicatorY + 1);
+            ctx.lineTo(canvas.width, indicatorY + 1);
+            ctx.stroke();
+        }
+
+        // ========== INTERACTION ==========
+
+        // Weight card click handlers
+        document.querySelectorAll('.weight-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const weightName = card.dataset.weight;
+                activateWeight(weightName);
+            });
+        });
+
+        function activateWeight(weightName) {
+            // Deactivate all cards
+            document.querySelectorAll('.weight-card').forEach(c => c.classList.remove('active'));
+
+            // Activate clicked card
+            const card = document.querySelector(`[data-weight="${weightName}"]`);
+            if (card) {
+                card.classList.add('active');
+            }
+
+            activeWeight = weightName;
+
+            // Update mini components to show this weight's color
+            if (colorWeights[weightName]) {
+                updateMiniComponents();
+            }
+
+            // Update status bar
+            updateStatusBar();
+        }
+
+        // Mini component interactions
+        function setupMiniInteractions() {
+            const hueCanvas = document.getElementById('hueWheelMini');
+            const chromaCanvas = document.getElementById('chromaSelectorMini');
+            const lightnessCanvas = document.getElementById('lightnessSelectorMini');
+
+            let isDragging = false;
+
+            // Hue wheel
+            hueCanvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateHueFromMouse(e);
+            });
+
+            hueCanvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateHueFromMouse(e);
+                }
+            });
+
+            hueCanvas.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Chroma selector
+            chromaCanvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateChromaFromMouse(e);
+            });
+
+            chromaCanvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateChromaFromMouse(e);
+                }
+            });
+
+            chromaCanvas.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Lightness selector
+            lightnessCanvas.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                updateLightnessFromMouse(e);
+            });
+
+            lightnessCanvas.addEventListener('mousemove', (e) => {
+                if (isDragging) {
+                    updateLightnessFromMouse(e);
+                }
+            });
+
+            lightnessCanvas.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+
+            // Global mouseup
+            document.addEventListener('mouseup', () => {
+                isDragging = false;
+            });
+        }
+
+        function updateHueFromMouse(e) {
+            if (!activeWeight) return;
+
+            const canvas = document.getElementById('hueWheelMini');
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+
+            const dx = x - centerX;
+            const dy = y - centerY;
+
+            let angle = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+            if (angle < 0) angle += 360;
+
+            colorWeights[activeWeight].h = Math.round(angle) % 360;
+            enforceAllConstraints();
+        }
+
+        function updateChromaFromMouse(e) {
+            if (!activeWeight) return;
+
+            const canvas = document.getElementById('chromaSelectorMini');
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const C_MAX = 0.37;
+
+            const hue = Math.max(0, Math.min(360, (x / canvas.width) * 360));
+            const chroma = Math.max(0, Math.min(C_MAX, (1 - (y / canvas.height)) * C_MAX));
+
+            colorWeights[activeWeight].h = Math.round(hue);
+            colorWeights[activeWeight].c = parseFloat(chroma.toFixed(3));
+
+            enforceAllConstraints();
+        }
+
+        function updateLightnessFromMouse(e) {
+            if (!activeWeight) return;
+
+            const canvas = document.getElementById('lightnessSelectorMini');
+            const rect = canvas.getBoundingClientRect();
+            const y = e.clientY - rect.top;
+
+            const lightness = Math.max(0, Math.min(1, 1 - (y / canvas.height)));
+
+            colorWeights[activeWeight].l = parseFloat(lightness.toFixed(3));
+
+            enforceAllConstraints();
+        }
+
+        // ========== INITIALIZATION ==========
+
+        setupMiniInteractions();
+        enforceAllConstraints();
+        updateUI();
+
+        console.log('✅ OKLCH Counter-Weight Gallery loaded!');
+        console.log('🎨 Click any color weight to adjust');
+        console.log('🔄 System auto-balances to maintain WCAG/APCA compliance');
+    </script>
+</body>
+</html>

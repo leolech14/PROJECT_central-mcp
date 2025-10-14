@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Config Pro - OKLCH Design System</title>
+  <style>
+    /* MINIMAL ENTERPRISE DESIGN SYSTEM - OKLCH COLORS */
+    :root {
+      /* OKLCH Color System - Light Theme */
+      --bg-primary: oklch(98% 0.002 264);
+      --bg-secondary: oklch(96% 0.004 264);
+      --bg-tertiary: oklch(94% 0.006 264);
+
+      --text-primary: oklch(20% 0.01 264);
+      --text-secondary: oklch(45% 0.01 264);
+      --text-tertiary: oklch(60% 0.01 264);
+
+      --border: oklch(88% 0.005 264);
+      --border-strong: oklch(75% 0.01 264);
+
+      /* Status Colors (OKLCH) */
+      --success: oklch(65% 0.15 145);
+      --warning: oklch(70% 0.15 85);
+      --error: oklch(60% 0.18 25);
+      --info: oklch(65% 0.15 240);
+      --accent: oklch(60% 0.18 270);
+
+      /* UI Config Pro Brand */
+      --brand-primary: oklch(60% 0.18 270);
+      --brand-secondary: oklch(65% 0.15 210);
+    }
+
+    [data-theme="dark"] {
+      /* OKLCH Dark Theme - 42D Counter-Weight */
+      --bg-primary: oklch(15% 0.01 264);
+      --bg-secondary: oklch(18% 0.012 264);
+      --bg-tertiary: oklch(22% 0.014 264);
+
+      --text-primary: oklch(95% 0.002 264);
+      --text-secondary: oklch(70% 0.005 264);
+      --text-tertiary: oklch(50% 0.008 264);
+
+      --border: oklch(30% 0.01 264);
+      --border-strong: oklch(40% 0.012 264);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      transition: background 300ms ease, color 300ms ease;
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    /* GO BACK BUTTON */
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 200ms ease;
+      cursor: pointer;
+    }
+
+    .back-button:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-strong);
+    }
+
+    .back-button::before {
+      content: '←';
+      font-size: 1.125rem;
+    }
+
+    /* THEME TOGGLE */
+    .theme-toggle {
+      padding: 0.5rem 1rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--border-strong);
+    }
+
+    /* GRID LAYOUT */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* CARD COMPONENT */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      transition: all 200ms ease;
+    }
+
+    .card:hover {
+      border-color: var(--border-strong);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 2.5rem;
+      height: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-tertiary);
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    /* BUTTON COMPONENT */
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.625rem 1.25rem;
+      background: var(--brand-primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 200ms ease;
+      width: 100%;
+    }
+
+    .button:hover {
+      background: oklch(55% 0.18 270);
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: translateY(0);
+    }
+
+    .button.secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .button.secondary:hover {
+      background: var(--bg-secondary);
+      border-color: var(--border-strong);
+    }
+
+    /* FEATURES LIST */
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .feature-item::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 600;
+      margin-top: 0.125rem;
+    }
+
+    /* MOCKUPS GRID */
+    .mockups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .mockup-item {
+      padding: 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: all 200ms ease;
+      cursor: pointer;
+    }
+
+    .mockup-item:hover {
+      background: var(--bg-secondary);
+      border-color: var(--brand-primary);
+      color: var(--text-primary);
+    }
+
+    /* COLOR PREVIEW */
+    .color-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .color-swatch {
+      aspect-ratio: 1;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0.5rem;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      font-size: 0.75rem;
+      text-align: center;
+    }
+
+    /* STATUS INDICATOR */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      background: var(--bg-tertiary);
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .status.active {
+      color: var(--success);
+    }
+
+    .status.active::before {
+      content: '';
+      width: 0.5rem;
+      height: 0.5rem;
+      background: var(--success);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mockups-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+
+    /* SECTION */
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <a href="/central-mcp-dashboard.html" class="back-button">Back to Dashboard</a>
+        <div>
+          <h1>🎨 UI Config Pro</h1>
+          <div class="subtitle">OKLCH Design System & 42D Counter-Weight Dark Mode</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem;">
+        <a href="/knowledge-space.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--info); color: white; border-radius: 0.5rem; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: opacity 200ms ease;">
+          📚 Knowledge Space
+        </a>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <div class="status active">OKLCH System Active</div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span id="theme-icon">🌙</span> Toggle Theme
+        </button>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="section">
+      <h2 class="section-title">Quick Actions</h2>
+      <div class="grid">
+        <!-- Open UI Studio -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🎨</div>
+            <div class="card-title">Open UI Studio</div>
+          </div>
+          <div class="card-description">
+            Launch ULTIMATE-UI-STUDIO-V2 with live color editing, 12 mockup pages, and interactive component gallery.
+          </div>
+          <button class="button" onclick="openUIStudio()">
+            🚀 Open Studio
+          </button>
+        </div>
+
+        <!-- Generate Design Tokens -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🎯</div>
+            <div class="card-title">Generate Design Tokens</div>
+          </div>
+          <div class="card-description">
+            Create design tokens from OKLCH colors. Export as CSS, JSON, SCSS, or JavaScript modules.
+          </div>
+          <button class="button" onclick="generateTokens()">
+            📦 Generate Tokens
+          </button>
+        </div>
+
+        <!-- Apply Dark Mode -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🌙</div>
+            <div class="card-title">42D Counter-Weight Dark Mode</div>
+          </div>
+          <div class="card-description">
+            Apply perceptually balanced dark mode transformation using the 42D counter-weight algorithm.
+          </div>
+          <button class="button" onclick="applyDarkMode()">
+            🌙 Apply Dark Mode
+          </button>
+        </div>
+
+        <!-- Export CSS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">📝</div>
+            <div class="card-title">Export CSS Variables</div>
+          </div>
+          <div class="card-description">
+            Export your theme as CSS custom properties ready to use in any project.
+          </div>
+          <button class="button" onclick="exportCSS()">
+            💾 Export CSS
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DESIGN SYSTEM FEATURES -->
+    <div class="section">
+      <h2 class="section-title">Design System Features</h2>
+      <div class="grid">
+        <!-- OKLCH Color System -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🎨</div>
+            <div class="card-title">OKLCH Color System</div>
+          </div>
+          <div class="features">
+            <div class="feature-item">Perceptually uniform color space</div>
+            <div class="feature-item">Consistent lightness across hues</div>
+            <div class="feature-item">Wide gamut color support</div>
+            <div class="feature-item">WCAG accessibility compliance</div>
+          </div>
+          <div class="color-preview">
+            <div class="color-swatch" style="background: oklch(0.60 0.18 270);">
+              <div class="color-label">Primary</div>
+            </div>
+            <div class="color-swatch" style="background: oklch(0.65 0.15 210);">
+              <div class="color-label">Secondary</div>
+            </div>
+            <div class="color-swatch" style="background: oklch(0.75 0.15 85);">
+              <div class="color-label">Accent</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 42D Counter-Weight -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🌙</div>
+            <div class="card-title">42D Counter-Weight Algorithm</div>
+          </div>
+          <div class="features">
+            <div class="feature-item">Lightness: (1-L) * 0.8</div>
+            <div class="feature-item">Chroma: C * 0.9</div>
+            <div class="feature-item">Hue: Maintained</div>
+            <div class="feature-item">Preserves visual hierarchy</div>
+          </div>
+          <button class="button secondary" onclick="showAlgorithm()">
+            📐 View Algorithm Details
+          </button>
+        </div>
+
+        <!-- Component Gallery -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">🧩</div>
+            <div class="card-title">Component Gallery</div>
+          </div>
+          <div class="features">
+            <div class="feature-item">Scaffold buttons with states</div>
+            <div class="feature-item">Input fields and forms</div>
+            <div class="feature-item">Cards and containers</div>
+            <div class="feature-item">Badges and toggles</div>
+            <div class="feature-item">Color pickers</div>
+            <div class="feature-item">Theme controls</div>
+          </div>
+          <button class="button secondary" onclick="openUIStudio()">
+            🎨 Explore Components
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12 MOCKUP PAGES -->
+    <div class="section">
+      <h2 class="section-title">12 Complete Mockup Pages</h2>
+      <div class="mockups-grid">
+        <div class="mockup-item" onclick="openMockup('blog')">📝 Blog</div>
+        <div class="mockup-item" onclick="openMockup('dashboard')">📊 Dashboard</div>
+        <div class="mockup-item" onclick="openMockup('docs')">📚 Docs</div>
+        <div class="mockup-item" onclick="openMockup('pricing')">💰 Pricing</div>
+        <div class="mockup-item" onclick="openMockup('settings')">⚙️ Settings</div>
+        <div class="mockup-item" onclick="openMockup('analytics')">📈 Analytics</div>
+        <div class="mockup-item" onclick="openMockup('chat')">💬 Chat</div>
+        <div class="mockup-item" onclick="openMockup('calendar')">📅 Calendar</div>
+        <div class="mockup-item" onclick="openMockup('email')">📧 Email</div>
+        <div class="mockup-item" onclick="openMockup('kanban')">📋 Kanban</div>
+        <div class="mockup-item" onclick="openMockup('profile')">👤 Profile</div>
+        <div class="mockup-item" onclick="openMockup('login')">🔐 Login</div>
+      </div>
+    </div>
+
+    <!-- USAGE GUIDE -->
+    <div class="section">
+      <h2 class="section-title">Usage Guide</h2>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-icon">📖</div>
+          <div class="card-title">How to Use UI Config Pro</div>
+        </div>
+        <div class="card-description">
+          <ol style="margin-left: 1.5rem; line-height: 2; color: var(--text-secondary);">
+            <li><strong>Open UI Studio</strong> - Launch the interactive design system</li>
+            <li><strong>Configure Colors</strong> - Use OKLCH color picker for precise color selection</li>
+            <li><strong>Preview Components</strong> - See live updates across all UI components</li>
+            <li><strong>Apply Dark Mode</strong> - Use 42D counter-weight for balanced dark themes</li>
+            <li><strong>Generate Tokens</strong> - Export design tokens in your preferred format</li>
+            <li><strong>Copy & Integrate</strong> - Use exported tokens in your project</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const currentTheme = html.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? '' : 'dark';
+      html.setAttribute('data-theme', newTheme);
+
+      const icon = document.getElementById('theme-icon');
+      icon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+
+      localStorage.setItem('theme', newTheme);
+    }
+
+    // Load saved theme
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-icon').textContent = '☀️';
+      }
+    });
+
+    // Open UI Studio
+    function openUIStudio() {
+      // Open ULTIMATE-UI-STUDIO-V2 in new tab
+      window.open('/ui-studio.html', '_blank');
+      showNotification('✅ Opening ULTIMATE-UI-STUDIO-V2 in new tab...', 'success');
+    }
+
+    // Generate Design Tokens
+    function generateTokens() {
+      openUIStudio();
+      showNotification('💡 Opening UI Studio - Use the "Export Design Tokens" button inside', 'info');
+    }
+
+    // Apply Dark Mode
+    function applyDarkMode() {
+      openUIStudio();
+      showNotification('💡 Opening UI Studio - Use the Dark Mode toggle inside', 'info');
+    }
+
+    // Export CSS
+    function exportCSS() {
+      openUIStudio();
+      showNotification('💡 Opening UI Studio - Use the "Export CSS" button inside', 'info');
+    }
+
+    // Open Mockup
+    function openMockup(mockupName) {
+      showNotification(`Opening ${mockupName} mockup in UI Studio...`, 'info');
+      openUIStudio(); // Open studio first, then user can navigate to mockup
+    }
+
+    // Show Algorithm
+    function showAlgorithm() {
+      alert(`42D Counter-Weight Dark Mode Algorithm:
+
+Lightness: (1 - L) * 0.8
+Chroma: C * 0.9
+Hue: Maintained (H)
+
+Example Transformation:
+Light: oklch(0.98 0.01 270) → Dark: oklch(0.12 0.009 270)
+
+This algorithm creates perceptually balanced dark themes that:
+✓ Preserve visual hierarchy
+✓ Maintain color relationships
+✓ Ensure accessibility compliance
+✓ Provide consistent contrast ratios`);
+    }
+
+    // Helper: Show Notification
+    function showNotification(message, type) {
+      // Simple console log for now (could be enhanced with toast notifications)
+      const emoji = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+      console.log(`${emoji} ${message}`);
+
+      // Show alert for important messages
+      if (type === 'error') {
+        alert(message);
+      }
+    }
+
+    // Helper: Show Tokens Modal
+    function showTokensModal(content, format) {
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 2rem;
+      `;
+
+      modal.innerHTML = `
+        <div style="
+          background: var(--bg-secondary);
+          border: 1px solid var(--border);
+          border-radius: 1rem;
+          padding: 2rem;
+          max-width: 800px;
+          max-height: 80vh;
+          overflow: auto;
+          width: 100%;
+        ">
+          <h2 style="margin-bottom: 1rem;">Generated Tokens (${format.toUpperCase()})</h2>
+          <pre style="
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.5;
+          ">${content}</pre>
+          <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button class="button" onclick="copyTokens('${content.replace(/'/g, "\\'")}')">📋 Copy</button>
+            <button class="button secondary" onclick="this.closest('div').parentElement.parentElement.remove()">Close</button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(modal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+    }
+
+    // Helper: Copy Tokens
+    function copyTokens(content) {
+      navigator.clipboard.writeText(content);
+      showNotification('✅ Tokens copied to clipboard!', 'success');
+    }
+
+    // Helper: Download File
+    function downloadFile(filename, content) {
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

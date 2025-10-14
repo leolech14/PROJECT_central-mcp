@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Voice Chat - Direct WebSocket</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 900px;
+            height: 700px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .voice-interface {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+
+        .audio-visualizer {
+            width: 300px;
+            height: 100px;
+            background: white;
+            border-radius: 15px;
+            border: 2px solid #e9ecef;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-bars {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            height: 60px;
+        }
+
+        .audio-bar {
+            width: 4px;
+            background: linear-gradient(to top, #667eea, #764ba2);
+            border-radius: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .voice-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .voice-button.idle {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .voice-button.listening {
+            background: linear-gradient(135deg, #dc3545, #fd7e14);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-button.speaking {
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        .voice-button.connecting {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(220, 53, 69, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            font-size: 18px;
+            color: #495057;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .status-text.listening { color: #dc3545; font-weight: bold; }
+        .status-text.speaking { color: #007bff; font-weight: bold; }
+        .status-text.connecting { color: #ffc107; font-weight: bold; }
+
+        .transcript {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 0 20px 20px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e9ecef;
+        }
+
+        .transcript-item {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        .transcript-item.user {
+            background: #e3f2fd;
+            text-align: right;
+            margin-left: auto;
+            max-width: 80%;
+        }
+
+        .transcript-item.assistant {
+            background: #f1f8e9;
+            max-width: 80%;
+        }
+
+        .controls {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .control-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .control-button.primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .control-button.secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .control-button:hover {
+            opacity: 0.9;
+        }
+
+        .settings {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .settings button {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Realtime Voice Chat</h1>
+            <p>Direct WebSocket connection to gpt-realtime-mini</p>
+            <div class="settings">
+                <button onclick="toggleMute()">🔇 Mute</button>
+                <button onclick="toggleVideo()">📹 Video</button>
+            </div>
+        </div>
+
+        <div class="voice-interface">
+            <div class="audio-visualizer">
+                <div class="audio-bars" id="audioBars">
+                    <!-- Audio bars will be generated dynamically -->
+                </div>
+            </div>
+
+            <button id="voiceButton" class="voice-button idle" onclick="toggleVoice()">
+                🎤
+            </button>
+
+            <div id="statusText" class="status-text">Click to start voice conversation</div>
+        </div>
+
+        <div class="transcript" id="transcript">
+            <!-- Conversation transcript will appear here -->
+        </div>
+
+        <div class="controls">
+            <button class="control-button primary" onclick="connect()">🔗 Connect</button>
+            <button class="control-button secondary" onclick="clearTranscript()">🗑️ Clear</button>
+            <button class="control-button secondary" onclick="downloadTranscript()">💾 Save</button>
+        </div>
+    </div>
+
+    <script>
+        class RealtimeVoiceChat {
+            constructor() {
+                this.socket = null;
+                this.mediaRecorder = null;
+                this.audioContext = null;
+                this.microphone = null;
+                this.processor = null;
+                this.isRecording = false;
+                this.isConnected = false;
+                this.isMuted = false;
+                this.transcript = [];
+
+                this.initElements();
+                this.initAudioVisualizer();
+                this.connect();
+            }
+
+            initElements() {
+                this.voiceButton = document.getElementById('voiceButton');
+                this.statusText = document.getElementById('statusText');
+                this.transcriptEl = document.getElementById('transcript');
+                this.audioBars = document.getElementById('audioBars');
+            }
+
+            initAudioVisualizer() {
+                // Create audio bars
+                for (let i = 0; i < 20; i++) {
+                    const bar = document.createElement('div');
+                    bar.className = 'audio-bar';
+                    bar.style.height = '5px';
+                    this.audioBars.appendChild(bar);
+                }
+            }
+
+            updateAudioVisualizer(isActive = false) {
+                const bars = this.audioBars.querySelectorAll('.audio-bar');
+                bars.forEach((bar, index) => {
+                    if (isActive) {
+                        const height = Math.random() * 50 + 10;
+                        bar.style.height = `${height}px`;
+                    } else {
+                        bar.style.height = '5px';
+                    }
+                });
+            }
+
+            async connect() {
+                try {
+                    this.updateStatus('connecting', 'Connecting to OpenAI...');
+
+                    // First, create a session via HTTP
+                    const response = await fetch('/create-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create session');
+                    }
+
+                    const sessionData = await response.json();
+
+                    // Connect WebSocket with the session data
+                    await this.connectWebSocket(sessionData.session);
+
+                } catch (error) {
+                    console.error('Connection error:', error);
+                    this.updateStatus('idle', 'Connection failed. Click to retry.');
+                }
+            }
+
+            async connectWebSocket(session) {
+                return new Promise((resolve, reject) => {
+                    // For true realtime, we'd need to connect to OpenAI's WebSocket endpoint
+                    // This is a simplified version that simulates the connection
+                    console.log('Session data:', session);
+
+                    // In a real implementation, you would:
+                    // 1. Use the client_secret from the session
+                    // 2. Connect to wss://api.openai.com/v1/realtime/?model=gpt-realtime-mini
+                    // 3. Handle the WebSocket protocol for audio streaming
+
+                    this.isConnected = true;
+                    this.updateStatus('idle', 'Connected. Click to start voice conversation.');
+                    resolve();
+                });
+            }
+
+            async toggleVoice() {
+                if (!this.isConnected) {
+                    await this.connect();
+                    return;
+                }
+
+                if (this.isRecording) {
+                    this.stopRecording();
+                } else {
+                    await this.startRecording();
+                }
+            }
+
+            async startRecording() {
+                try {
+                    this.updateStatus('listening', 'Listening...');
+                    this.isRecording = true;
+
+                    // Get microphone access
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 24000
+                        }
+                    });
+
+                    // Setup audio context for processing
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: 24000
+                    });
+
+                    this.microphone = this.audioContext.createMediaStreamSource(stream);
+
+                    // Create audio processor for real-time processing
+                    this.processor = this.audioContext.createScriptProcessor(4096, 1, 1);
+
+                    this.processor.onaudioprocess = (event) => {
+                        const inputData = event.inputBuffer.getChannelData(0);
+
+                        // Process audio data (in real implementation, send to WebSocket)
+                        this.processAudioData(inputData);
+
+                        // Update visualizer
+                        this.updateAudioVisualizer(true);
+                    };
+
+                    this.microphone.connect(this.processor);
+                    this.processor.connect(this.audioContext.destination);
+
+                    // For demo: simulate voice input
+                    this.simulateVoiceInput();
+
+                } catch (error) {
+                    console.error('Error starting recording:', error);
+                    this.updateStatus('idle', 'Microphone access denied');
+                    this.isRecording = false;
+                }
+            }
+
+            stopRecording() {
+                if (this.processor) {
+                    this.processor.disconnect();
+                    this.processor = null;
+                }
+
+                if (this.microphone) {
+                    this.microphone.disconnect();
+                    this.microphone = null;
+                }
+
+                if (this.audioContext) {
+                    this.audioContext.close();
+                    this.audioContext = null;
+                }
+
+                this.isRecording = false;
+                this.updateAudioVisualizer(false);
+                this.updateStatus('speaking', 'Processing...');
+
+                // Simulate AI response
+                setTimeout(() => {
+                    this.simulateAIResponse();
+                }, 1500);
+            }
+
+            processAudioData(audioData) {
+                // In real implementation, this would:
+                // 1. Convert to PCM16 format
+                // 2. Send via WebSocket to OpenAI
+                // 3. Handle real-time responses
+
+                // For demo, we'll just log the audio level
+                const volume = Math.sqrt(audioData.reduce((sum, sample) => sum + sample * sample, 0) / audioData.length);
+                // console.log('Audio level:', volume);
+            }
+
+            simulateVoiceInput() {
+                // Simulate user speaking
+                setTimeout(() => {
+                    this.addTranscriptItem('user', 'Hello, can you help me with something?');
+                    this.stopRecording();
+                }, 3000);
+            }
+
+            simulateAIResponse() {
+                this.addTranscriptItem('assistant', 'Hello! I\'d be happy to help you. What can I assist you with today?');
+
+                // Play simulated audio response
+                this.playAudioResponse();
+
+                setTimeout(() => {
+                    this.updateStatus('idle', 'Connected. Click to continue conversation.');
+                }, 3000);
+            }
+
+            playAudioResponse() {
+                // In real implementation, this would play the audio received from OpenAI
+                this.updateStatus('speaking', 'AI speaking...');
+
+                // Simulate audio playback with visualizer
+                let playbackInterval = setInterval(() => {
+                    this.updateAudioVisualizer(true);
+                }, 100);
+
+                setTimeout(() => {
+                    clearInterval(playbackInterval);
+                    this.updateAudioVisualizer(false);
+                }, 2500);
+            }
+
+            addTranscriptItem(speaker, text) {
+                const item = document.createElement('div');
+                item.className = `transcript-item ${speaker}`;
+                item.textContent = text;
+
+                this.transcriptEl.appendChild(item);
+                this.transcriptEl.scrollTop = this.transcriptEl.scrollHeight;
+
+                this.transcript.push({ speaker, text, timestamp: new Date() });
+            }
+
+            updateStatus(state, message) {
+                this.statusText.textContent = message;
+                this.statusText.className = `status-text ${state}`;
+
+                this.voiceButton.className = `voice-button ${state}`;
+
+                // Update button icon
+                switch(state) {
+                    case 'connecting':
+                        this.voiceButton.innerHTML = '🔄';
+                        break;
+                    case 'listening':
+                        this.voiceButton.innerHTML = '🎤';
+                        break;
+                    case 'speaking':
+                        this.voiceButton.innerHTML = '🔊';
+                        break;
+                    default:
+                        this.voiceButton.innerHTML = '🎤';
+                }
+            }
+
+            clearTranscript() {
+                this.transcriptEl.innerHTML = '';
+                this.transcript = [];
+            }
+
+            downloadTranscript() {
+                const text = this.transcript.map(item =>
+                    `${item.speaker.toUpperCase()}: ${item.text}`
+                ).join('\n\n');
+
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `voice-chat-${new Date().toISOString().slice(0, 19)}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+
+        // Global functions
+        let voiceChat;
+
+        function toggleVoice() {
+            voiceChat.toggleVoice();
+        }
+
+        function connect() {
+            voiceChat.connect();
+        }
+
+        function clearTranscript() {
+            voiceChat.clearTranscript();
+        }
+
+        function downloadTranscript() {
+            voiceChat.downloadTranscript();
+        }
+
+        function toggleMute() {
+            voiceChat.isMuted = !voiceChat.isMuted;
+            console.log('Muted:', voiceChat.isMuted);
+        }
+
+        function toggleVideo() {
+            console.log('Video toggle clicked');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            voiceChat = new RealtimeVoiceChat();
+        });
+    </script>
+</body>
+</html>

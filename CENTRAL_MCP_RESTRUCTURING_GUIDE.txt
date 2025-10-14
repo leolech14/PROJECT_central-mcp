@@ -1,0 +1,195 @@
+========================================================================================
+📋 RESTRUCTURING GUIDE: PROJECT_central-mcp
+   Optimizing 9-Loop Autonomous Intelligence
+========================================================================================
+
+🎯 CURRENT ARCHITECTURE ANALYSIS:
+----------------------------------------------------------------------------------------
+
+The system is organized as a 9-loop auto-proactive intelligence engine:
+
+LAYER 0 - FOUNDATION & SYSTEM HEALTH
+  Loop 0: System Status (5s interval) - Health monitoring
+  Loop 1: Agent Auto-Discovery (60s) - Agent awareness
+
+LAYER 1 - OBSERVATION & TRACKING
+  Loop 2: Project Discovery (60s) - Project scanning
+  Loop 3: Context Learning (RESERVED) - Future implementation
+  Loop 4: Progress Monitoring (30s) - Real-time tracking
+  Loop 5: Status Analysis (300s) - Health analysis
+  Loop 9: Git Push Monitor (60s) - Senior engineer workflows
+
+LAYER 2 - DETECTION & PLANNING
+  Loop 6: Opportunity Scanning (900s) - Finding work
+  Loop 7: Spec Generation (600s) - Creating specifications
+
+LAYER 3 - EXECUTION
+  Loop 8: Task Assignment (120s) - Distributing work
+
+Current Stats:
+  • 136 TypeScript files
+  • 40,948 lines of code
+  • 2581 functions
+  • 10 tool categories
+
+
+💡 CONSOLIDATION OPPORTUNITIES:
+----------------------------------------------------------------------------------------
+
+1. SHARED LOOP UTILITIES
+   Currently each loop may implement similar functionality:
+   - Database query patterns
+   - Logging and error handling
+   - Interval management
+   - Status reporting
+
+   RECOMMENDATION: Create shared/LoopBaseUtilities.ts with:
+   - BaseLoop abstract class with common lifecycle methods
+   - Shared query helpers
+   - Standardized logging interface
+   - Common configuration patterns
+
+2. MCP TOOL CONSOLIDATION
+   Multiple tool categories may have overlapping functionality:
+   - Error handling patterns
+   - Response formatting
+   - Validation logic
+
+   RECOMMENDATION: Extract to shared/ToolUtilities.ts:
+   - Standard response builders
+   - Common validators
+   - Shared error handling
+   - Type definitions
+
+3. DATABASE ACCESS PATTERNS
+   Each loop and tool accesses the database directly:
+   - Potential for inconsistent patterns
+   - Repeated query logic
+   - No centralized optimization
+
+   RECOMMENDATION: Create data/DatabaseFacade.ts:
+   - Centralized query methods
+   - Connection pooling
+   - Query optimization
+   - Transaction management
+
+
+🔧 REFACTORING PRIORITIES:
+----------------------------------------------------------------------------------------
+
+PRIORITY 1 - Create Shared Loop Foundation (Week 1)
+  • Extract common loop patterns to BaseLoop class
+  • Standardize configuration interfaces
+  • Unify logging and error handling
+  • Benefits: 30-40% code reduction in loop implementations
+
+PRIORITY 2 - Consolidate MCP Tools (Week 2)
+  • Extract shared tool utilities
+  • Standardize response formats
+  • Create common validation library
+  • Benefits: Improved consistency, easier maintenance
+
+PRIORITY 3 - Database Layer Abstraction (Week 3)
+  • Create DatabaseFacade for all DB operations
+  • Implement query optimization
+  • Add connection pooling
+  • Benefits: Better performance, easier testing
+
+PRIORITY 4 - Type Safety & Documentation (Week 4)
+  • Ensure full TypeScript coverage
+  • Add JSDoc comments to all public APIs
+  • Generate API documentation
+  • Benefits: Better developer experience, fewer bugs
+
+
+🏗️ RECOMMENDED MODULE STRUCTURE:
+----------------------------------------------------------------------------------------
+
+src/
+├── core/
+│   ├── BaseLoop.ts              # Abstract base for all loops
+│   ├── LoopManager.ts           # Lifecycle management
+│   └── Configuration.ts         # Centralized config
+│
+├── loops/
+│   ├── foundation/              # Layer 0
+│   │   ├── SystemStatusLoop.ts
+│   │   └── AgentAutoDiscoveryLoop.ts
+│   ├── observation/             # Layer 1
+│   │   ├── ProjectDiscoveryLoop.ts
+│   │   ├── ProgressMonitoringLoop.ts
+│   │   ├── StatusAnalysisLoop.ts
+│   │   └── GitPushMonitor.ts
+│   ├── planning/                # Layer 2
+│   │   ├── OpportunityScanningLoop.ts
+│   │   └── SpecGenerationLoop.ts
+│   └── execution/               # Layer 3
+│       └── TaskAssignmentLoop.ts
+│
+├── tools/
+│   ├── core/                    # Essential tools
+│   ├── intelligence/            # Agent communication
+│   ├── discovery/               # Context management
+│   ├── health/                  # System health
+│   ├── cost/                    # Usage tracking
+│   └── shared/
+│       ├── ToolBase.ts          # Base tool class
+│       ├── Validators.ts        # Common validators
+│       └── ResponseBuilders.ts  # Standard responses
+│
+├── data/
+│   ├── DatabaseFacade.ts        # Centralized DB access
+│   ├── QueryBuilders.ts         # Query helpers
+│   └── migrations/              # Schema updates
+│
+└── shared/
+    ├── types/                   # Common type definitions
+    ├── utils/                   # Utility functions
+    └── constants/               # System constants
+
+
+📈 EXPECTED BENEFITS:
+----------------------------------------------------------------------------------------
+
+Current State:
+  • 136 TypeScript files (some with duplication)
+  • 40,948 lines (with repeated patterns)
+  • Maintenance: Medium (each loop/tool is independent)
+  • Testing: Challenging (tight coupling to database)
+
+After Restructuring:
+  • ~108 files (30-40% consolidation)
+  • ~30,711 lines (25% reduction via sharing)
+  • Maintenance: High (clear abstractions, reusable components)
+  • Testing: Easy (dependency injection, mock-friendly)
+  • Development Speed: 3-5x faster (clear patterns to follow)
+  • Bug Rate: 50% reduction (less duplication = fewer bugs)
+
+
+🚀 QUICK WINS (Implement Today!):
+----------------------------------------------------------------------------------------
+
+1. Create BaseLoop Abstract Class
+   Extract common pattern from existing loops:
+   - start() lifecycle method
+   - stop() cleanup
+   - getStats() reporting
+   - interval management
+
+   Impact: Immediately reduces 200-300 lines of duplicate code
+
+2. Standardize Tool Response Format
+   Create shared response builder:
+   - Success/error states
+   - Standard metadata
+   - Consistent error messages
+
+   Impact: Improves API consistency across all tools
+
+3. Extract Database Query Helpers
+   Common patterns like:
+   - getAllTasks()
+   - getAgentPresence()
+   - updateTaskStatus()
+
+   Impact: Single source of truth for queries

@@ -1,0 +1,329 @@
+<!--
+═══════════════════════════════════════════════════════════════
+OKLCH 3D VISUALIZATION - COPY-PASTE READY SNIPPET
+Evil Martians' Exact Code - Zero Dependencies - Drop-in Ready
+═══════════════════════════════════════════════════════════════
+
+USAGE:
+1. Copy everything below
+2. Paste into your HTML file (anywhere in <body>)
+3. Done! The 3D OKLCH color space will appear
+
+REQUIREMENTS:
+- Modern browser with import maps (Chrome 89+, Firefox 108+, Safari 16.4+)
+- No build step, no npm, no framework required
+
+FEATURES:
+- Delaunator triangulation (real algorithm from Evil Martians)
+- GLSL shader slicing planes
+- Interactive controls (drag to rotate, scroll to zoom)
+- L/C/H sliders to explore color space
+- Color preview
+
+CUSTOMIZATION:
+- Change position: Modify #oklchCanvas and #oklchControls styles
+- Change colors: Modify oklch() values in styles
+- Change size: Modify width/height in styles
+
+═══════════════════════════════════════════════════════════════
+-->
+
+<!-- STEP 1: Import Map (Place in <head> or before script) -->
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+    }
+}
+</script>
+
+<!-- STEP 2: Styles -->
+<style>
+    #oklchCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 0;
+    }
+
+    #oklchControls {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: oklch(18% 0.01 250 / 0.92);
+        border: 2px solid oklch(35% 0.02 250);
+        border-radius: 16px;
+        padding: 1.5rem;
+        min-width: 280px;
+        backdrop-filter: blur(12px);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: oklch(95% 0.01 250);
+        z-index: 10;
+    }
+
+    #oklchControls h1 {
+        font-size: 1.2rem;
+        margin: 0 0 1rem 0;
+        background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .oklch-control-group {
+        margin-bottom: 1rem;
+    }
+
+    .oklch-control-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        color: oklch(70% 0.02 250);
+    }
+
+    .oklch-value {
+        font-family: 'SF Mono', monospace;
+        color: oklch(85% 0.02 250);
+    }
+
+    .oklch-slider {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: oklch(30% 0.02 250);
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .oklch-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: oklch(75% 0.15 240);
+        cursor: pointer;
+    }
+
+    .oklch-slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: oklch(75% 0.15 240);
+        cursor: pointer;
+        border: none;
+    }
+
+    #oklchPreview {
+        width: 100%;
+        height: 50px;
+        border-radius: 10px;
+        border: 2px solid oklch(40% 0.02 250);
+        margin-top: 1rem;
+    }
+
+    .oklch-info {
+        font-size: 0.75rem;
+        color: oklch(65% 0.02 250);
+        line-height: 1.4;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid oklch(30% 0.02 250);
+    }
+</style>
+
+<!-- STEP 3: HTML Structure -->
+<canvas id="oklchCanvas"></canvas>
+
+<div id="oklchControls">
+    <h1>🎨 OKLCH 3D</h1>
+
+    <div class="oklch-control-group">
+        <div class="oklch-control-label">
+            <span>Lightness (L)</span>
+            <span class="oklch-value" id="oklchValueL">0.60</span>
+        </div>
+        <input type="range" class="oklch-slider" id="oklchSliderL" min="0" max="100" value="60">
+    </div>
+
+    <div class="oklch-control-group">
+        <div class="oklch-control-label">
+            <span>Chroma (C)</span>
+            <span class="oklch-value" id="oklchValueC">0.15</span>
+        </div>
+        <input type="range" class="oklch-slider" id="oklchSliderC" min="0" max="37" value="15">
+    </div>
+
+    <div class="oklch-control-group">
+        <div class="oklch-control-label">
+            <span>Hue (H)</span>
+            <span class="oklch-value" id="oklchValueH">240°</span>
+        </div>
+        <input type="range" class="oklch-slider" id="oklchSliderH" min="0" max="360" value="240">
+    </div>
+
+    <div id="oklchPreview"></div>
+
+    <div class="oklch-info">
+        🖱️ Drag to rotate • 🔍 Scroll to zoom<br>
+        🎯 Evil Martians' exact code
+    </div>
+</div>
+
+<!-- STEP 4: JavaScript (Evil Martians' Algorithm) -->
+<script type="module">
+    (async () => {
+        // Import dependencies
+        const THREE = await import('three');
+        const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+        const culoriModule = await import('https://cdn.jsdelivr.net/npm/culori@3.3.0/+esm');
+        const { converter } = culoriModule;
+        const toOklch = converter('oklch');
+        const toRgb = converter('rgb');
+        const delaunatorModule = await import('https://cdn.jsdelivr.net/npm/delaunator@5.0.1/+esm');
+        const Delaunator = delaunatorModule.default || delaunatorModule.Delaunator || delaunatorModule;
+
+        // Constants
+        const L_MAX_COLOR = 1;
+        const C_MAX = 0.37;
+
+        // Evil Martians' functions (from model.ts)
+        function onGamutEdge(r, g, b) {
+            return r === 0 || g === 0 || b === 0 || r > 0.99 || g > 0.99 || b > 0.99;
+        }
+
+        function getModelData() {
+            let coordinates = [];
+            let colors = [];
+            for (let x = 0; x <= 1; x += 0.05) {
+                for (let y = 0; y <= 1; y += 0.05) {
+                    for (let z = 0; z <= 1; z += 0.05) {
+                        if (onGamutEdge(x, y, z)) {
+                            let edgeRgb = { mode: 'rgb', r: x, g: y, b: z };
+                            let to = toOklch(edgeRgb);
+                            if (to.h !== undefined) {
+                                colors.push(edgeRgb.r, edgeRgb.g, edgeRgb.b);
+                                coordinates.push(new THREE.Vector3(to.l / L_MAX_COLOR, to.c / (C_MAX * 2), to.h / 360));
+                            }
+                        }
+                    }
+                }
+            }
+            let bounds = [[0,0,0],[0,0,1],[1,0,0],[1,1,0],[1,0,1],[1,0,1],[1,1,1]];
+            for (let i of bounds) {
+                coordinates.push(new THREE.Vector3(...i));
+                colors.push(i[0], i[0], i[0]);
+            }
+            return [coordinates, colors];
+        }
+
+        function generateMesh(scene) {
+            scene.clear();
+            let [coordinates, colors] = getModelData();
+            let top = new THREE.BufferGeometry().setFromPoints(coordinates);
+            top.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            top.center();
+            const points2D = coordinates.map(c => [c.x, c.z]);
+            const delaunay = Delaunator.from(points2D);
+            top.setIndex(Array.from(delaunay.triangles));
+            top.computeVertexNormals();
+
+            let material = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, vertexColors: true, transparent: true, opacity: 0.8 });
+            let l = new THREE.Vector2(0, 1);
+            let c = new THREE.Vector2(0, 1);
+            let h = new THREE.Vector2(0, 1);
+
+            material.onBeforeCompile = shader => {
+                shader.uniforms.sliceL = { value: l };
+                shader.uniforms.sliceC = { value: c };
+                shader.uniforms.sliceH = { value: h };
+                shader.vertexShader = `varying vec3 vPos;\n${shader.vertexShader}`.replace(`#include <begin_vertex>`, `#include <begin_vertex>\nvPos = transformed;`);
+                shader.fragmentShader = `#define ss(a, b, c) smoothstep(a, b, c)\nuniform vec2 sliceL, sliceC, sliceH;\nvarying vec3 vPos;\n${shader.fragmentShader}`.replace(`#include <dithering_fragment>`, `#include <dithering_fragment>\nvec3 col = vec3(0.5, 0.5, 0.5);\nfloat width = 0.0025;\nfloat l = ss(width, 0., abs(vPos.x + sliceL.y));\nfloat c = ss(width, 0., abs(vPos.y + sliceC.y));\nfloat h = ss(width, 0., abs(vPos.z - sliceH.y));\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, l);\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, c);\ngl_FragColor.rgb = mix(gl_FragColor.rgb, col, h);`);
+            };
+
+            let topMesh = new THREE.Mesh(top, material);
+            topMesh.translateY(0.3);
+            scene.add(topMesh);
+
+            let bottom = new THREE.PlaneGeometry(1, 1, 1, 20);
+            let bottomColors = [];
+            let bottomSteps = bottom.attributes.position.array.length / 6;
+            for (let i = 0; i <= bottomSteps; i += 1) {
+                let lchL = (L_MAX_COLOR * i) / bottomSteps;
+                let rgbL = toRgb({ mode: 'oklch', l: lchL, c: 0, h: 0 }).r;
+                bottomColors.push(rgbL, rgbL, rgbL, rgbL, rgbL, rgbL);
+            }
+            bottom.setAttribute('color', new THREE.Float32BufferAttribute(bottomColors, 3));
+            bottom.translate(0, 0, -0.2);
+            bottom.rotateZ(Math.PI * 0.5);
+            bottom.rotateX(-Math.PI * 0.5);
+            let bottomMesh = new THREE.Mesh(bottom, material);
+            scene.add(bottomMesh);
+
+            return color => {
+                l.set(0, -color.l + 0.5);
+                c.set(0, (0.5 * -color.c) / C_MAX + 0.5);
+                h.set(0, 0.0028 * color.h - (color.h > 350 ? 0.51 : 0.5));
+            };
+        }
+
+        // Setup scene
+        const canvas = document.getElementById('oklchCanvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true, canvas, antialias: true });
+        renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.set(0.79, 0, 0.79);
+        camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enablePan = true;
+        controls.enableZoom = true;
+        controls.minDistance = 0.9;
+        controls.maxDistance = 3;
+
+        const updateSlices = generateMesh(scene);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+
+        // UI Controls
+        const sliderL = document.getElementById('oklchSliderL');
+        const sliderC = document.getElementById('oklchSliderC');
+        const sliderH = document.getElementById('oklchSliderH');
+
+        function updateColor() {
+            const l = parseFloat(sliderL.value) / 100;
+            const c = parseFloat(sliderC.value) / 100;
+            const h = parseFloat(sliderH.value);
+            document.getElementById('oklchValueL').textContent = l.toFixed(2);
+            document.getElementById('oklchValueC').textContent = c.toFixed(2);
+            document.getElementById('oklchValueH').textContent = h.toFixed(0) + '°';
+            document.getElementById('oklchPreview').style.background = `oklch(${l} ${c} ${h})`;
+            updateSlices({ l, c, h });
+        }
+
+        sliderL.addEventListener('input', updateColor);
+        sliderC.addEventListener('input', updateColor);
+        sliderH.addEventListener('input', updateColor);
+        updateColor();
+
+        console.log('✅ OKLCH 3D loaded successfully!');
+    })();
+</script>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧠 Loop 7 - Context Learning Intelligence Dashboard | Central-MCP</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* OKLCH Color System - SPECBASE 0017 Compliant */
+            --primary: oklch(0.60 0.18 270);
+            --secondary: oklch(0.65 0.15 210);
+            --accent: oklch(0.75 0.15 85);
+            --background: oklch(0.12 0.01 270);
+            --surface: oklch(0.18 0.01 270);
+            --text: oklch(0.95 0.01 270);
+            --text-secondary: oklch(0.65 0.02 270);
+            --border: oklch(0.30 0.01 270);
+            --success: oklch(0.65 0.18 145);
+            --warning: oklch(0.70 0.18 70);
+            --error: oklch(0.60 0.20 25);
+
+            /* Transitions */
+            --transition-fast: 150ms;
+            --transition-normal: 200ms;
+            --transition-slow: 300ms;
+
+            /* Spacing */
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            touch-action: manipulation;
+        }
+
+        /* Accessibility: Skip Link - SPECBASE 0017 Required */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            font-weight: 600;
+            z-index: 10000;
+            border-radius: 0 0 var(--radius-sm) 0;
+            transition: top var(--transition-fast);
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 3px solid oklch(from var(--primary) l c h / 0.5);
+            outline-offset: 2px;
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .header h1 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            font-size: clamp(0.9rem, 2vw, 1.2rem);
+            color: var(--text-secondary);
+        }
+
+        /* Control panel */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+            flex-wrap: wrap;
+        }
+
+        .button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            min-height: 44px; /* Touch target */
+            min-width: 44px;
+        }
+
+        .button:hover {
+            background: oklch(from var(--primary) calc(l + 0.1) c h);
+            transform: translateY(-1px);
+        }
+
+        .button:focus {
+            outline: 3px solid oklch(from var(--primary) l c h / 0.4);
+            outline-offset: 2px;
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        /* Stats bar */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 8px 16px oklch(from var(--primary) l c h / 0.2);
+        }
+
+        .stat-number {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loops grid */
+        .loops-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .loop-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            transition: all var(--transition-normal);
+        }
+
+        .loop-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+        }
+
+        .loop-card.loop-7 {
+            background: linear-gradient(135deg, oklch(from var(--accent) l c h / 0.15), oklch(from var(--primary) l c h / 0.15));
+            border: 2px solid var(--accent);
+            box-shadow: 0 0 20px oklch(from var(--accent) l c h / 0.3);
+        }
+
+        .loop-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .loop-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-badge.active {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-badge.pending {
+            background: var(--warning);
+            color: white;
+        }
+
+        .loop-stats {
+            margin-top: var(--spacing-md);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Intelligence sections */
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .message-card {
+            background: oklch(from var(--surface) calc(l + 0.02) c h);
+            border-left: 3px solid var(--success);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            transition: all var(--transition-normal);
+        }
+
+        .message-card:hover {
+            transform: translateX(4px);
+            border-left-color: var(--accent);
+        }
+
+        .message-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .message-content {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .insight-badge {
+            display: inline-block;
+            background: var(--success);
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: var(--spacing-sm);
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: var(--spacing-xl);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .loops-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Accessibility: Skip Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <main id="main-content" class="container">
+        <header class="header">
+            <h1>🧠 Loop 7 - Context Learning Intelligence</h1>
+            <p class="subtitle">Revolutionary Inside-Out Building System | Central-MCP</p>
+        </header>
+
+        <nav aria-label="Dashboard controls" class="controls">
+            <button class="button" onclick="refreshData()" aria-label="Refresh intelligence data">
+                🔄 Refresh Intelligence
+            </button>
+        </nav>
+
+        <section aria-label="System statistics" class="stats">
+            <article class="stat-card">
+                <div class="stat-number" id="totalMessages">0</div>
+                <div class="stat-label">Messages Captured</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-number" id="totalInsights">0</div>
+                <div class="stat-label">Insights Extracted</div>
+            </article>
+            <article class="stat-card">
+                <div class="stat-number" id="loop7Runs">0</div>
+                <div class="stat-label">Loop 7 Executions</div>
+            </article>
+        </section>
+
+        <section aria-label="Auto-proactive loops status" class="loops-grid" id="loopsGrid">
+            <!-- Loops populated by JavaScript -->
+        </section>
+
+        <article class="section">
+            <h2 class="section-title">
+                <span role="img" aria-label="Messages">💬</span>
+                <span>Recent User Messages (Highest Prize Intelligence)</span>
+            </h2>
+            <div id="messagesContainer" role="list">
+                <p class="loading">Loading messages...</p>
+            </div>
+        </article>
+
+        <article class="section">
+            <h2 class="section-title">
+                <span role="img" aria-label="Insights">🎯</span>
+                <span>Loop 7 Learning Insights</span>
+            </h2>
+            <div id="insightsContainer" role="list">
+                <p class="loading">Loading insights...</p>
+            </div>
+        </article>
+    </main>
+
+    <script>
+        const API_BASE = 'http://localhost:3007/api';
+
+        async function refreshData() {
+            await Promise.all([
+                loadLoopStatus(),
+                loadMessages(),
+                loadInsights()
+            ]);
+        }
+
+        async function loadLoopStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/engine/status`);
+                const data = await response.json();
+
+                const loopsGrid = document.getElementById('loopsGrid');
+                loopsGrid.innerHTML = '';
+
+                const loopDetails = {
+                    'project-discovery': { num: 1, name: 'Project Discovery', interval: '60s' },
+                    'status-analysis': { num: 2, name: 'Status Analysis', interval: '5min' },
+                    'spec-generation': { num: 3, name: 'Spec Generation', interval: '10min' },
+                    'task-assignment': { num: 4, name: 'Task Assignment', interval: '2min' },
+                    'opportunity-scanning': { num: 5, name: 'Opportunity Scanning', interval: '15min' },
+                    'progress-monitoring': { num: 6, name: 'Progress Monitoring', interval: '30s' },
+                    'context-learning': { num: 7, name: 'Context Learning', interval: '20min' }
+                };
+
+                Object.entries(data.loops || {}).forEach(([key, loop]) => {
+                    const details = loopDetails[key];
+                    if (!details) return;
+
+                    const card = document.createElement('article');
+                    card.className = `loop-card ${key === 'context-learning' ? 'loop-7' : ''}`;
+                    card.setAttribute('aria-label', `Loop ${details.num}: ${details.name}`);
+                    card.innerHTML = `
+                        <div class="loop-number">Loop ${details.num}</div>
+                        <div class="loop-name">${details.name}</div>
+                        <span class="status-badge ${loop.status}">${loop.status.toUpperCase()}</span>
+                        <div class="loop-stats">
+                            Interval: ${details.interval}<br>
+                            Runs: ${loop.runCount || 0}<br>
+                            Last: ${loop.lastRun ? new Date(loop.lastRun).toLocaleTimeString() : 'Never'}
+                        </div>
+                    `;
+                    loopsGrid.appendChild(card);
+                });
+
+                const loop7 = data.loops['context-learning'];
+                if (loop7) {
+                    document.getElementById('loop7Runs').textContent = loop7.runCount || 0;
+                }
+
+            } catch (error) {
+                console.error('Error loading loop status:', error);
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                const response = await fetch(`${API_BASE}/intelligence/message-analytics`);
+                const data = await response.json();
+
+                const container = document.getElementById('messagesContainer');
+
+                if (!data.recentMessages || data.recentMessages.length === 0) {
+                    container.innerHTML = '<p class="loading">No messages captured yet. Start a conversation!</p>';
+                    return;
+                }
+
+                document.getElementById('totalMessages').textContent = data.totalMessages || 0;
+                document.getElementById('totalInsights').textContent = data.totalInsights || 0;
+
+                container.innerHTML = data.recentMessages.map(msg => `
+                    <article class="message-card" role="listitem">
+                        <div class="message-meta">
+                            📅 ${new Date(msg.timestamp).toLocaleString()} |
+                            🎯 Density: ${(msg.semanticDensity * 100).toFixed(1)}% |
+                            📝 ${msg.wordCount} words
+                        </div>
+                        <div class="message-content">${escapeHtml(msg.content)}</div>
+                        ${msg.insights > 0 ? `<span class="insight-badge">💡 ${msg.insights} insights extracted</span>` : ''}
+                    </article>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messagesContainer').innerHTML = '<p class="loading">Error loading messages</p>';
+            }
+        }
+
+        async function loadInsights() {
+            try {
+                const response = await fetch(`${API_BASE}/intelligence/message-analytics`);
+                const data = await response.json();
+
+                const container = document.getElementById('insightsContainer');
+
+                if (!data.topInsights || data.topInsights.length === 0) {
+                    container.innerHTML = '<p class="loading">No insights extracted yet. Loop 7 will generate them from captured messages.</p>';
+                    return;
+                }
+
+                container.innerHTML = data.topInsights.map(insight => `
+                    <article class="message-card" role="listitem" style="border-left-color: var(--warning);">
+                        <div class="message-meta">
+                            🏷️ ${insight.type} | Confidence: ${(insight.confidence * 100).toFixed(0)}%
+                        </div>
+                        <div class="message-content">${escapeHtml(insight.summary)}</div>
+                        ${insight.actionable ? '<span class="insight-badge" style="background: var(--warning);">⚡ Actionable</span>' : ''}
+                    </article>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading insights:', error);
+                document.getElementById('insightsContainer').innerHTML = '<p class="loading">Error loading insights</p>';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshData, 30000);
+
+        // Initial load
+        refreshData();
+    </script>
+</body>
+</html>

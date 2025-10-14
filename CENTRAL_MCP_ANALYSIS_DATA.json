@@ -1,0 +1,4248 @@
+{
+  "loops": {
+    "Loop 0": {
+      "name": "SystemStatusLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 50,
+          "code_snippet": "constructor(db: Database.Database, config: SystemStatusConfig, systems?: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 55,
+          "code_snippet": "if (systems && systems.totalityVerification) {"
+        },
+        {
+          "name": "start",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 63,
+          "code_snippet": "start(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 64,
+          "code_snippet": "if (this.isRunning) {"
+        },
+        {
+          "name": "stop",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 88,
+          "code_snippet": "stop(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 91,
+          "code_snippet": "if (this.intervalHandle) {"
+        },
+        {
+          "name": "runHealthCheck",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 103,
+          "code_snippet": "private async runHealthCheck(): Promise<void> {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 121,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 129,
+          "code_snippet": "for (const path of this.config.criticalPaths) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 144,
+          "code_snippet": "if (!health.memory) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 151,
+          "code_snippet": "if (this.systems.totalityVerification) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 162,
+          "code_snippet": "if (completeness.percentage < 70) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 166,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 172,
+          "code_snippet": "if (!health.isHealthy) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 175,
+          "code_snippet": "if (this.consecutiveFailures >= 3) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 179,
+          "code_snippet": "if (this.config.autoRecover) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 190,
+          "code_snippet": "if (health.database) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 200,
+          "code_snippet": "if (health.isHealthy && this.loopCount % 100 === 0) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 204,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "attemptRecovery",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 214,
+          "code_snippet": "private async attemptRecovery(health: SystemHealth): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 218,
+          "code_snippet": "if (!health.database) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 223,
+          "code_snippet": "if (!health.memory) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 225,
+          "code_snippet": "if (global.gc) {"
+        },
+        {
+          "name": "logHealthCheck",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 236,
+          "code_snippet": "private logHealthCheck(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 250,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getHealth",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 259,
+          "code_snippet": "getHealth(): SystemHealth | null {"
+        },
+        {
+          "name": "getStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SystemStatusLoop.ts",
+          "line": 266,
+          "code_snippet": "getStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 276
+    },
+    "Loop 1": {
+      "name": "AgentAutoDiscoveryLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 99,
+          "code_snippet": "constructor(db: Database.Database, config: AgentAutoDiscoveryConfig) {"
+        },
+        {
+          "name": "start",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 107,
+          "code_snippet": "start(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 108,
+          "code_snippet": "if (this.isRunning) {"
+        },
+        {
+          "name": "stop",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 132,
+          "code_snippet": "stop(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 135,
+          "code_snippet": "if (this.intervalHandle) {"
+        },
+        {
+          "name": "runDiscovery",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 147,
+          "code_snippet": "private async runDiscovery(): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 157,
+          "code_snippet": "if (currentAgent) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 163,
+          "code_snippet": "if (this.config.autoRegister) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 171,
+          "code_snippet": "if (this.config.trackHeartbeats) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 190,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "detectCurrentAgent",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 198,
+          "code_snippet": "private detectCurrentAgent(): AgentSession | null {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 204,
+          "code_snippet": "if (!agentLetter) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 224,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "guessModelFromContext",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 233,
+          "code_snippet": "private guessModelFromContext(): string {"
+        },
+        {
+          "name": "mapModelToAgentLetter",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 246,
+          "code_snippet": "private mapModelToAgentLetter(modelId: string): string | null {"
+        },
+        {
+          "name": "extractProjectName",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 258,
+          "code_snippet": "private extractProjectName(cwd: string): string {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 262,
+          "code_snippet": "if (projectIndex >= 0) {"
+        },
+        {
+          "name": "registerAgentSession",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 273,
+          "code_snippet": "private registerAgentSession(agent: AgentSession): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 283,
+          "code_snippet": "if (existing) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 316,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "updateHeartbeats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 324,
+          "code_snippet": "private updateHeartbeats(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 327,
+          "code_snippet": "if (currentAgent) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 341,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "detectStaleAgents",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 349,
+          "code_snippet": "private detectStaleAgents(): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 362,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getActiveAgents",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 370,
+          "code_snippet": "private getActiveAgents(): AgentSession[] {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 389,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 397,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 411,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/AgentAutoDiscoveryLoop.ts",
+          "line": 419,
+          "code_snippet": "getStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 432
+    },
+    "Loop 2": {
+      "name": "ProjectDiscoveryLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 42,
+          "code_snippet": "constructor(db: Database.Database, config: ProjectDiscoveryConfig) {"
+        },
+        {
+          "name": "start",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 52,
+          "code_snippet": "start(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 53,
+          "code_snippet": "if (this.isRunning) {"
+        },
+        {
+          "name": "stop",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 78,
+          "code_snippet": "stop(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 79,
+          "code_snippet": "if (!this.isRunning) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 84,
+          "code_snippet": "if (this.intervalHandle) {"
+        },
+        {
+          "name": "runDiscovery",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 96,
+          "code_snippet": "private async runDiscovery(): Promise<void> {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 106,
+          "code_snippet": "for (const scanPath of this.config.scanPaths) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 116,
+          "code_snippet": "for (const projectPath of projects) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 123,
+          "code_snippet": "if (existing) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 134,
+          "code_snippet": "if (this.config.autoRegister) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 142,
+          "code_snippet": "if (this.config.extractContext) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 146,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 152,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 169,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "scanDirectory",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 177,
+          "code_snippet": "private scanDirectory(basePath: string): string[] {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 183,
+          "code_snippet": "for (const entry of entries) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 200,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 205,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "looksLikeProject",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 215,
+          "code_snippet": "private looksLikeProject(path: string): boolean {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 229,
+          "code_snippet": "for (const indicator of indicators) {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 241,
+          "code_snippet": "private logLoopExecution(loopName: string, result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 268,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProjectDiscoveryLoop.ts",
+          "line": 276,
+          "code_snippet": "getStats(): {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 290
+    },
+    "Loop 3": {
+      "name": "Context Learning (RESERVED)",
+      "file": "RESERVED",
+      "functions": [],
+      "dependencies": []
+    },
+    "Loop 4": {
+      "name": "ProgressMonitoringLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 41,
+          "code_snippet": "constructor(db: Database.Database, config: ProgressMonitoringConfig) {"
+        },
+        {
+          "name": "execute",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 80,
+          "code_snippet": "protected async execute(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 87,
+          "code_snippet": "if (context.trigger === 'event') {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 95,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "handleEventTriggeredMonitoring",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 103,
+          "code_snippet": "private async handleEventTriggeredMonitoring(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "switch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 109,
+          "code_snippet": "switch (event) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 122,
+          "code_snippet": "if (this.config.autoUnblock) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 124,
+          "code_snippet": "if (unblocked > 0) {"
+        },
+        {
+          "name": "runFullMonitoringCycle",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 145,
+          "code_snippet": "private async runFullMonitoringCycle(startTime: number): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 150,
+          "code_snippet": "if (activeSessions.length === 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 161,
+          "code_snippet": "for (const session of activeSessions) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 174,
+          "code_snippet": "if (minutesSince > this.config.staleThresholdMinutes) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 179,
+          "code_snippet": "if (minutesSince > this.config.abandonThresholdMinutes && this.config.autoRelease) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 190,
+          "code_snippet": "if (this.config.autoUnblock) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 195,
+          "code_snippet": "if (unblocked > 0) {"
+        },
+        {
+          "name": "getActiveSessions",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 224,
+          "code_snippet": "private getActiveSessions(): any[] {"
+        },
+        {
+          "name": "updateTaskMetrics",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 240,
+          "code_snippet": "private updateTaskMetrics(taskId: string, completionPercent: number): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 250,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "trackAgentActivity",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 259,
+          "code_snippet": "private trackAgentActivity(agent: string, taskId: string): void {"
+        },
+        {
+          "name": "updateAgentHeartbeat",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 267,
+          "code_snippet": "private updateAgentHeartbeat(agent: string, timestamp: number): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 277,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "releaseAbandonedTasks",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 285,
+          "code_snippet": "private releaseAbandonedTasks(sessionId: string): void {"
+        },
+        {
+          "name": "markSessionInactive",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 299,
+          "code_snippet": "private markSessionInactive(sessionId: string): void {"
+        },
+        {
+          "name": "checkAndUnblockTasks",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 311,
+          "code_snippet": "private checkAndUnblockTasks(): number {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 320,
+          "code_snippet": "for (const task of blockedTasks as any[]) {"
+        },
+        {
+          "name": "areDependenciesMet",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 354,
+          "code_snippet": "private areDependenciesMet(task: any): boolean {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 367,
+          "code_snippet": "for (const depId of deps) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 372,
+          "code_snippet": "if (!dep || dep.status !== 'completed') {"
+        },
+        {
+          "name": "updateDashboardMetrics",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 383,
+          "code_snippet": "private updateDashboardMetrics(metrics: any): void {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 391,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 405,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getLoopStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/ProgressMonitoringLoop.ts",
+          "line": 413,
+          "code_snippet": "getLoopStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 422
+    },
+    "Loop 5": {
+      "name": "StatusAnalysisLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 41,
+          "code_snippet": "constructor(db: Database.Database, config: StatusAnalysisConfig) {"
+        },
+        {
+          "name": "start",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 49,
+          "code_snippet": "start(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 50,
+          "code_snippet": "if (this.isRunning) {"
+        },
+        {
+          "name": "stop",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 74,
+          "code_snippet": "stop(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 77,
+          "code_snippet": "if (this.intervalHandle) {"
+        },
+        {
+          "name": "runAnalysis",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 89,
+          "code_snippet": "private async runAnalysis(): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 99,
+          "code_snippet": "if (projects.length === 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 109,
+          "code_snippet": "for (const project of projects) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 116,
+          "code_snippet": "if (status.blockers && status.blockers.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 121,
+          "code_snippet": "if (this.config.autoAlert) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 128,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 143,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getRegisteredProjects",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 151,
+          "code_snippet": "private getRegisteredProjects(): any[] {"
+        },
+        {
+          "name": "analyzeProjectStatus",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 162,
+          "code_snippet": "private analyzeProjectStatus(project: any): any {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 178,
+          "code_snippet": "if (gitStatus.hasUncommittedChanges) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 186,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 197,
+          "code_snippet": "if (!buildStatus.healthy) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 205,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 211,
+          "code_snippet": "if (status.blockers.length > 0) {"
+        },
+        {
+          "name": "analyzeGitStatus",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 226,
+          "code_snippet": "private analyzeGitStatus(projectPath: string): any {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 252,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "analyzeBuildHealth",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 263,
+          "code_snippet": "private analyzeBuildHealth(projectPath: string): any {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 276,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "updateProjectHealth",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 287,
+          "code_snippet": "private updateProjectHealth(projectId: string, status: any): void {"
+        },
+        {
+          "name": "alertBlockers",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 310,
+          "code_snippet": "private alertBlockers(project: any, blockers: any[]): void {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 319,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 333,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/StatusAnalysisLoop.ts",
+          "line": 341,
+          "code_snippet": "getStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 351
+    },
+    "Loop 6": {
+      "name": "OpportunityScanningLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 49,
+          "code_snippet": "constructor(db: Database.Database, config: OpportunityScanningConfig) {"
+        },
+        {
+          "name": "start",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 57,
+          "code_snippet": "start(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 58,
+          "code_snippet": "if (this.isRunning) {"
+        },
+        {
+          "name": "stop",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 82,
+          "code_snippet": "stop(): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 85,
+          "code_snippet": "if (this.intervalHandle) {"
+        },
+        {
+          "name": "runScanning",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 97,
+          "code_snippet": "private async runScanning(): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 106,
+          "code_snippet": "if (projects.length === 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 113,
+          "code_snippet": "for (const project of projects) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 121,
+          "code_snippet": "if (opportunities.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 133,
+          "code_snippet": "if (this.config.autoGenerateTasks) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 134,
+          "code_snippet": "for (const opp of criticalOpps) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 139,
+          "code_snippet": "if (criticalOpps.length > 0) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 155,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getRegisteredProjects",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 163,
+          "code_snippet": "private getRegisteredProjects(): any[] {"
+        },
+        {
+          "name": "scanProject",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 173,
+          "code_snippet": "private scanProject(project: any): Opportunity[] {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 177,
+          "code_snippet": "if (this.config.scanSpecs) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 183,
+          "code_snippet": "if (this.config.scanTests) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 189,
+          "code_snippet": "if (this.config.scanDocs) {"
+        },
+        {
+          "name": "findSpecsWithoutImplementation",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 200,
+          "code_snippet": "private findSpecsWithoutImplementation(project: any): Opportunity[] {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 215,
+          "code_snippet": "if (specFiles.length > 0 && !hasCodebase) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 225,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "findCodeWithoutTests",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 235,
+          "code_snippet": "private findCodeWithoutTests(project: any): Opportunity[] {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 248,
+          "code_snippet": "if (sourceFiles > 0 && !hasTests) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 258,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "findDocumentationGaps",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 268,
+          "code_snippet": "private findDocumentationGaps(project: any): Opportunity[] {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 275,
+          "code_snippet": "if (!hasReadme) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 285,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "countFilesInDir",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 295,
+          "code_snippet": "private countFilesInDir(dir: string, extensions: string[]): number {"
+        },
+        {
+          "name": "scan",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 299,
+          "code_snippet": "const scan = (currentDir: string) => {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 302,
+          "code_snippet": "for (const entry of entries) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 323,
+          "code_snippet": "} catch (err) {"
+        },
+        {
+          "name": "generateTaskFromOpportunity",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 333,
+          "code_snippet": "private generateTaskFromOpportunity(opp: Opportunity): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 366,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 374,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 388,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/OpportunityScanningLoop.ts",
+          "line": 396,
+          "code_snippet": "getStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 406
+    },
+    "Loop 7": {
+      "name": "SpecGenerationLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 50,
+          "code_snippet": "constructor(db: Database.Database, config: SpecGenerationConfig, systems?: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 79,
+          "code_snippet": "if (systems && systems.llmOrchestrator) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 82,
+          "code_snippet": "if (systems && systems.taskGenerator) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 85,
+          "code_snippet": "if (systems && systems.specValidator) {"
+        },
+        {
+          "name": "execute",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 98,
+          "code_snippet": "protected async execute(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 105,
+          "code_snippet": "if (context.trigger === 'event') {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 113,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "handleEventTriggeredGeneration",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 121,
+          "code_snippet": "private async handleEventTriggeredGeneration(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 140,
+          "code_snippet": "if (this.config.autoGenerate) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 165,
+          "code_snippet": "if (this.config.createTasks) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 170,
+          "code_snippet": "for (const task of tasks) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 187,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "runFullGenerationScan",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 205,
+          "code_snippet": "private async runFullGenerationScan(startTime: number): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 209,
+          "code_snippet": "if (requests.length === 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 218,
+          "code_snippet": "for (const request of requests) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 230,
+          "code_snippet": "if (this.config.autoGenerate) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 257,
+          "code_snippet": "if (this.config.createTasks) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 262,
+          "code_snippet": "for (const task of tasks) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 279,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getUnprocessedRequests",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 304,
+          "code_snippet": "private getUnprocessedRequests(): UserRequest[] {"
+        },
+        {
+          "name": "isFeatureRequest",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 328,
+          "code_snippet": "private isFeatureRequest(request: UserRequest): boolean {"
+        },
+        {
+          "name": "generateSpec",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 354,
+          "code_snippet": "private async generateSpec(request: UserRequest): Promise<any> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 360,
+          "code_snippet": "if (this.systems.llmOrchestrator) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 394,
+          "code_snippet": "if (this.systems.specValidator) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 397,
+          "code_snippet": "if (!validation.isValid) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 400,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 407,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "saveSpec",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 469,
+          "code_snippet": "private saveSpec(spec: any, projectId: string): void {"
+        },
+        {
+          "name": "generateTasksFromSpec",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 489,
+          "code_snippet": "private generateTasksFromSpec(spec: any): any[] {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 491,
+          "code_snippet": "if (this.systems.taskGenerator) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 496,
+          "code_snippet": "for (const task of generatedTasks) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 517,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 524,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 541,
+          "code_snippet": "for (const task of tasks) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 562,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "markAsProcessed",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 573,
+          "code_snippet": "private markAsProcessed(messageId: string, status: string, specId?: string): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 587,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 595,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 609,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getLoopStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/SpecGenerationLoop.ts",
+          "line": 617,
+          "code_snippet": "getLoopStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 625
+    },
+    "Loop 8": {
+      "name": "TaskAssignmentLoop",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 61,
+          "code_snippet": "constructor(db: Database.Database, config: TaskAssignmentConfig, systems?: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 91,
+          "code_snippet": "if (systems && systems.agentOrchestrator) {"
+        },
+        {
+          "name": "execute",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 103,
+          "code_snippet": "protected async execute(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 110,
+          "code_snippet": "if (context.trigger === 'event') {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 118,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "handleEventTriggeredAssignment",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 126,
+          "code_snippet": "private async handleEventTriggeredAssignment(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "switch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 132,
+          "code_snippet": "switch (event) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 140,
+          "code_snippet": "for (const taskId of payload.unblockedTasks || []) {"
+        },
+        {
+          "name": "assignSpecificTask",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 156,
+          "code_snippet": "private async assignSpecificTask(taskId: string): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 162,
+          "code_snippet": "if (!task) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 167,
+          "code_snippet": "if (task.status !== 'pending' || task.claimed_by) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 181,
+          "code_snippet": "if (activeAgents.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 189,
+          "code_snippet": "if (matchedAgents.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 197,
+          "code_snippet": "if (this.config.autoAssign) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 218,
+          "code_snippet": "if (this.config.notifyAgents) {"
+        },
+        {
+          "name": "assignToSpecificAgent",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 227,
+          "code_snippet": "private async assignToSpecificAgent(agentLetter: string): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 232,
+          "code_snippet": "if (!agent) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 240,
+          "code_snippet": "if (availableTasks.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 250,
+          "code_snippet": "if (matchedTasks.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 258,
+          "code_snippet": "if (this.config.autoAssign) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 279,
+          "code_snippet": "if (this.config.notifyAgents) {"
+        },
+        {
+          "name": "runFullAssignmentScan",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 288,
+          "code_snippet": "private async runFullAssignmentScan(startTime: number): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 295,
+          "code_snippet": "if (availableTasks.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 300,
+          "code_snippet": "if (activeAgents.length === 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 309,
+          "code_snippet": "for (const task of availableTasks) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 313,
+          "code_snippet": "if (matchedAgents.length === 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 323,
+          "code_snippet": "if (this.config.autoAssign) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 346,
+          "code_snippet": "if (this.config.notifyAgents) {"
+        },
+        {
+          "name": "getAvailableTasks",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 367,
+          "code_snippet": "private getAvailableTasks(): Task[] {"
+        },
+        {
+          "name": "areDependenciesMet",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 384,
+          "code_snippet": "private areDependenciesMet(task: Task): boolean {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 397,
+          "code_snippet": "for (const depId of deps) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 402,
+          "code_snippet": "if (!dep || dep.status !== 'completed') {"
+        },
+        {
+          "name": "getActiveAgents",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 413,
+          "code_snippet": "private getActiveAgents(): Agent[] {"
+        },
+        {
+          "name": "matchAgentCapabilities",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 465,
+          "code_snippet": "private matchAgentCapabilities(task: Task, agents: Agent[]): Agent[] {"
+        },
+        {
+          "name": "getTaskCapabilities",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 480,
+          "code_snippet": "private getTaskCapabilities(task: Task): string[] {"
+        },
+        {
+          "name": "rankAgentsByFitness",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 502,
+          "code_snippet": "private rankAgentsByFitness(agents: Agent[], task: Task): Agent[] {"
+        },
+        {
+          "name": "calculateFitnessScore",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 519,
+          "code_snippet": "private calculateFitnessScore(agent: Agent, task: Task): number {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 535,
+          "code_snippet": "if (agent.projectId === task.projectId) {"
+        },
+        {
+          "name": "assignTask",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 545,
+          "code_snippet": "private assignTask(taskId: string, agent: Agent): void {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 547,
+          "code_snippet": "if (this.systems.agentOrchestrator) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 554,
+          "code_snippet": "if (task) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 559,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "notifyAgent",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 578,
+          "code_snippet": "private notifyAgent(agent: Agent, task: Task): void {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 587,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 601,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getLoopStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/TaskAssignmentLoop.ts",
+          "line": 609,
+          "code_snippet": "getLoopStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 616
+    },
+    "Loop 9": {
+      "name": "GitPushMonitor",
+      "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+      "functions": [
+        {
+          "name": "constructor",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 76,
+          "code_snippet": "constructor(db: Database.Database, config: GitPushMonitorConfig, systems?: any) {"
+        },
+        {
+          "name": "execute",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 117,
+          "code_snippet": "protected async execute(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 124,
+          "code_snippet": "if (context.trigger === 'event') {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 132,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "handleEventTriggeredMonitoring",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 140,
+          "code_snippet": "private async handleEventTriggeredMonitoring(context: LoopExecutionContext): Promise<void> {"
+        },
+        {
+          "name": "switch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 146,
+          "code_snippet": "switch (event) {"
+        },
+        {
+          "name": "runFullGitScan",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 168,
+          "code_snippet": "private async runFullGitScan(startTime: number): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 174,
+          "code_snippet": "if (pushes.length > 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 178,
+          "code_snippet": "for (const push of pushes) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 185,
+          "code_snippet": "if (needsPush) {"
+        },
+        {
+          "name": "processPush",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 219,
+          "code_snippet": "private async processPush(push: GitPushEvent): Promise<void> {"
+        },
+        {
+          "name": "filter",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 257,
+          "code_snippet": ".filter((c: ConventionalCommit | null): c is ConventionalCommit => c !== null);"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 262,
+          "code_snippet": "if (this.config.autoVersion && conventionalCommits.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 267,
+          "code_snippet": "if (this.config.autoChangelog && conventionalCommits.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 272,
+          "code_snippet": "if (this.config.autoDeploy) {"
+        },
+        {
+          "name": "autoVersion",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 282,
+          "code_snippet": "private async autoVersion(commits: ConventionalCommit[], push: GitPushEvent): Promise<void> {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 322,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "autoChangelog",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 330,
+          "code_snippet": "private async autoChangelog(commits: ConventionalCommit[], push: GitPushEvent): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 335,
+          "code_snippet": "if (!changelog) {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 361,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 378,
+          "code_snippet": "if (validation.ready) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 447,
+          "code_snippet": "if (ready) {"
+        },
+        {
+          "name": "processBranchIntelligence",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 468,
+          "code_snippet": "private async processBranchIntelligence(branches: BranchIntelligence[]): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 472,
+          "code_snippet": "if (staleBranches.length > 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 475,
+          "code_snippet": "for (const branch of staleBranches) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 495,
+          "code_snippet": "if (hotfixBranches.length > 0) {"
+        },
+        {
+          "name": "for",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 498,
+          "code_snippet": "for (const branch of hotfixBranches) {"
+        },
+        {
+          "name": "analyzeCommit",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 518,
+          "code_snippet": "private async analyzeCommit(hash: string, message: string): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 526,
+          "code_snippet": "if (!commit) {"
+        },
+        {
+          "name": "info",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 531,
+          "code_snippet": "logger.info(`   \u2705 Conventional commit: ${commit.type}(${commit.scope || 'none'}): ${commit.description}`);"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 534,
+          "code_snippet": "if (commit.breaking) {"
+        },
+        {
+          "name": "checkPushReadiness",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 556,
+          "code_snippet": "private async checkPushReadiness(taskId: string): Promise<void> {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 562,
+          "code_snippet": "if (commits.length === 0) {"
+        },
+        {
+          "name": "updateDeploymentReadiness",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 573,
+          "code_snippet": "private async updateDeploymentReadiness(payload: any): Promise<void> {"
+        },
+        {
+          "name": "generateVersionTagMessage",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 580,
+          "code_snippet": "private generateVersionTagMessage(commits: ConventionalCommit[], bump: VersionBump): string {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 587,
+          "code_snippet": "if (breaking.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 593,
+          "code_snippet": "if (features.length > 0) {"
+        },
+        {
+          "name": "if",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 599,
+          "code_snippet": "if (fixes.length > 0) {"
+        },
+        {
+          "name": "logLoopExecution",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 610,
+          "code_snippet": "private logLoopExecution(result: any): void {"
+        },
+        {
+          "name": "catch",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 624,
+          "code_snippet": "} catch (err: any) {"
+        },
+        {
+          "name": "getLoopStats",
+          "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/auto-proactive/GitPushMonitor.ts",
+          "line": 632,
+          "code_snippet": "getLoopStats(): any {"
+        }
+      ],
+      "dependencies": [],
+      "lines": 642
+    }
+  },
+  "tools": {
+    "ui": [
+      {
+        "name": "getKnowledge",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+        "functions": [
+          {
+            "name": "readFileContent",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 11,
+            "code_snippet": "async function readFileContent(filename: string): Promise<string> {"
+          },
+          {
+            "name": "readFileContent",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 11,
+            "code_snippet": "async function readFileContent(filename: string): Promise<string> {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 14,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "getKnowledge",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 19,
+            "code_snippet": "export async function getKnowledge(query: UIKnowledgeQuery): Promise<string> {"
+          },
+          {
+            "name": "getKnowledge",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 19,
+            "code_snippet": "export async function getKnowledge(query: UIKnowledgeQuery): Promise<string> {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 20,
+            "code_snippet": "if (query.topic !== 'oklch') {"
+          },
+          {
+            "name": "switch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 26,
+            "code_snippet": "switch (query.asset_type) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/ui/getKnowledge.ts",
+            "line": 69,
+            "code_snippet": "if (filesToRead.length === 0) {"
+          }
+        ],
+        "lines": 77
+      }
+    ],
+    "intelligence": [
+      {
+        "name": "uploadProjectContext",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/uploadProjectContext.ts",
+        "functions": [
+          {
+            "name": "handleUploadProjectContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/uploadProjectContext.ts",
+            "line": 38,
+            "code_snippet": "export async function handleUploadProjectContext(args: any, db: Database.Database) {"
+          },
+          {
+            "name": "handleUploadProjectContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/uploadProjectContext.ts",
+            "line": 38,
+            "code_snippet": "export async function handleUploadProjectContext(args: any, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/uploadProjectContext.ts",
+            "line": 46,
+            "code_snippet": "if (!contextData) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/uploadProjectContext.ts",
+            "line": 114,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 123
+      },
+      {
+        "name": "getSwarmDashboard",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/getSwarmDashboard.ts",
+        "functions": [
+          {
+            "name": "handleGetSwarmDashboard",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/getSwarmDashboard.ts",
+            "line": 26,
+            "code_snippet": "export async function handleGetSwarmDashboard(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleGetSwarmDashboard",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/getSwarmDashboard.ts",
+            "line": 26,
+            "code_snippet": "export async function handleGetSwarmDashboard(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 125
+      },
+      {
+        "name": "connectToMCP",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+        "functions": [
+          {
+            "name": "handleConnectToMCP",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 47,
+            "code_snippet": "export async function handleConnectToMCP(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleConnectToMCP",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 47,
+            "code_snippet": "export async function handleConnectToMCP(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "detectAgentLetter",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 87,
+            "code_snippet": "function detectAgentLetter(): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' {"
+          },
+          {
+            "name": "detectAgentLetter",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 87,
+            "code_snippet": "function detectAgentLetter(): 'A' | 'B' | 'C' | 'D' | 'E' | 'F' {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 89,
+            "code_snippet": "if (process.env.AGENT_LETTER) {"
+          },
+          {
+            "name": "detectModel",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 105,
+            "code_snippet": "function detectModel(): string {"
+          },
+          {
+            "name": "detectModel",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 105,
+            "code_snippet": "function detectModel(): string {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 113,
+            "code_snippet": "if (process.env.CLAUDE_CODE_VERSION) {"
+          },
+          {
+            "name": "detectContextWindow",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 123,
+            "code_snippet": "function detectContextWindow(): number {"
+          },
+          {
+            "name": "detectContextWindow",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 123,
+            "code_snippet": "function detectContextWindow(): number {"
+          },
+          {
+            "name": "detectProject",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 136,
+            "code_snippet": "function detectProject(): string {"
+          },
+          {
+            "name": "detectProject",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 136,
+            "code_snippet": "function detectProject(): string {"
+          },
+          {
+            "name": "detectCapabilities",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 168,
+            "code_snippet": "function detectCapabilities(): string[] {"
+          },
+          {
+            "name": "detectCapabilities",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 168,
+            "code_snippet": "function detectCapabilities(): string[] {"
+          },
+          {
+            "name": "detectHardware",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 183,
+            "code_snippet": "function detectHardware(): { cpu?: string; memory?: string; os?: string } {"
+          },
+          {
+            "name": "detectHardware",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 183,
+            "code_snippet": "function detectHardware(): { cpu?: string; memory?: string; os?: string } {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 191,
+            "code_snippet": "if (process.arch) {"
+          },
+          {
+            "name": "getMachineId",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 207,
+            "code_snippet": "function getMachineId(): string {"
+          },
+          {
+            "name": "getMachineId",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/connectToMCP.ts",
+            "line": 207,
+            "code_snippet": "function getMachineId(): string {"
+          }
+        ],
+        "lines": 215
+      },
+      {
+        "name": "agentHeartbeat",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentHeartbeat.ts",
+        "functions": [
+          {
+            "name": "handleAgentHeartbeat",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentHeartbeat.ts",
+            "line": 33,
+            "code_snippet": "export async function handleAgentHeartbeat(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleAgentHeartbeat",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentHeartbeat.ts",
+            "line": 33,
+            "code_snippet": "export async function handleAgentHeartbeat(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 50
+      },
+      {
+        "name": "captureMessage",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/captureMessage.ts",
+        "functions": [
+          {
+            "name": "handleCaptureMessage",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/captureMessage.ts",
+            "line": 34,
+            "code_snippet": "export async function handleCaptureMessage("
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/captureMessage.ts",
+            "line": 41,
+            "code_snippet": "if (!content) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/captureMessage.ts",
+            "line": 80,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 87
+      },
+      {
+        "name": "agentConnect",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+        "functions": [
+          {
+            "name": "handleAgentConnect",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 52,
+            "code_snippet": "export async function handleAgentConnect(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleAgentConnect",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 52,
+            "code_snippet": "export async function handleAgentConnect(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 190,
+            "code_snippet": "} catch (error: any) {"
+          },
+          {
+            "name": "formatAgentIdentityBlock",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 198,
+            "code_snippet": "function formatAgentIdentityBlock("
+          },
+          {
+            "name": "join",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 247,
+            "code_snippet": "`).join('\\n') : 'No tasks assigned yet - Stand by for auto-assignment'}"
+          },
+          {
+            "name": "getRoleDescription",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 273,
+            "code_snippet": "function getRoleDescription(agentLetter: string): string {"
+          },
+          {
+            "name": "getRoleDescription",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 273,
+            "code_snippet": "function getRoleDescription(agentLetter: string): string {"
+          },
+          {
+            "name": "getDefaultCapabilities",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 286,
+            "code_snippet": "function getDefaultCapabilities(agentLetter: string): string[] {"
+          },
+          {
+            "name": "getDefaultCapabilities",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 286,
+            "code_snippet": "function getDefaultCapabilities(agentLetter: string): string[] {"
+          },
+          {
+            "name": "generateGuidanceMessage",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 299,
+            "code_snippet": "function generateGuidanceMessage(agentLetter: string, taskCount: number, completion: number): string {"
+          },
+          {
+            "name": "generateGuidanceMessage",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 299,
+            "code_snippet": "function generateGuidanceMessage(agentLetter: string, taskCount: number, completion: number): string {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 300,
+            "code_snippet": "if (taskCount === 0) {"
+          },
+          {
+            "name": "getContextFromPreviousAgents",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 308,
+            "code_snippet": "function getContextFromPreviousAgents(db: Database.Database, projectName: string): any[] {"
+          },
+          {
+            "name": "getContextFromPreviousAgents",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentConnect.ts",
+            "line": 308,
+            "code_snippet": "function getContextFromPreviousAgents(db: Database.Database, projectName: string): any[] {"
+          }
+        ],
+        "lines": 322
+      },
+      {
+        "name": "agentDisconnect",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentDisconnect.ts",
+        "functions": [
+          {
+            "name": "handleAgentDisconnect",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentDisconnect.ts",
+            "line": 28,
+            "code_snippet": "export async function handleAgentDisconnect(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleAgentDisconnect",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentDisconnect.ts",
+            "line": 28,
+            "code_snippet": "export async function handleAgentDisconnect(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/agentDisconnect.ts",
+            "line": 39,
+            "code_snippet": "if (!session) {"
+          }
+        ],
+        "lines": 58
+      },
+      {
+        "name": "visualMCPCall",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/visualMCPCall.ts",
+        "functions": [
+          {
+            "name": "createVisualConnectionExperience",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/visualMCPCall.ts",
+            "line": 9,
+            "code_snippet": "export function createVisualConnectionExperience("
+          },
+          {
+            "name": "getRoleName",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/visualMCPCall.ts",
+            "line": 79,
+            "code_snippet": "function getRoleName(agent: string): string {"
+          },
+          {
+            "name": "getRoleName",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/intelligence/visualMCPCall.ts",
+            "line": 79,
+            "code_snippet": "function getRoleName(agent: string): string {"
+          }
+        ],
+        "lines": 90
+      }
+    ],
+    "health": [
+      {
+        "name": "getSystemHealth",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/health/getSystemHealth.ts",
+        "functions": [
+          {
+            "name": "handleGetSystemHealth",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/health/getSystemHealth.ts",
+            "line": 27,
+            "code_snippet": "export async function handleGetSystemHealth(args: unknown, db: Database.Database, dbPath: string) {"
+          },
+          {
+            "name": "handleGetSystemHealth",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/health/getSystemHealth.ts",
+            "line": 27,
+            "code_snippet": "export async function handleGetSystemHealth(args: unknown, db: Database.Database, dbPath: string) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/health/getSystemHealth.ts",
+            "line": 36,
+            "code_snippet": "if (parsed.autoHeal && health.status !== 'HEALTHY') {"
+          }
+        ],
+        "lines": 97
+      }
+    ],
+    "cost": [
+      {
+        "name": "checkUsageLimits",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/checkUsageLimits.ts",
+        "functions": [
+          {
+            "name": "handleCheckUsageLimits",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/checkUsageLimits.ts",
+            "line": 28,
+            "code_snippet": "export async function handleCheckUsageLimits(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleCheckUsageLimits",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/checkUsageLimits.ts",
+            "line": 28,
+            "code_snippet": "export async function handleCheckUsageLimits(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/checkUsageLimits.ts",
+            "line": 52,
+            "code_snippet": "if (status.alert) {"
+          }
+        ],
+        "lines": 66
+      },
+      {
+        "name": "estimateTaskCost",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/estimateTaskCost.ts",
+        "functions": [
+          {
+            "name": "handleEstimateTaskCost",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/estimateTaskCost.ts",
+            "line": 28,
+            "code_snippet": "export async function handleEstimateTaskCost(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleEstimateTaskCost",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/cost/estimateTaskCost.ts",
+            "line": 28,
+            "code_snippet": "export async function handleEstimateTaskCost(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 62
+      }
+    ],
+    "discovery": [
+      {
+        "name": "getContextStats",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/getContextStats.ts",
+        "functions": [
+          {
+            "name": "getContextStats",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/getContextStats.ts",
+            "line": 11,
+            "code_snippet": "export async function getContextStats("
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/getContextStats.ts",
+            "line": 61,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "formatBytes",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/getContextStats.ts",
+            "line": 79,
+            "code_snippet": "function formatBytes(bytes: number): string {"
+          },
+          {
+            "name": "formatBytes",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/getContextStats.ts",
+            "line": 79,
+            "code_snippet": "function formatBytes(bytes: number): string {"
+          }
+        ],
+        "lines": 85
+      },
+      {
+        "name": "searchContext",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/searchContext.ts",
+        "functions": [
+          {
+            "name": "searchContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/searchContext.ts",
+            "line": 21,
+            "code_snippet": "export async function searchContext("
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/searchContext.ts",
+            "line": 72,
+            "code_snippet": "} catch (error) {"
+          }
+        ],
+        "lines": 84
+      },
+      {
+        "name": "contextTools",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+        "functions": [
+          {
+            "name": "handleUploadContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 44,
+            "code_snippet": "export async function handleUploadContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleUploadContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 44,
+            "code_snippet": "export async function handleUploadContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleSearchContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 103,
+            "code_snippet": "export async function handleSearchContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleSearchContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 103,
+            "code_snippet": "export async function handleSearchContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleRetrieveContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 137,
+            "code_snippet": "export async function handleRetrieveContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleRetrieveContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 137,
+            "code_snippet": "export async function handleRetrieveContext(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleGetContextStats",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 161,
+            "code_snippet": "export async function handleGetContextStats(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleGetContextStats",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/contextTools.ts",
+            "line": 161,
+            "code_snippet": "export async function handleGetContextStats(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 171
+      },
+      {
+        "name": "retrieveContext",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/retrieveContext.ts",
+        "functions": [
+          {
+            "name": "retrieveContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/retrieveContext.ts",
+            "line": 17,
+            "code_snippet": "export async function retrieveContext("
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/retrieveContext.ts",
+            "line": 59,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "formatBytes",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/retrieveContext.ts",
+            "line": 71,
+            "code_snippet": "function formatBytes(bytes: number): string {"
+          },
+          {
+            "name": "formatBytes",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/retrieveContext.ts",
+            "line": 71,
+            "code_snippet": "function formatBytes(bytes: number): string {"
+          }
+        ],
+        "lines": 77
+      },
+      {
+        "name": "discoverEnvironment",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/discoverEnvironment.ts",
+        "functions": [
+          {
+            "name": "handleDiscoverEnvironment",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/discoverEnvironment.ts",
+            "line": 49,
+            "code_snippet": "export async function handleDiscoverEnvironment(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleDiscoverEnvironment",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/discoverEnvironment.ts",
+            "line": 49,
+            "code_snippet": "export async function handleDiscoverEnvironment(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 142
+      },
+      {
+        "name": "uploadContext",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/uploadContext.ts",
+        "functions": [
+          {
+            "name": "uploadContext",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/uploadContext.ts",
+            "line": 18,
+            "code_snippet": "export async function uploadContext("
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/uploadContext.ts",
+            "line": 39,
+            "code_snippet": "if (!files || files.length === 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/uploadContext.ts",
+            "line": 52,
+            "code_snippet": "if (types && types.length > 0) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/discovery/uploadContext.ts",
+            "line": 77,
+            "code_snippet": "} catch (error) {"
+          }
+        ],
+        "lines": 90
+      }
+    ],
+    "mcp": [
+      {
+        "name": "getSystemStatus",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/mcp/getSystemStatus.ts",
+        "functions": [
+          {
+            "name": "getSystemStatus",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/mcp/getSystemStatus.ts",
+            "line": 31,
+            "code_snippet": "export async function getSystemStatus(db: Database.Database): Promise<any> {"
+          },
+          {
+            "name": "getSystemStatus",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/mcp/getSystemStatus.ts",
+            "line": 31,
+            "code_snippet": "export async function getSystemStatus(db: Database.Database): Promise<any> {"
+          }
+        ],
+        "lines": 54
+      }
+    ],
+    "vm": [
+      {
+        "name": "readVMFile",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/readVMFile.ts",
+        "functions": [
+          {
+            "name": "readVMFile",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/readVMFile.ts",
+            "line": 29,
+            "code_snippet": "export async function readVMFile(input: ReadVMFileInput): Promise<ReadVMFileResult> {"
+          },
+          {
+            "name": "readVMFile",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/readVMFile.ts",
+            "line": 29,
+            "code_snippet": "export async function readVMFile(input: ReadVMFileInput): Promise<ReadVMFileResult> {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/readVMFile.ts",
+            "line": 44,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 49
+      },
+      {
+        "name": "listVMDirectory",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+        "functions": [
+          {
+            "name": "listVMDirectory",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+            "line": 39,
+            "code_snippet": "export async function listVMDirectory(input: ListVMDirectoryInput): Promise<ListVMDirectoryResult> {"
+          },
+          {
+            "name": "listVMDirectory",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+            "line": 39,
+            "code_snippet": "export async function listVMDirectory(input: ListVMDirectoryInput): Promise<ListVMDirectoryResult> {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+            "line": 58,
+            "code_snippet": "} catch (error: any) {"
+          },
+          {
+            "name": "listDir",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+            "line": 63,
+            "code_snippet": "async function listDir("
+          },
+          {
+            "name": "for",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/listVMDirectory.ts",
+            "line": 71,
+            "code_snippet": "for (const entry of entries) {"
+          }
+        ],
+        "lines": 97
+      },
+      {
+        "name": "writeVMFile",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/writeVMFile.ts",
+        "functions": [
+          {
+            "name": "writeVMFile",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/writeVMFile.ts",
+            "line": 31,
+            "code_snippet": "export async function writeVMFile(input: WriteVMFileInput): Promise<WriteVMFileResult> {"
+          },
+          {
+            "name": "writeVMFile",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/writeVMFile.ts",
+            "line": 31,
+            "code_snippet": "export async function writeVMFile(input: WriteVMFileInput): Promise<WriteVMFileResult> {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/writeVMFile.ts",
+            "line": 36,
+            "code_snippet": "if (createDir) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/writeVMFile.ts",
+            "line": 54,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 59
+      },
+      {
+        "name": "executeBash",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/executeBash.ts",
+        "functions": [
+          {
+            "name": "executeBash",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/executeBash.ts",
+            "line": 33,
+            "code_snippet": "export async function executeBash(input: ExecuteBashInput): Promise<ExecuteBashResult> {"
+          },
+          {
+            "name": "executeBash",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/executeBash.ts",
+            "line": 33,
+            "code_snippet": "export async function executeBash(input: ExecuteBashInput): Promise<ExecuteBashResult> {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/vm/executeBash.ts",
+            "line": 53,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 64
+      }
+    ],
+    "keepintouch": [
+      {
+        "name": "requestCompletionPermission",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/requestCompletionPermission.ts",
+        "functions": [
+          {
+            "name": "handleRequestCompletionPermission",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/requestCompletionPermission.ts",
+            "line": 40,
+            "code_snippet": "export async function handleRequestCompletionPermission(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleRequestCompletionPermission",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/requestCompletionPermission.ts",
+            "line": 40,
+            "code_snippet": "export async function handleRequestCompletionPermission(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/requestCompletionPermission.ts",
+            "line": 48,
+            "code_snippet": "if (result.granted) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/requestCompletionPermission.ts",
+            "line": 64,
+            "code_snippet": "if (result.blocked) {"
+          }
+        ],
+        "lines": 96
+      },
+      {
+        "name": "agentCheckIn",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/agentCheckIn.ts",
+        "functions": [
+          {
+            "name": "handleAgentCheckIn",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/agentCheckIn.ts",
+            "line": 51,
+            "code_snippet": "export async function handleAgentCheckIn(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleAgentCheckIn",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/keepintouch/agentCheckIn.ts",
+            "line": 51,
+            "code_snippet": "export async function handleAgentCheckIn(args: unknown, db: Database.Database) {"
+          }
+        ],
+        "lines": 78
+      }
+    ],
+    "rules": [
+      {
+        "name": "createRule",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/createRule.ts",
+        "functions": [
+          {
+            "name": "registerCreateRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/createRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerCreateRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "registerCreateRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/createRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerCreateRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/createRule.ts",
+            "line": 19,
+            "code_snippet": "if (!type || !name || !priority) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/createRule.ts",
+            "line": 50,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 110
+      },
+      {
+        "name": "rulesTools",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+        "functions": [
+          {
+            "name": "getRulesRegistry",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 14,
+            "code_snippet": "function getRulesRegistry(db: Database.Database): RulesRegistry {"
+          },
+          {
+            "name": "getRulesRegistry",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 14,
+            "code_snippet": "function getRulesRegistry(db: Database.Database): RulesRegistry {"
+          },
+          {
+            "name": "handleGetRules",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 38,
+            "code_snippet": "export async function handleGetRules(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleGetRules",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 38,
+            "code_snippet": "export async function handleGetRules(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 44,
+            "code_snippet": "if (enabled_only) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 46,
+            "code_snippet": "} else if (type) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 68,
+            "code_snippet": "} catch (error: any) {"
+          },
+          {
+            "name": "handleCreateRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 121,
+            "code_snippet": "export async function handleCreateRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleCreateRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 121,
+            "code_snippet": "export async function handleCreateRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 125,
+            "code_snippet": "if (!type || !name || !priority) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 145,
+            "code_snippet": "if (createdRule) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 159,
+            "code_snippet": "} catch (error: any) {"
+          },
+          {
+            "name": "handleUpdateRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 216,
+            "code_snippet": "export async function handleUpdateRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleUpdateRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 216,
+            "code_snippet": "export async function handleUpdateRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 220,
+            "code_snippet": "if (!id) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 236,
+            "code_snippet": "if (!success) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 245,
+            "code_snippet": "if (updatedRule) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 259,
+            "code_snippet": "} catch (error: any) {"
+          },
+          {
+            "name": "handleDeleteRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 290,
+            "code_snippet": "export async function handleDeleteRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "handleDeleteRule",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 290,
+            "code_snippet": "export async function handleDeleteRule(args: unknown, db: Database.Database) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 294,
+            "code_snippet": "if (!id) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 301,
+            "code_snippet": "if (!rule) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 307,
+            "code_snippet": "if (!success) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/rulesTools.ts",
+            "line": 326,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 340
+      },
+      {
+        "name": "updateRule",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+        "functions": [
+          {
+            "name": "registerUpdateRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerUpdateRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "registerUpdateRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerUpdateRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+            "line": 19,
+            "code_snippet": "if (!id) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+            "line": 35,
+            "code_snippet": "if (!success) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/updateRule.ts",
+            "line": 55,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 119
+      },
+      {
+        "name": "deleteRule",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+        "functions": [
+          {
+            "name": "registerDeleteRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerDeleteRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "registerDeleteRuleTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 12,
+            "code_snippet": "export function registerDeleteRuleTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 19,
+            "code_snippet": "if (!id) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 27,
+            "code_snippet": "if (!rule) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 33,
+            "code_snippet": "if (!success) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/deleteRule.ts",
+            "line": 51,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 89
+      },
+      {
+        "name": "getRules",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+        "functions": [
+          {
+            "name": "registerGetRulesTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+            "line": 13,
+            "code_snippet": "export function registerGetRulesTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "registerGetRulesTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+            "line": 13,
+            "code_snippet": "export function registerGetRulesTool(server: Server, registry: TaskRegistry) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+            "line": 23,
+            "code_snippet": "if (enabled_only) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+            "line": 25,
+            "code_snippet": "} else if (type) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/rules/getRules.ts",
+            "line": 49,
+            "code_snippet": "} catch (error: any) {"
+          }
+        ],
+        "lines": 91
+      }
+    ],
+    "core": [
+      {
+        "name": "updateProgress",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+        "functions": [
+          {
+            "name": "createUpdateProgressTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 26,
+            "code_snippet": "export function createUpdateProgressTool(registry: TaskRegistry, gitTracker: GitTracker): Tool {"
+          },
+          {
+            "name": "createUpdateProgressTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 26,
+            "code_snippet": "export function createUpdateProgressTool(registry: TaskRegistry, gitTracker: GitTracker): Tool {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 66,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 70,
+            "code_snippet": "if (!task) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 82,
+            "code_snippet": "if (task.claimedBy !== agent) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 95,
+            "code_snippet": "if (status) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 118,
+            "code_snippet": "if (notes) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/updateProgress.ts",
+            "line": 123,
+            "code_snippet": "if (status) {"
+          }
+        ],
+        "lines": 216
+      },
+      {
+        "name": "getAvailableTasks",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+        "functions": [
+          {
+            "name": "createGetAvailableTasksTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+            "line": 20,
+            "code_snippet": "export function createGetAvailableTasksTool(registry: TaskRegistry, db: Database.Database): Tool {"
+          },
+          {
+            "name": "createGetAvailableTasksTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+            "line": 20,
+            "code_snippet": "export function createGetAvailableTasksTool(registry: TaskRegistry, db: Database.Database): Tool {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+            "line": 40,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+            "line": 48,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAvailableTasks.ts",
+            "line": 80,
+            "code_snippet": "if (tasks.length === 0) {"
+          }
+        ],
+        "lines": 145
+      },
+      {
+        "name": "claimTask",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+        "functions": [
+          {
+            "name": "createClaimTaskTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+            "line": 20,
+            "code_snippet": "export function createClaimTaskTool(registry: TaskRegistry): Tool {"
+          },
+          {
+            "name": "createClaimTaskTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+            "line": 20,
+            "code_snippet": "export function createClaimTaskTool(registry: TaskRegistry): Tool {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+            "line": 40,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+            "line": 45,
+            "code_snippet": "if (result.success) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/claimTask.ts",
+            "line": 50,
+            "code_snippet": "if (task) {"
+          }
+        ],
+        "lines": 143
+      },
+      {
+        "name": "completeTask",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+        "functions": [
+          {
+            "name": "createCompleteTaskToolIntegrated",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 64,
+            "code_snippet": "export function createCompleteTaskToolIntegrated("
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 72,
+            "code_snippet": "handler: async (args: unknown) => {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 90,
+            "code_snippet": "if (!parsed.bypassEnforcement) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 96,
+            "code_snippet": "if (!permission.granted) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 125,
+            "code_snippet": "if (!task) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 137,
+            "code_snippet": "if (gitScore < 30 && !parsed.bypassEnforcement) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 167,
+            "code_snippet": "if (!parsed.bypassEnforcement) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 178,
+            "code_snippet": "if (!validation.canComplete) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 203,
+            "code_snippet": "if (validation.warnings.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 226,
+            "code_snippet": "if (result.success) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 233,
+            "code_snippet": "if (task?.startedAt) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 245,
+            "code_snippet": "if (result.success) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 248,
+            "code_snippet": "if (task) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 259,
+            "code_snippet": "if (result.unblocked && result.unblocked.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 262,
+            "code_snippet": "if (unblockedTask) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 292,
+            "code_snippet": "if (result.unblocked && result.unblocked.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 341,
+            "code_snippet": "if (parsed.filesCreated && parsed.filesCreated.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 377,
+            "code_snippet": "if (result.success) {"
+          },
+          {
+            "name": "task",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask.ts",
+            "line": 394,
+            "code_snippet": "? `\ud83d\udd13 Unblocked ${result.unblocked.length} task(s): ${result.unblocked.join(', ')}`"
+          }
+        ],
+        "lines": 413
+      },
+      {
+        "name": "completeTask-old",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+        "functions": [
+          {
+            "name": "createCompleteTaskTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 23,
+            "code_snippet": "export function createCompleteTaskTool(registry: TaskRegistry, gitTracker: GitTracker): Tool {"
+          },
+          {
+            "name": "createCompleteTaskTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 23,
+            "code_snippet": "export function createCompleteTaskTool(registry: TaskRegistry, gitTracker: GitTracker): Tool {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 58,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 62,
+            "code_snippet": "if (!task) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 77,
+            "code_snippet": "if (requireVerification && !evidence.autoVerified) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 101,
+            "code_snippet": "if (result.success) {"
+          },
+          {
+            "name": "task",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/completeTask-old.ts",
+            "line": 122,
+            "code_snippet": "? `\ud83d\udd13 Auto-unblocked ${result.unblocked.length} dependent task(s): ${result.unblocked.join(', ')}`"
+          }
+        ],
+        "lines": 144
+      },
+      {
+        "name": "getDashboard",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+        "functions": [
+          {
+            "name": "createGetDashboardTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 14,
+            "code_snippet": "export function createGetDashboardTool("
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 17,
+            "code_snippet": "): Tool & { handler: (args: any) => Promise<any> } {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 58,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 154,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "buildDashboard",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 171,
+            "code_snippet": "function buildDashboard("
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 226,
+            "code_snippet": "if (detailLevel !== 'minimal') {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 229,
+            "code_snippet": "if (stats.currentTask) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 236,
+            "code_snippet": "if (detailLevel === 'detailed') {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 251,
+            "code_snippet": "if (detailLevel !== 'minimal' && recentCompletions.length > 0) {"
+          },
+          {
+            "name": "match",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 256,
+            "code_snippet": "const taskId = commit.message.match(/^(T\\d+):/)?.[1] || '???';"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 265,
+            "code_snippet": "if (systemStats.blocked > 0) {"
+          },
+          {
+            "name": "createProgressBar",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 284,
+            "code_snippet": "function createProgressBar(percent: number, width: number): string {"
+          },
+          {
+            "name": "createProgressBar",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 284,
+            "code_snippet": "function createProgressBar(percent: number, width: number): string {"
+          },
+          {
+            "name": "center",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 293,
+            "code_snippet": "function center(text: string, width: number): string {"
+          },
+          {
+            "name": "center",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 293,
+            "code_snippet": "function center(text: string, width: number): string {"
+          },
+          {
+            "name": "calculateVelocity",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 301,
+            "code_snippet": "function calculateVelocity(completedTasks: any[]): string {"
+          },
+          {
+            "name": "calculateVelocity",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 301,
+            "code_snippet": "function calculateVelocity(completedTasks: any[]): string {"
+          },
+          {
+            "name": "parseTimeEstimate",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 316,
+            "code_snippet": "function parseTimeEstimate(estimate: string): number {"
+          },
+          {
+            "name": "parseTimeEstimate",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 316,
+            "code_snippet": "function parseTimeEstimate(estimate: string): number {"
+          },
+          {
+            "name": "getRelativeTime",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 331,
+            "code_snippet": "function getRelativeTime(timestamp: Date): string {"
+          },
+          {
+            "name": "getRelativeTime",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getDashboard.ts",
+            "line": 331,
+            "code_snippet": "function getRelativeTime(timestamp: Date): string {"
+          }
+        ],
+        "lines": 344
+      },
+      {
+        "name": "getAgentStatus",
+        "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+        "functions": [
+          {
+            "name": "createGetAgentStatusTool",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 14,
+            "code_snippet": "export function createGetAgentStatusTool("
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 17,
+            "code_snippet": "): Tool & { handler: (args: any) => Promise<any> } {"
+          },
+          {
+            "name": "handler",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 59,
+            "code_snippet": "handler: async (args: any) => {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 77,
+            "code_snippet": "if (!agentInfo) {"
+          },
+          {
+            "name": "catch",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 138,
+            "code_snippet": "} catch (error) {"
+          },
+          {
+            "name": "buildAgentStatusReport",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 155,
+            "code_snippet": "function buildAgentStatusReport("
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 177,
+            "code_snippet": "if (currentTask) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 185,
+            "code_snippet": "if (currentTask.dependencies?.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 189,
+            "code_snippet": "if (currentTask.acceptanceCriteria?.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 200,
+            "code_snippet": "} else if (availableTasks.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 205,
+            "code_snippet": "} else if (blockedTasks.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 224,
+            "code_snippet": "if (completedTasks.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 232,
+            "code_snippet": "if (includeHistory && completedTasks.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 244,
+            "code_snippet": "if (completedTasks.length > 5) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 252,
+            "code_snippet": "if (availableTasks.length > 0) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 261,
+            "code_snippet": "if (availableTasks.length > 3) {"
+          },
+          {
+            "name": "if",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 269,
+            "code_snippet": "if (recentCommits.length > 0) {"
+          },
+          {
+            "name": "center",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 293,
+            "code_snippet": "function center(text: string, width: number): string {"
+          },
+          {
+            "name": "center",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 293,
+            "code_snippet": "function center(text: string, width: number): string {"
+          },
+          {
+            "name": "calculateAgentVelocity",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 301,
+            "code_snippet": "function calculateAgentVelocity(completedTasks: any[]): string {"
+          },
+          {
+            "name": "calculateAgentVelocity",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 301,
+            "code_snippet": "function calculateAgentVelocity(completedTasks: any[]): string {"
+          },
+          {
+            "name": "parseTimeEstimate",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 315,
+            "code_snippet": "function parseTimeEstimate(estimate: string): number {"
+          },
+          {
+            "name": "parseTimeEstimate",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 315,
+            "code_snippet": "function parseTimeEstimate(estimate: string): number {"
+          },
+          {
+            "name": "getRelativeTime",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 330,
+            "code_snippet": "function getRelativeTime(timestamp: Date): string {"
+          },
+          {
+            "name": "getRelativeTime",
+            "file": "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/getAgentStatus.ts",
+            "line": 330,
+            "code_snippet": "function getRelativeTime(timestamp: Date): string {"
+          }
+        ],
+        "lines": 343
+      }
+    ]
+  },
+  "complexity": {
+    "total_files": 136,
+    "total_lines": 40948,
+    "total_functions": 2581,
+    "by_category": {
+      "root": {
+        "files": 2,
+        "lines": 423,
+        "functions": 10
+      },
+      "clients": {
+        "files": 2,
+        "lines": 467,
+        "functions": 26
+      },
+      "tools": {
+        "files": 40,
+        "lines": 5334,
+        "functions": 281
+      },
+      "types": {
+        "files": 2,
+        "lines": 274,
+        "functions": 0
+      },
+      "transport": {
+        "files": 1,
+        "lines": 238,
+        "functions": 14
+      },
+      "core": {
+        "files": 10,
+        "lines": 3623,
+        "functions": 224
+      },
+      "intelligence": {
+        "files": 9,
+        "lines": 3936,
+        "functions": 266
+      },
+      "auth": {
+        "files": 6,
+        "lines": 933,
+        "functions": 74
+      },
+      "a2a": {
+        "files": 7,
+        "lines": 1621,
+        "functions": 130
+      },
+      "health": {
+        "files": 1,
+        "lines": 553,
+        "functions": 43
+      },
+      "discovery": {
+        "files": 6,
+        "lines": 2129,
+        "functions": 125
+      },
+      "spec": {
+        "files": 6,
+        "lines": 2851,
+        "functions": 171
+      },
+      "utils": {
+        "files": 2,
+        "lines": 201,
+        "functions": 40
+      },
+      "auto-tasks": {
+        "files": 1,
+        "lines": 303,
+        "functions": 18
+      },
+      "auto-proactive": {
+        "files": 12,
+        "lines": 5138,
+        "functions": 367
+      },
+      "ai": {
+        "files": 2,
+        "lines": 1047,
+        "functions": 50
+      },
+      "deployment": {
+        "files": 1,
+        "lines": 604,
+        "functions": 29
+      },
+      "orchestration": {
+        "files": 2,
+        "lines": 1350,
+        "functions": 82
+      },
+      "registry": {
+        "files": 5,
+        "lines": 1510,
+        "functions": 123
+      },
+      "api": {
+        "files": 1,
+        "lines": 349,
+        "functions": 20
+      },
+      "photon": {
+        "files": 7,
+        "lines": 2944,
+        "functions": 203
+      },
+      "monitoring": {
+        "files": 1,
+        "lines": 338,
+        "functions": 22
+      },
+      "events": {
+        "files": 1,
+        "lines": 303,
+        "functions": 19
+      },
+      "spec-generator": {
+        "files": 5,
+        "lines": 2028,
+        "functions": 104
+      },
+      "git": {
+        "files": 1,
+        "lines": 715,
+        "functions": 45
+      },
+      "validation": {
+        "files": 3,
+        "lines": 1736,
+        "functions": 95
+      }
+    }
+  },
+  "dependencies": {
+    "index.ts": [
+      "./utils/logger.js"
+    ],
+    "standalone-a2a-vm-server.ts": [
+      "./a2a/A2AServer.js",
+      "./tools/vm/index.js"
+    ],
+    "clients/ZAIClient.ts": [
+      "../events/EventBroadcaster.js",
+      "../utils/logger.js",
+      "./BaseAIClient.js"
+    ],
+    "clients/BaseAIClient.ts": [
+      "../events/EventBroadcaster.js"
+    ],
+    "tools/updateProgress.ts": [
+      "../registry/GitTracker.js",
+      "../auto-proactive/EventBus.js",
+      "../events/EventBroadcaster.js",
+      "../types/Task.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/getAvailableTasks.ts": [
+      "../core/AgentContextBuilder.js",
+      "../types/Task.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/claimTask.ts": [
+      "../events/EventBroadcaster.js",
+      "../auto-proactive/EventBus.js",
+      "../types/Task.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/completeTask.ts": [
+      "../core/BestPracticesEngine.js",
+      "../core/KeepInTouchEnforcer.js",
+      "../types/Task.js",
+      "../auto-proactive/EventBus.js",
+      "../events/EventBroadcaster.js",
+      "../core/CostAwareScheduler.js",
+      "../registry/GitTracker.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/BaseToolWithEvents.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "tools/index.ts": [
+      "./discovery/contextTools.js",
+      "./keepintouch/requestCompletionPermission.js",
+      "./completeTask.js",
+      "./intelligence/captureMessage.js",
+      "./getAvailableTasks.js",
+      "./intelligence/connectToMCP.js",
+      "../registry/GitTracker.js",
+      "./getAgentStatus.js",
+      "./getDashboard.js",
+      "./ui/getKnowledge.js",
+      "./keepintouch/agentCheckIn.js",
+      "./intelligence/getSwarmDashboard.js",
+      "../registry/TaskRegistry.js",
+      "./cost/estimateTaskCost.js",
+      "./rules/rulesTools.js",
+      "./cost/checkUsageLimits.js",
+      "./claimTask.js",
+      "./health/getSystemHealth.js",
+      "./mcp/getSystemStatus.js",
+      "./intelligence/uploadProjectContext.js",
+      "./intelligence/agentHeartbeat.js",
+      "../utils/logger.js",
+      "./intelligence/agentDisconnect.js",
+      "./discovery/discoverEnvironment.js",
+      "./updateProgress.js",
+      "./intelligence/agentConnect.js"
+    ],
+    "tools/completeTask-old.ts": [
+      "../types/Task.js",
+      "../registry/GitTracker.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/getDashboard.ts": [
+      "../registry/GitTracker.js",
+      "../utils/logger.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "tools/getAgentStatus.ts": [
+      "../registry/GitTracker.js",
+      "../utils/logger.js",
+      "../registry/TaskRegistry.js"
+    ],
+    "core/ContextManager.ts": [
+      "../discovery/ContextExtractor.js"
+    ],
+    "intelligence/PredictionEngine.ts": [
+      "./IntelligenceEngine.js",
+      "../clients/BaseAIClient.js",
+      "./PatternDetector.js",
+      "../utils/logger.js",
+      "../events/EventBroadcaster.js"
+    ],
+    "intelligence/IntelligenceServer.ts": [
+      "./IntelligenceEngine.js",
+      "../utils/logger.js",
+      "../events/EventBroadcaster.js"
+    ],
+    "intelligence/PatternDetector.ts": [
+      "./IntelligenceEngine.js",
+      "../clients/BaseAIClient.js",
+      "../utils/logger.js",
+      "../utils/eventUtils.js",
+      "../events/EventBroadcaster.js"
+    ],
+    "intelligence/IntelligenceEngine.ts": [
+      "../events/EventBroadcaster.js",
+      "../clients/ZAIClient.js",
+      "../utils/logger.js",
+      "../clients/BaseAIClient.js"
+    ],
+    "intelligence/EventAnalyzer.ts": [
+      "./IntelligenceEngine.js",
+      "../utils/logger.js",
+      "../utils/eventUtils.js",
+      "../events/EventBroadcaster.js"
+    ],
+    "intelligence/IntelligentTaskGenerator.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "intelligence/OptimizationSuggestor.ts": [
+      "./IntelligenceEngine.js",
+      "../clients/BaseAIClient.js",
+      "./PatternDetector.js",
+      "../utils/logger.js",
+      "../events/EventBroadcaster.js"
+    ],
+    "auth/Authentication.ts": [
+      "./TokenManager.js",
+      "../utils/logger.js",
+      "./PermissionChecker.js",
+      "./ApiKeyManager.js"
+    ],
+    "auth/ApiKeyManager.ts": [
+      "./TokenManager.js",
+      "../utils/logger.js"
+    ],
+    "auth/TokenManager.ts": [
+      "../utils/logger.js"
+    ],
+    "auth/PermissionChecker.ts": [
+      "./TokenManager.js",
+      "../utils/logger.js"
+    ],
+    "a2a/WebSocketTransport.ts": [
+      "../utils/logger.js",
+      "./types.js"
+    ],
+    "a2a/MCPBridge.ts": [
+      "../utils/logger.js",
+      "./types.js"
+    ],
+    "a2a/A2AServer.ts": [
+      "./WebSocketTransport.js",
+      "./MCPBridge.js",
+      "./MessageRouter.js",
+      "./types.js",
+      "./AgentRegistry.js",
+      "../auth/TokenManager.js",
+      "../utils/logger.js",
+      "../auth/middleware/authenticateWebSocket.js",
+      "../auth/ApiKeyManager.js"
+    ],
+    "a2a/MessageRouter.ts": [
+      "./WebSocketTransport.js",
+      "./MCPBridge.js",
+      "./types.js",
+      "./AgentRegistry.js",
+      "../utils/logger.js"
+    ],
+    "a2a/AgentRegistry.ts": [
+      "../utils/logger.js",
+      "./types.js"
+    ],
+    "discovery/DiscoveryEngine.ts": [
+      "./ContextExtractor.js",
+      "./ProjectDetector.js",
+      "./JobProposalEngine.js",
+      "./AgentRecognizer.js",
+      "../core/ContextManager.js"
+    ],
+    "utils/eventUtils.ts": [
+      "../events/EventBroadcaster.js"
+    ],
+    "auto-proactive/SystemStatusLoop.ts": [
+      "../utils/logger.js"
+    ],
+    "auto-proactive/BaseLoop.ts": [
+      "./EventBus.js",
+      "../utils/logger.js"
+    ],
+    "auto-proactive/SpecGenerationLoop.ts": [
+      "./BaseLoop.js",
+      "./EventBus.js",
+      "../utils/logger.js"
+    ],
+    "auto-proactive/EventBus.ts": [
+      "../utils/logger.js"
+    ],
+    "auto-proactive/TaskAssignmentLoop.ts": [
+      "./BaseLoop.js",
+      "./EventBus.js",
+      "../utils/logger.js"
+    ],
+    "auto-proactive/AutoProactiveEngine.ts": [
+      "./StatusAnalysisLoop.js",
+      "./ProgressMonitoringLoop.js",
+      "./ProjectDiscoveryLoop.js",
+      "./AgentAutoDiscoveryLoop.js",
+      "../utils/logger.js",
+      "./SpecGenerationLoop.js",
+      "./TaskAssignmentLoop.js",
+      "./SystemStatusLoop.js",
+      "./OpportunityScanningLoop.js"
+    ],
+    "auto-proactive/StatusAnalysisLoop.ts": [
+      "../utils/logger.js"
+    ],
+    "auto-proactive/OpportunityScanningLoop.ts": [
+      "../utils/logger.js"
+    ],
+    "auto-proactive/AgentAutoDiscoveryLoop.ts": [
+      "../utils/logger.js"
+    ],
+    "auto-proactive/ProjectDiscoveryLoop.ts": [
+      "../discovery/ProjectDetector.js",
+      "../utils/logger.js",
+      "../discovery/ContextExtractor.js"
+    ],
+    "auto-proactive/GitPushMonitor.ts": [
+      "./BaseLoop.js",
+      "./EventBus.js",
+      "../utils/logger.js",
+      "../git/GitIntelligenceEngine.js"
+    ],
+    "auto-proactive/ProgressMonitoringLoop.ts": [
+      "./BaseLoop.js",
+      "./EventBus.js",
+      "../utils/logger.js"
+    ],
+    "ai/ModelRegistry.ts": [
+      "../utils/logger.js"
+    ],
+    "ai/LLMOrchestrator.ts": [
+      "./ModelRegistry.js",
+      "../utils/logger.js"
+    ],
+    "deployment/AutoDeployer.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "orchestration/CuratedContentManager.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "orchestration/AgentDeploymentOrchestrator.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "registry/RulesRegistry.ts": [
+      "../utils/logger.js"
+    ],
+    "registry/DependencyResolver.ts": [
+      "../utils/logger.js"
+    ],
+    "registry/TaskStore.ts": [
+      "../utils/logger.js"
+    ],
+    "registry/TaskRegistry.ts": [
+      "../utils/logger.js",
+      "./TaskStore.js",
+      "./DependencyResolver.js",
+      "./RulesRegistry.js"
+    ],
+    "registry/GitTracker.ts": [
+      "../utils/logger.js"
+    ],
+    "api/MonitoringAPI.ts": [
+      "../auto-proactive/AutoProactiveEngine.js"
+    ],
+    "photon/PhotonCore.ts": [
+      "../utils/logger.js"
+    ],
+    "photon/PhotonAPI.ts": [
+      "./PhotonCore.js",
+      "../utils/logger.js"
+    ],
+    "photon/PhotonIntegrations.ts": [
+      "./PhotonAPI.js",
+      "./PhotonCore.js",
+      "../tools/vm/index.js",
+      "../utils/logger.js",
+      "../a2a/A2AServer.js"
+    ],
+    "photon/PhotonServer.ts": [
+      "./PhotonIntegrations.js",
+      "./PhotonCore.js",
+      "../utils/logger.js",
+      "./PhotonAPI.js"
+    ],
+    "photon/MonitoringServer.ts": [
+      "../api/MonitoringAPI.js",
+      "../auto-proactive/AutoProactiveEngine.js"
+    ],
+    "photon/PhotonCore-Lite.ts": [
+      "../utils/logger.js"
+    ],
+    "photon/PhotonServer-Lite.ts": [
+      "./PhotonCore-Lite.js"
+    ],
+    "monitoring/PrometheusExporter.ts": [
+      "../auto-proactive/AutoProactiveEngine.js"
+    ],
+    "events/EventBroadcaster.ts": [
+      "../utils/logger.js",
+      "../transport/WebSocketTransport.js"
+    ],
+    "spec-generator/SpecGenerator.ts": [
+      "./ContextAnalyzer",
+      "./SemanticExtractor"
+    ],
+    "spec-generator/SpecNormalizer.ts": [
+      "./LLMSpecConverter.js"
+    ],
+    "spec-generator/SemanticExtractor.ts": [
+      "./ContextAnalyzer"
+    ],
+    "git/GitIntelligenceEngine.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "validation/SpecFrontmatterParser.ts": [
+      "../utils/logger.js"
+    ],
+    "validation/SpecLifecycleValidator.ts": [
+      "./SpecFrontmatterParser.js",
+      "../utils/logger.js"
+    ],
+    "validation/TotalityVerificationSystem.ts": [
+      "../auto-proactive/EventBus.js",
+      "../utils/logger.js"
+    ],
+    "auth/middleware/authenticateWebSocket.ts": [
+      "../ApiKeyManager.js",
+      "../../utils/logger.js",
+      "../TokenManager.js"
+    ],
+    "auth/middleware/authorizeAction.ts": [
+      "../../utils/logger.js",
+      "../PermissionChecker.js",
+      "../TokenManager.js"
+    ],
+    "tools/intelligence/connectToMCP.ts": [
+      "./agentConnect.js"
+    ],
+    "tools/intelligence/agentHeartbeat.ts": [
+      "../../intelligence/SessionManager.js"
+    ],
+    "tools/intelligence/captureMessage.ts": [
+      "../../intelligence/ConversationCapture.js"
+    ],
+    "tools/intelligence/agentConnect.ts": [
+      "../../intelligence/SessionManager.js"
+    ],
+    "tools/intelligence/agentDisconnect.ts": [
+      "../../intelligence/SessionManager.js"
+    ],
+    "tools/health/getSystemHealth.ts": [
+      "../../health/HealthChecker.js"
+    ],
+    "tools/cost/checkUsageLimits.ts": [
+      "../../core/CostAwareScheduler.js"
+    ],
+    "tools/cost/estimateTaskCost.ts": [
+      "../../core/CostAwareScheduler.js"
+    ],
+    "tools/discovery/getContextStats.ts": [
+      "../../core/ContextManager.js"
+    ],
+    "tools/discovery/searchContext.ts": [
+      "../../core/ContextManager.js"
+    ],
+    "tools/discovery/contextTools.ts": [
+      "./getContextStats.js",
+      "./searchContext.js",
+      "./uploadContext.js",
+      "./retrieveContext.js"
+    ],
+    "tools/discovery/retrieveContext.ts": [
+      "../../core/ContextManager.js",
+      "../../discovery/ContextExtractor.js"
+    ],
+    "tools/discovery/discoverEnvironment.ts": [
+      "../../discovery/index.js"
+    ],
+    "tools/discovery/uploadContext.ts": [
+      "../../core/ContextManager.js",
+      "../../discovery/ContextExtractor.js"
+    ],
+    "tools/mcp/getSystemStatus.ts": [
+      "../../registry/TaskRegistry.js",
+      "../../auto-proactive/AutoProactiveEngine.js"
+    ],
+    "tools/vm/index.ts": [
+      "./readVMFile.js",
+      "./listVMDirectory.js",
+      "./executeBash.js",
+      "./writeVMFile.js"
+    ],
+    "tools/keepintouch/requestCompletionPermission.ts": [
+      "../../core/KeepInTouchEnforcer.js"
+    ],
+    "tools/keepintouch/agentCheckIn.ts": [
+      "../../core/KeepInTouchEnforcer.js"
+    ],
+    "tools/rules/createRule.ts": [
+      "../../utils/logger.js"
+    ],
+    "tools/rules/rulesTools.ts": [
+      "../../utils/logger.js",
+      "../../registry/RulesRegistry.js",
+      "../../events/EventBroadcaster.js"
+    ],
+    "tools/rules/updateRule.ts": [
+      "../../utils/logger.js"
+    ],
+    "tools/rules/deleteRule.ts": [
+      "../../utils/logger.js"
+    ],
+    "tools/rules/getRules.ts": [
+      "../../utils/logger.js"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+#!/bin/bash
+# Quick launcher for LLM chat
+# Usage: ./scripts/llm "your message"
+# OR: ./scripts/llm (interactive)
+
+cd "$(dirname "$0")/.."
+
+# Use Doppler if available, otherwise use .env
+if command -v doppler &> /dev/null; then
+  doppler run --project ai-tools --config dev -- node scripts/chat-with-llm.js "$@"
+else
+  # Load from .env
+  export $(grep -v '^#' .env | xargs)
+  node scripts/chat-with-llm.js "$@"
+fi

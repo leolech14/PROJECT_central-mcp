@@ -1,0 +1,4 @@
+# System auto-verification (for fresh agents)
+SYSTEM=http://34.41.115.199:3000
+HEALTH=$(curl -s ${SYSTEM}/health | jq -r .status)
+echo "Central-MCP: ${HEALTH}"

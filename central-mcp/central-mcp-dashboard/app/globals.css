@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+
+  /* OKLCH Color System - Scaffold Layers */
+  --scaffold-0: oklch(1.00 0.000 0);
+  --scaffold-1: oklch(0.98 0.005 270);
+  --scaffold-2: oklch(0.95 0.005 270);
+  --scaffold-3: oklch(0.92 0.005 270);
+
+  /* Text Colors */
+  --text-primary: oklch(0.20 0.005 270);
+  --text-secondary: oklch(0.45 0.005 270);
+  --text-tertiary: oklch(0.60 0.005 270);
+
+  /* Border Colors */
+  --border-subtle: oklch(0.85 0.005 270);
+  --border-default: oklch(0.70 0.005 270);
+
+  /* Status Colors */
+  --color-success: oklch(0.65 0.18 145);
+  --color-warning: oklch(0.75 0.15 90);
+  --color-error: oklch(0.65 0.22 25);
+  --color-info: oklch(0.70 0.15 240);
+
+  /* Metric Colors */
+  --metric-cpu: oklch(0.70 0.15 240);
+  --metric-memory: oklch(0.65 0.20 280);
+  --metric-disk: oklch(0.75 0.15 60);
+  --metric-network: oklch(0.65 0.18 145);
+
+  /* Accent Colors */
+  --accent-primary: oklch(0.70 0.20 260);
+  --accent-secondary: oklch(0.65 0.18 200);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Custom Color Classes */
+  --color-scaffold-1: var(--scaffold-1);
+  --color-scaffold-2: var(--scaffold-2);
+  --color-scaffold-3: var(--scaffold-3);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-tertiary: var(--text-tertiary);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+
+  /* Status Colors */
+  --color-success: oklch(0.65 0.18 145);
+  --color-warning: oklch(0.75 0.15 90);
+  --color-error: oklch(0.65 0.22 25);
+  --color-info: oklch(0.70 0.15 240);
+
+  /* Metric Colors */
+  --color-metric-cpu: var(--metric-cpu);
+  --color-metric-memory: var(--metric-memory);
+  --color-metric-disk: var(--metric-disk);
+  --color-metric-network: var(--metric-network);
+
+  /* Accent Colors */
+  --color-accent-primary: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    /* Dark Mode OKLCH Colors - Ultra-Compact Dashboard Optimized */
+    --scaffold-0: oklch(0.15 0.01 240);
+    --scaffold-1: oklch(0.19 0.01 240);
+    --scaffold-2: oklch(0.23 0.01 240);
+    --scaffold-3: oklch(0.27 0.01 240);
+
+    --text-primary: oklch(0.95 0.01 240);
+    --text-secondary: oklch(0.75 0.01 240);
+    --text-tertiary: oklch(0.55 0.01 240);
+
+    --border-subtle: oklch(0.30 0.01 240);
+    --border-default: oklch(0.40 0.01 240);
+
+    /* Dark Mode Accent Colors */
+    --accent-primary: oklch(0.65 0.20 250);
+    --accent-secondary: oklch(0.60 0.18 200);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Custom Animations for Dashboard Components */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.625rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawPie {
+  from {
+    stroke-dashoffset: 1000;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility Classes */
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* Scrollbar Styling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Custom Scrollbar for Dashboard */
+.custom-scrollbar::-webkit-scrollbar,
+.scrollbar-thin::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track,
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: var(--scaffold-2);
+  border-radius: 0.125rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb,
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 0.125rem;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover,
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* Ultra-Compact Utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Line Clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Enhanced Pulse Glow Animation */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--accent-primary);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0.9375rem 0.1875rem var(--accent-primary);
+    opacity: 0.9;
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Smooth Transitions - REMOVED GLOBAL SELECTOR
+ * Applying transitions to * (all elements) can break fixed positioning
+ * and cause layout issues. Instead, transitions are applied per-component.
+ */
+
+/* Focus Visible for Keyboard Navigation - WCAG 2.2 AA Compliant */
+*:focus-visible {
+  outline: 0.125rem solid var(--accent-primary);
+  outline-offset: 0.125rem;
+  border-radius: 0.25rem;
+}
+
+/* Loading Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -62.5rem 0;
+  }
+  100% {
+    background-position: 62.5rem 0;
+  }
+}
+
+.loading-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg,
+    var(--scaffold-1) 0%,
+    var(--scaffold-2) 50%,
+    var(--scaffold-1) 100%);
+  background-size: 62.5rem 100%;
+}
+
+/* Hover Lift Effect */
+.hover-lift {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-0.125rem);
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.15);
+}

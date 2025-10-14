@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Ultimate System - Color.js + 3D + Auto-Constraints</title>
+
+    <!-- Color.js picker (standards-based, recommended by ChatGPT) -->
+    <script type="module" src="https://elements.colorjs.io/src/color-picker/color-picker.js"></script>
+    <script type="module" src="https://elements.colorjs.io/src/color-inline/color-inline.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* Design tokens (OKLCH) with sRGB fallbacks */
+            --brand:  oklch(60% 0.18 260);
+            --accent: oklch(70% 0.11  25);
+            --bg:     oklch(98% 0.03 250);
+            --text:   oklch(18% 0.02 250);
+
+            /* sRGB fallbacks for old browsers */
+            --brand-srgb:  #5146e5;
+            --accent-srgb: #d97706;
+            --bg-srgb:     #f8fafc;
+            --text-srgb:   #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-srgb); background: var(--bg);
+            color: var(--text-srgb); color: var(--text);
+            overflow: hidden;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: 340px 1fr 340px;
+        }
+
+        /* Canvas background for 3D */
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        /* All panels float above canvas */
+        aside, main { position: relative; z-index: 10; }
+
+        /* Left Panel: Color.js Pickers */
+        #leftPanel {
+            background: oklch(18% 0.01 250 / 0.95);
+            border-right: 2px solid oklch(35% 0.02 250);
+            padding: 1.5rem;
+            overflow-y: auto;
+            backdrop-filter: blur(12px);
+        }
+
+        /* Center: Live Preview */
+        #centerPanel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Right Panel: Constraints + 3D Controls */
+        #rightPanel {
+            background: oklch(18% 0.01 250 / 0.95);
+            border-left: 2px solid oklch(35% 0.02 250);
+            padding: 1.5rem;
+            overflow-y: auto;
+            backdrop-filter: blur(12px);
+        }
+
+        h1 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, oklch(75% 0.15 0), oklch(75% 0.15 120), oklch(75% 0.15 240));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.8rem;
+            color: oklch(80% 0.08 240);
+        }
+
+        h2:first-of-type { margin-top: 0; }
+
+        /* Picker Groups */
+        .picker-group {
+            margin-bottom: 2rem;
+        }
+
+        .picker-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .picker-label {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        color-inline {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid oklch(40% 0.02 250);
+        }
+
+        color-picker {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 1rem;
+        }
+
+        /* Control Groups */
+        .control-group {
+            margin-bottom: 1.2rem;
+            position: relative;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: oklch(70% 0.02 250);
+        }
+
+        .value {
+            font-family: 'SF Mono', monospace;
+            color: oklch(85% 0.02 250);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: oklch(30% 0.02 250);
+            appearance: none;
+            position: relative;
+            z-index: 2;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: oklch(75% 0.15 240);
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Legal Zone Overlay */
+        .legal-zone {
+            position: absolute;
+            bottom: 0;
+            height: 6px;
+            background: oklch(60% 0.15 140 / 0.3);
+            border-radius: 3px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Warning */
+        .warning {
+            display: none;
+            font-size: 0.8rem;
+            color: oklch(70% 0.18 30);
+            margin-top: 0.3rem;
+        }
+
+        .warning.active {
+            display: block;
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 0.8rem;
+        }
+
+        .btn:hover { transform: translateY(-2px); }
+
+        .btn-primary {
+            background: var(--brand-srgb); background: var(--brand);
+            color: var(--bg-srgb); color: var(--bg);
+        }
+
+        .btn-secondary {
+            background: oklch(30% 0.02 250);
+            color: oklch(85% 0.02 250);
+        }
+
+        /* Preview Cards */
+        .preview-card {
+            background: var(--bg-srgb); background: var(--bg);
+            color: var(--text-srgb); color: var(--text);
+            border-radius: 16px;
+            padding: 2rem;
+            min-width: 400px;
+            box-shadow: 0 8px 32px oklch(0% 0 0 / 0.2);
+        }
+
+        .preview-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--brand-srgb);
+            color: var(--brand);
+        }
+
+        .preview-card p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .accent-text {
+            color: var(--accent-srgb);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Relationships */
+        .relationship {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem;
+            background: oklch(22% 0.01 250 / 0.5);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .relationship.pass { border-left: 3px solid oklch(65% 0.15 140); }
+        .relationship.fail { border-left: 3px solid oklch(65% 0.18 30); }
+
+        .ratio {
+            font-family: 'SF Mono', monospace;
+            font-weight: bold;
+        }
+
+        .status-badge {
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-badge.pass {
+            background: oklch(60% 0.15 140 / 0.3);
+            color: oklch(80% 0.15 140);
+        }
+
+        .status-badge.fail {
+            background: oklch(60% 0.18 30 / 0.3);
+            color: oklch(80% 0.18 30);
+        }
+
+        .info {
+            font-size: 0.8rem;
+            color: oklch(65% 0.02 250);
+            line-height: 1.5;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid oklch(30% 0.02 250);
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: oklch(18% 0.01 250 / 0.98);
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            z-index: 1000;
+            border: 2px solid oklch(35% 0.02 250);
+        }
+
+        #loadingTitle {
+            font-size: 1.5rem;
+            color: oklch(75% 0.15 240);
+            margin-bottom: 1rem;
+        }
+
+        #progress {
+            font-size: 0.9rem;
+            color: oklch(70% 0.02 250);
+            font-family: 'SF Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas3d"></canvas>
+
+    <!-- LEFT PANEL: Color.js Pickers -->
+    <aside id="leftPanel">
+        <h1>🎨 Theme Colors</h1>
+
+        <div class="picker-group">
+            <div class="picker-row">
+                <span class="picker-label">Brand</span>
+                <color-inline id="brandSwatch"></color-inline>
+            </div>
+            <color-picker id="brandPicker" space="oklch" alpha></color-picker>
+        </div>
+
+        <div class="picker-group">
+            <div class="picker-row">
+                <span class="picker-label">Accent</span>
+                <color-inline id="accentSwatch"></color-inline>
+            </div>
+            <color-picker id="accentPicker" space="oklch" alpha></color-picker>
+        </div>
+
+        <div class="picker-group">
+            <div class="picker-row">
+                <span class="picker-label">Background</span>
+                <color-inline id="bgSwatch"></color-inline>
+            </div>
+            <color-picker id="bgPicker" space="oklch"></color-picker>
+        </div>
+
+        <div class="picker-group">
+            <div class="picker-row">
+                <span class="picker-label">Text</span>
+                <color-inline id="textSwatch"></color-inline>
+            </div>
+            <color-picker id="textPicker" space="oklch"></color-picker>
+        </div>
+
+        <button class="btn btn-primary" id="copyCss">Copy CSS Variables</button>
+        <button class="btn btn-secondary" id="exportTokens">Export Design Tokens</button>
+
+        <div class="info">
+            🎨 <strong>Color.js pickers</strong> (standards-based)<br>
+            📋 <strong>Direct CSS variable</strong> integration<br>
+            💾 <strong>Auto-saves</strong> to localStorage
+        </div>
+    </aside>
+
+    <!-- CENTER: Live Preview -->
+    <main id="centerPanel">
+        <div class="preview-card">
+            <h3>Live Preview</h3>
+            <p>This card updates in <span class="accent-text">real-time</span> as you adjust colors.</p>
+            <p>All elements use CSS variables that are directly controlled by the pickers on the left.</p>
+            <button class="btn btn-primary">Primary Action</button>
+        </div>
+
+        <div class="preview-card">
+            <h3>WCAG Compliance</h3>
+            <p>The right panel enforces <span class="accent-text">auto-constraints</span> to maintain accessibility.</p>
+            <p>Try adjusting the background - text automatically corrects to maintain 4.5:1 contrast ratio.</p>
+        </div>
+    </main>
+
+    <!-- RIGHT PANEL: Constraints + 3D Controls -->
+    <aside id="rightPanel">
+        <h1>🛡️ Auto-Constraints</h1>
+
+        <h2>Background (Constrained)</h2>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness</span>
+                <span class="value" id="valueBgL">0.98</span>
+            </div>
+            <input type="range" id="sliderBgL" min="0" max="100" value="98">
+        </div>
+
+        <h2>Text (Auto-Adjusted)</h2>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness</span>
+                <span class="value" id="valueTextL">0.18</span>
+            </div>
+            <div class="legal-zone" id="legalZoneText"></div>
+            <input type="range" id="sliderTextL" min="0" max="100" value="18">
+            <div class="warning" id="warningText">⚠️ Blocked by WCAG AA (4.5:1)</div>
+        </div>
+
+        <h2>WCAG Relationships</h2>
+        <div id="relationships"></div>
+
+        <h2>3D Visualization</h2>
+        <div class="control-group">
+            <div class="control-label">
+                <span>Lightness (L)</span>
+                <span class="value" id="value3dL">0.60</span>
+            </div>
+            <input type="range" id="slider3dL" min="0" max="100" value="60">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Chroma (C)</span>
+                <span class="value" id="value3dC">0.15</span>
+            </div>
+            <input type="range" id="slider3dC" min="0" max="37" value="15">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Hue (H)</span>
+                <span class="value" id="value3dH">240°</span>
+            </div>
+            <input type="range" id="slider3dH" min="0" max="360" value="240">
+        </div>
+
+        <div class="info">
+            🛡️ <strong>Guardrails</strong> prevent illegal colors<br>
+            ✨ <strong>Auto-adjustment</strong> maintains WCAG<br>
+            🎯 <strong>3D model</strong> from Evil Martians<br>
+            🖱️ <strong>Drag/scroll</strong> to explore space
+        </div>
+    </aside>
+
+    <div id="loading">
+        <div id="loadingTitle">🚀 Loading Ultimate OKLCH System</div>
+        <div id="progress">Initializing...</div>
+    </div>
+
+    <script type="module">
+        const log = (msg) => {
+            document.getElementById('progress').textContent = msg;
+            console.log(msg);
+        };
+
+        // ========================================
+        // PART 1: Color.js Pickers → CSS Variables
+        // ========================================
+
+        function toOKLCHString(col) { return col.to('oklch').toString(); }
+        function toSRGBString(col) { return col.to('srgb').toGamut().toString(); }
+
+        const root = document.documentElement;
+
+        function bindPicker(pickerId, varName, swatchId) {
+            const picker = document.getElementById(pickerId);
+            const swatch = document.getElementById(swatchId);
+
+            const initial = getComputedStyle(root).getPropertyValue(varName).trim();
+            if (initial) picker.color = initial;
+
+            const update = () => {
+                const c = picker.color;
+                const oklch = toOKLCHString(c);
+                const srgb = toSRGBString(c);
+                root.style.setProperty(varName, oklch);
+                root.style.setProperty(varName + '-srgb', srgb);
+                if (swatch) swatch.color = c;
+                localStorage.setItem('theme:' + varName, oklch);
+            };
+
+            const saved = localStorage.getItem('theme:' + varName);
+            if (saved) picker.color = saved;
+            update();
+
+            picker.addEventListener('colorchange', update);
+        }
+
+        bindPicker('brandPicker', '--brand', 'brandSwatch');
+        bindPicker('accentPicker', '--accent', 'accentSwatch');
+        bindPicker('bgPicker', '--bg', 'bgSwatch');
+        bindPicker('textPicker', '--text', 'textSwatch');
+
+        // Copy CSS Variables
+        document.getElementById('copyCss').addEventListener('click', () => {
+            const css = `:root {
+  --brand:  ${getComputedStyle(root).getPropertyValue('--brand').trim()};
+  --accent: ${getComputedStyle(root).getPropertyValue('--accent').trim()};
+  --bg:     ${getComputedStyle(root).getPropertyValue('--bg').trim()};
+  --text:   ${getComputedStyle(root).getPropertyValue('--text').trim()};
+}`;
+            navigator.clipboard.writeText(css);
+            alert('✅ CSS variables copied to clipboard!');
+        });
+
+        // Export Design Tokens
+        document.getElementById('exportTokens').addEventListener('click', () => {
+            const tokens = {
+                brand: getComputedStyle(root).getPropertyValue('--brand').trim(),
+                accent: getComputedStyle(root).getPropertyValue('--accent').trim(),
+                bg: getComputedStyle(root).getPropertyValue('--bg').trim(),
+                text: getComputedStyle(root).getPropertyValue('--text').trim()
+            };
+            const json = JSON.stringify(tokens, null, 2);
+            navigator.clipboard.writeText(json);
+            alert('✅ Design tokens (JSON) copied to clipboard!');
+        });
+
+        // ========================================
+        // PART 2: Constraint Engine
+        // ========================================
+
+        const state = {
+            bg: { l: 0.98, c: 0.03, h: 250 },
+            text: { l: 0.18, c: 0.02, h: 250 }
+        };
+
+        function oklchToLuminance(l) {
+            return Math.pow(l, 2);
+        }
+
+        function getContrastRatio(l1, l2) {
+            const y1 = oklchToLuminance(l1);
+            const y2 = oklchToLuminance(l2);
+            const lighter = Math.max(y1, y2);
+            const darker = Math.min(y1, y2);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        function getLegalLightnessRange(bgL, minContrast = 4.5) {
+            const bgY = oklchToLuminance(bgL);
+            const lighterY = (minContrast * (bgY + 0.05)) - 0.05;
+            const darkerY = ((bgY + 0.05) / minContrast) - 0.05;
+
+            return {
+                min: Math.max(0, Math.sqrt(Math.max(0, darkerY))),
+                max: Math.min(1, Math.sqrt(Math.min(1, lighterY)))
+            };
+        }
+
+        function updateLegalZone() {
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+            const zone = document.getElementById('legalZoneText');
+            const slider = document.getElementById('sliderTextL');
+            const sliderWidth = slider.offsetWidth;
+
+            zone.style.left = (legalRange.min * sliderWidth) + 'px';
+            zone.style.width = ((legalRange.max - legalRange.min) * sliderWidth) + 'px';
+        }
+
+        function enforceTextConstraints() {
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+            const warning = document.getElementById('warningText');
+
+            if (state.text.l < legalRange.min) {
+                state.text.l = legalRange.min;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+                warning.classList.add('active');
+                setTimeout(() => warning.classList.remove('active'), 1000);
+            } else if (state.text.l > legalRange.max) {
+                state.text.l = legalRange.max;
+                document.getElementById('sliderTextL').value = state.text.l * 100;
+                warning.classList.add('active');
+                setTimeout(() => warning.classList.remove('active'), 1000);
+            }
+        }
+
+        function updateRelationships() {
+            const ratio = getContrastRatio(state.bg.l, state.text.l);
+            const pass = ratio >= 4.5;
+
+            const html = `
+                <div class="relationship ${pass ? 'pass' : 'fail'}">
+                    <span>Background → Text</span>
+                    <span class="ratio">${ratio.toFixed(1)}:1</span>
+                    <span class="status-badge ${pass ? 'pass' : 'fail'}">${pass ? '✓ PASS' : '✗ FAIL'}</span>
+                </div>
+            `;
+
+            document.getElementById('relationships').innerHTML = html;
+        }
+
+        function updateConstraintUI() {
+            document.getElementById('valueBgL').textContent = state.bg.l.toFixed(2);
+            document.getElementById('valueTextL').textContent = state.text.l.toFixed(2);
+            updateLegalZone();
+            updateRelationships();
+        }
+
+        document.getElementById('sliderBgL').addEventListener('input', (e) => {
+            state.bg.l = parseFloat(e.target.value) / 100;
+            enforceTextConstraints();
+            updateConstraintUI();
+        });
+
+        document.getElementById('sliderTextL').addEventListener('input', (e) => {
+            let requested = parseFloat(e.target.value) / 100;
+            const legalRange = getLegalLightnessRange(state.bg.l, 4.5);
+
+            if (requested < legalRange.min) {
+                requested = legalRange.min;
+                e.target.value = requested * 100;
+                document.getElementById('warningText').classList.add('active');
+                setTimeout(() => document.getElementById('warningText').classList.remove('active'), 1000);
+            } else if (requested > legalRange.max) {
+                requested = legalRange.max;
+                e.target.value = requested * 100;
+                document.getElementById('warningText').classList.add('active');
+                setTimeout(() => document.getElementById('warningText').classList.remove('active'), 1000);
+            }
+
+            state.text.l = requested;
+            updateConstraintUI();
+        });
+
+        // ========================================
+        // PART 3: Evil Martians' 3D Visualization
+        // ========================================
+
+        try {
+            log('Loading Three.js...');
+            const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js');
+            const { OrbitControls } = await import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/OrbitControls.js');
+
+            log('Loading Culori...');
+            const culoriModule = await import('https://cdn.jsdelivr.net/npm/culori@3.3.0/+esm');
+            const { converter } = culoriModule;
+            const toOklch = converter('oklch');
+            const toRgb = converter('rgb');
+
+            log('Loading Delaunator...');
+            const delaunatorModule = await import('https://cdn.jsdelivr.net/npm/delaunator@5.0.1/+esm');
+            const Delaunator = delaunatorModule.default || delaunatorModule.Delaunator || delaunatorModule;
+
+            log('Generating 3D model...');
+
+            const L_MAX_COLOR = 1;
+            const C_MAX = 0.37;
+
+            function onGamutEdge(r, g, b) {
+                return r === 0 || g === 0 || b === 0 || r > 0.99 || g > 0.99 || b > 0.99;
+            }
+
+            function getModelData() {
+                let coordinates = [];
+                let colors = [];
+
+                for (let x = 0; x <= 1; x += 0.05) {
+                    for (let y = 0; y <= 1; y += 0.05) {
+                        for (let z = 0; z <= 1; z += 0.05) {
+                            if (onGamutEdge(x, y, z)) {
+                                let edgeRgb = { mode: 'rgb', r: x, g: y, b: z };
+                                let to = toOklch(edgeRgb);
+
+                                if (to.h !== undefined) {
+                                    colors.push(edgeRgb.r, edgeRgb.g, edgeRgb.b);
+                                    coordinates.push(
+                                        new THREE.Vector3(
+                                            to.l / L_MAX_COLOR,
+                                            to.c / (C_MAX * 2),
+                                            to.h / 360
+                                        )
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                let bounds = [[0,0,0],[0,0,1],[1,0,0],[1,1,0],[1,0,1],[1,0,1],[1,1,1]];
+                for (let i of bounds) {
+                    coordinates.push(new THREE.Vector3(...i));
+                    colors.push(i[0], i[0], i[0]);
+                }
+
+                return [coordinates, colors];
+            }
+
+            function generateMesh(scene) {
+                scene.clear();
+
+                let [coordinates, colors] = getModelData();
+                let top = new THREE.BufferGeometry().setFromPoints(coordinates);
+                top.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+                top.center();
+
+                const points2D = coordinates.map(c => [c.x, c.z]);
+                const delaunay = Delaunator.from(points2D);
+                top.setIndex(Array.from(delaunay.triangles));
+                top.computeVertexNormals();
+
+                let material = new THREE.MeshBasicMaterial({
+                    side: THREE.DoubleSide,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.6
+                });
+
+                let l = new THREE.Vector2(0, 1);
+                let c = new THREE.Vector2(0, 1);
+                let h = new THREE.Vector2(0, 1);
+
+                material.onBeforeCompile = shader => {
+                    shader.uniforms.sliceL = { value: l };
+                    shader.uniforms.sliceC = { value: c };
+                    shader.uniforms.sliceH = { value: h };
+
+                    shader.vertexShader = `varying vec3 vPos;\n${shader.vertexShader}`.replace(
+                        `#include <begin_vertex>`,
+                        `#include <begin_vertex>\nvPos = transformed;`
+                    );
+
+                    shader.fragmentShader = `
+                        #define ss(a, b, c) smoothstep(a, b, c)
+                        uniform vec2 sliceL, sliceC, sliceH;
+                        varying vec3 vPos;
+                        ${shader.fragmentShader}
+                    `.replace(
+                        `#include <dithering_fragment>`,
+                        `#include <dithering_fragment>
+                        vec3 col = vec3(0.5, 0.5, 0.5);
+                        float width = 0.0025;
+                        float l = ss(width, 0., abs(vPos.x + sliceL.y));
+                        float c = ss(width, 0., abs(vPos.y + sliceC.y));
+                        float h = ss(width, 0., abs(vPos.z - sliceH.y));
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, l);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, c);
+                        gl_FragColor.rgb = mix(gl_FragColor.rgb, col, h);`
+                    );
+                };
+
+                let topMesh = new THREE.Mesh(top, material);
+                topMesh.translateY(0.3);
+                scene.add(topMesh);
+
+                let bottom = new THREE.PlaneGeometry(1, 1, 1, 20);
+                let bottomColors = [];
+                let bottomSteps = bottom.attributes.position.array.length / 6;
+                for (let i = 0; i <= bottomSteps; i += 1) {
+                    let lchL = (L_MAX_COLOR * i) / bottomSteps;
+                    let rgbL = toRgb({ mode: 'oklch', l: lchL, c: 0, h: 0 }).r;
+                    bottomColors.push(rgbL, rgbL, rgbL, rgbL, rgbL, rgbL);
+                }
+                bottom.setAttribute('color', new THREE.Float32BufferAttribute(bottomColors, 3));
+                bottom.translate(0, 0, -0.2);
+                bottom.rotateZ(Math.PI * 0.5);
+                bottom.rotateX(-Math.PI * 0.5);
+                let bottomMesh = new THREE.Mesh(bottom, material);
+                scene.add(bottomMesh);
+
+                return color => {
+                    l.set(0, -color.l + 0.5);
+                    c.set(0, (0.5 * -color.c) / C_MAX + 0.5);
+                    h.set(0, 0.0028 * color.h - (color.h > 350 ? 0.51 : 0.5));
+                };
+            }
+
+            log('Setting up scene...');
+
+            const canvas = document.getElementById('canvas3d');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, canvas });
+
+            renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.position.set(0.79, 0, 0.79);
+            camera.lookAt(new THREE.Vector3(0, 1, 0));
+
+            const controls = new OrbitControls(camera, renderer.domElement);
+            controls.enablePan = true;
+            controls.enableZoom = true;
+            controls.minDistance = 0.9;
+            controls.maxDistance = 3;
+
+            const updateSlices = generateMesh(scene);
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // 3D Controls
+            const slider3dL = document.getElementById('slider3dL');
+            const slider3dC = document.getElementById('slider3dC');
+            const slider3dH = document.getElementById('slider3dH');
+
+            function update3D() {
+                const l = parseFloat(slider3dL.value) / 100;
+                const c = parseFloat(slider3dC.value) / 100;
+                const h = parseFloat(slider3dH.value);
+
+                document.getElementById('value3dL').textContent = l.toFixed(2);
+                document.getElementById('value3dC').textContent = c.toFixed(2);
+                document.getElementById('value3dH').textContent = h.toFixed(0) + '°';
+
+                updateSlices({ l, c, h });
+            }
+
+            slider3dL.addEventListener('input', update3D);
+            slider3dC.addEventListener('input', update3D);
+            slider3dH.addEventListener('input', update3D);
+
+            // Initialize everything
+            log('Starting systems...');
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                animate();
+                update3D();
+                updateConstraintUI();
+                console.log('🎉 ULTIMATE OKLCH SYSTEM READY!');
+                console.log('📦 3 systems unified:');
+                console.log('  1. Color.js pickers (standards-based)');
+                console.log('  2. Evil Martians 3D visualization');
+                console.log('  3. Auto-constraint WCAG enforcement');
+            }, 100);
+
+        } catch (error) {
+            log(`ERROR: ${error.message}`);
+            console.error('Full error:', error);
+        }
+    </script>
+</body>
+</html>

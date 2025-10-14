@@ -1,0 +1,307 @@
+version: '1.0'
+project: my-saas-app
+generated_at: '2025-10-12T12:00:00Z'
+environment: production
+
+backend_connections:
+  - id: postgres-prod
+    category: database
+    provider: postgresql
+    environment: production
+    owner: data-platform@app
+    endpoints:
+      primary: postgres://db.prod.internal:5432/app
+      replica: postgres://db-ro.prod.internal:5432/app
+    secrets_ref: doppler://my-saas-app/prod/DATABASE_URL
+    health_probes:
+      - type: tcp
+        target: db.prod.internal:5432
+        interval_seconds: 30
+        timeout_ms: 1500
+        expected_response: null
+        auth_required: false
+      - type: sql
+        target: SELECT 1
+        interval_seconds: 60
+        timeout_ms: 1000
+        expected_response: null
+        auth_required: false
+    slo:
+      availability_percentage: 99.9
+      latency_p95_ms: 50
+      latency_p99_ms: 100
+      error_rate_percentage: 0.1
+      error_budget_policy: alert_only
+    quotas:
+      max_connections: 400
+      rpm: null
+      tpm: null
+      burst_capacity: null
+      daily_limit: null
+    discovered_at: '2025-10-12T12:00:00Z'
+    discovered_in_files:
+      - src/database/connection.ts
+      - src/models/user.ts
+      - src/models/subscription.ts
+      - prisma/schema.prisma
+    usage_patterns:
+      - read
+      - write
+      - migrate
+
+  - id: redis-prod
+    category: cache
+    provider: redis
+    environment: production
+    owner: backend@app
+    endpoints:
+      primary: redis://cache.prod.internal:6379
+    secrets_ref: doppler://my-saas-app/prod/REDIS_URL
+    health_probes:
+      - type: redis
+        target: PING
+        interval_seconds: 30
+        timeout_ms: 500
+    slo:
+      availability_percentage: 99.5
+      latency_p95_ms: 10
+      latency_p99_ms: 50
+      error_rate_percentage: 0.5
+    quotas:
+      max_connections: 100
+    discovered_in_files:
+      - src/cache/redis-client.ts
+      - src/services/session-store.ts
+    usage_patterns:
+      - read
+      - write
+
+  - id: s3-prod
+    category: storage
+    provider: aws-s3
+    environment: production
+    owner: backend@app
+    endpoints:
+      bucket: my-saas-app-uploads
+      region: us-east-1
+    secrets_ref: doppler://my-saas-app/prod/AWS_S3_CREDENTIALS
+    slo:
+      availability_percentage: 99.9
+      latency_p95_ms: 200
+      latency_p99_ms: 500
+      error_rate_percentage: 0.1
+    discovered_in_files:
+      - src/storage/s3-uploader.ts
+      - src/api/upload-handler.ts
+    usage_patterns:
+      - write
+      - read
+
+external_apis:
+  - id: openai-gpt4
+    category: llm
+    provider: openai
+    environment: production
+    owner: ai@app
+    endpoints:
+      api: https://api.openai.com/v1
+    auth_type: bearer
+    secrets_ref: doppler://my-saas-app/prod/OPENAI_API_KEY
+    quotas:
+      max_connections: null
+      rpm: 3500
+      tpm: 90000
+      burst_capacity: 500
+      daily_limit: 10000
+    cost:
+      model: per_token
+      currency: USD
+      pricing:
+        input_per_1k: 0.01
+        output_per_1k: 0.03
+      budget_monthly: 1000.0
+      current_spend: 347.82
+      projected_monthly: 892.45
+    health_probes:
+      - type: http
+        target: https://api.openai.com/v1/models
+        interval_seconds: 300
+        timeout_ms: 5000
+        auth_required: true
+    slo:
+      availability_percentage: 99.5
+      latency_p95_ms: 1200
+      latency_p99_ms: 3000
+      error_rate_percentage: 2.0
+    compliance:
+      - SOC2
+      - GDPR
+    total_requests: 45821
+    last_used: '2025-10-12T11:58:23Z'
+    top_consumers:
+      chat_feature: 67.2
+      embeddings: 23.1
+      summaries: 9.7
+    discovered_at: '2025-10-12T12:00:00Z'
+    discovered_in_files:
+      - src/ai/chat-completions.ts
+      - src/ai/embeddings.ts
+      - src/ai/summarizer.ts
+    api_patterns:
+      - chat.completions
+      - embeddings
+      - moderations
+
+  - id: anthropic-claude
+    category: llm
+    provider: anthropic
+    environment: production
+    owner: ai@app
+    endpoints:
+      api: https://api.anthropic.com/v1
+    auth_type: api_key
+    secrets_ref: doppler://my-saas-app/prod/ANTHROPIC_API_KEY
+    quotas:
+      rpm: 4000
+      tpm: 400000
+    cost:
+      model: per_token
+      currency: USD
+      pricing:
+        input_per_1k: 0.008
+        output_per_1k: 0.024
+      budget_monthly: 800.0
+      current_spend: 156.34
+      projected_monthly: 401.28
+    slo:
+      availability_percentage: 99.5
+      latency_p95_ms: 1500
+      latency_p99_ms: 3500
+      error_rate_percentage: 2.0
+    compliance:
+      - SOC2
+      - GDPR
+    discovered_in_files:
+      - src/ai/claude-chat.ts
+    api_patterns:
+      - messages
+
+  - id: stripe-payments
+    category: payments
+    provider: stripe
+    environment: production
+    owner: payments@app
+    endpoints:
+      api: https://api.stripe.com/v1
+      webhooks: https://api.myapp.com/webhooks/stripe
+    auth_type: bearer
+    secrets_ref: doppler://my-saas-app/prod/STRIPE_SECRET_KEY
+    quotas:
+      rpm: 200
+    cost:
+      model: per_request
+      currency: USD
+      pricing:
+        transaction_fee: 2.9
+        transaction_fixed: 0.30
+      budget_monthly: null
+    slo:
+      availability_percentage: 99.9
+      latency_p95_ms: 300
+      latency_p99_ms: 1000
+      error_rate_percentage: 0.1
+    compliance:
+      - PCI-DSS
+      - SOC2
+    discovered_in_files:
+      - src/payments/stripe-client.ts
+      - src/webhooks/stripe-handler.ts
+    api_patterns:
+      - charges
+      - subscriptions
+      - webhooks
+
+  - id: resend-email
+    category: email
+    provider: resend
+    environment: production
+    owner: backend@app
+    endpoints:
+      api: https://api.resend.com
+    auth_type: bearer
+    secrets_ref: doppler://my-saas-app/prod/RESEND_API_KEY
+    quotas:
+      daily_limit: 3000
+    cost:
+      model: per_request
+      currency: USD
+      pricing:
+        per_email: 0.001
+      budget_monthly: 100.0
+    slo:
+      availability_percentage: 99.5
+      latency_p95_ms: 500
+      latency_p99_ms: 2000
+      error_rate_percentage: 1.0
+    discovered_in_files:
+      - src/email/resend-client.ts
+      - src/notifications/email-sender.ts
+    api_patterns:
+      - emails
+
+commercial_readiness:
+  overall_score: 8
+  max_score: 14
+  completion_percentage: 57.1
+  identity:
+    name: Identity & Auth
+    score: 3
+    max_score: 4
+    items:
+      oauth2: true
+      mfa: true
+      session_mgmt: true
+      password_recovery: false
+    blockers:
+      - identity.password_recovery
+  payments:
+    name: Payments
+    score: 3
+    max_score: 4
+    items:
+      provider: true
+      plans: true
+      trial: true
+      webhooks: false
+    blockers:
+      - payments.webhooks
+  email:
+    name: Email Infrastructure
+    score: 1
+    max_score: 3
+    items:
+      transactional: true
+      spf: false
+      dkim: false
+    blockers:
+      - email.spf
+      - email.dkim
+  security:
+    name: Security
+    score: 1
+    max_score: 3
+    items:
+      secrets_vault: true
+      ssl: false
+    blockers:
+      - security.ssl
+  observability: null
+  infrastructure: null
+  ux: null
+  analytics: null
+  blocking_layers:
+    - identity.password_recovery
+    - payments.webhooks
+    - email.spf
+    - email.dkim
+    - security.ssl

@@ -1,0 +1,536 @@
+<!-- ========== E-COMMERCE PRODUCT PAGE ========== -->
+<!--
+COMPREHENSIVE E-COMMERCE PRODUCT PAGE MOCKUP
+Following UI Commandments from ULTIMATE-UI-STUDIO-V2.html
+
+MANDATORY COLOR-GROUP USAGE:
+- ALL elements: data-group="primary|secondary|accent|background|surface|text"
+- "Add to Cart" button: data-group="primary" (highest chroma)
+- Product cards: data-group="surface"
+- Price tags: data-group="accent"
+- Reviews: data-group="surface" cards
+- Rating stars: data-group="accent"
+
+HARDCODED GUARDRAILS APPLIED:
+✓ Buttons: C ≤ 0.15, minimum 3:1 contrast vs background
+✓ Surfaces: L ∈ [0.85, 1.0] light, [0.0, 0.20] dark
+✓ Backgrounds: C ≤ 0.02
+✓ NO forbidden zones (mid-L + high-C)
+✓ All interactive elements: 44x44px minimum touch target
+✓ Typography scale: --text-base (14px), --text-lg (18px), --text-xl (20px), --text-2xl (24px)
+✓ Spacing scale: 4px base (12px, 16px, 24px, 32px, 48px)
+✓ Border radius: --radius-sm (4px), --radius-md (8px), --radius-lg (12px)
+
+FEATURES INCLUDED:
+1. Product Gallery - Image carousel with thumbnails
+2. Product Details - Title, price, rating, description
+3. Variant Selector - Size, color, quantity options
+4. Add to Cart - Primary CTA with cart icon
+5. Product Reviews - Star ratings, customer reviews, filters
+6. Related Products - Grid of similar items
+7. Shopping Cart Sidebar - Cart preview with items (hidden by default)
+-->
+<div class="mockup-page" id="mockup-ecommerce" style="display: none;" data-group="background">
+    <div style="max-width: 1400px; margin: 0 auto; position: relative;">
+
+        <!-- Top Navigation Bar -->
+        <div class="card selectable" data-color-group="surface" style="margin-bottom: 24px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 32px;">
+                <div style="font-size: 24px; font-weight: 700; color: var(--scaffold-text);">ShopLogo</div>
+                <nav style="display: flex; gap: 24px; font-size: 14px;">
+                    <a href="#" style="color: var(--scaffold-text); text-decoration: none; font-weight: 500;">Products</a>
+                    <a href="#" style="color: var(--scaffold-text-muted); text-decoration: none;">Categories</a>
+                    <a href="#" style="color: var(--scaffold-text-muted); text-decoration: none;">Deals</a>
+                    <a href="#" style="color: var(--scaffold-text-muted); text-decoration: none;">About</a>
+                </nav>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button class="btn btn-outline selectable" data-color-group="primary" style="padding: 8px 16px; font-size: 14px;">
+                    Search
+                </button>
+                <button class="btn btn-primary selectable" data-color-group="primary" style="padding: 8px 16px; font-size: 14px; position: relative;">
+                    Cart (3)
+                </button>
+            </div>
+        </div>
+
+        <!-- Breadcrumb -->
+        <div style="margin-bottom: 24px; font-size: 14px; color: var(--scaffold-text-muted);">
+            <span>Home</span> / <span>Electronics</span> / <span style="color: var(--scaffold-text); font-weight: 500;">Premium Wireless Headphones</span>
+        </div>
+
+        <!-- Main Product Section -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-bottom: 48px;">
+
+            <!-- Product Gallery (LEFT) -->
+            <div>
+                <!-- Main Image -->
+                <div class="card selectable" data-color-group="surface" style="aspect-ratio: 1; margin-bottom: 16px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                    <div style="width: 80%; height: 80%; background: var(--scaffold-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 80px;">
+                        🎧
+                    </div>
+                    <!-- Sale Badge -->
+                    <span class="badge badge-accent selectable" data-color-group="accent" style="position: absolute; top: 16px; right: 16px; font-size: 14px; padding: 8px 16px;">-20% OFF</span>
+                </div>
+
+                <!-- Thumbnail Gallery -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                    <div class="card selectable" data-color-group="surface" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid var(--primary); min-height: 44px;">
+                        <span style="font-size: 24px;">🎧</span>
+                    </div>
+                    <div class="card selectable" data-color-group="surface" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 44px;">
+                        <span style="font-size: 24px;">📦</span>
+                    </div>
+                    <div class="card selectable" data-color-group="surface" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 44px;">
+                        <span style="font-size: 24px;">🔊</span>
+                    </div>
+                    <div class="card selectable" data-color-group="surface" style="aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; min-height: 44px;">
+                        <span style="font-size: 24px;">📸</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Details (RIGHT) -->
+            <div>
+                <!-- Product Title & Rating -->
+                <div style="margin-bottom: 16px;">
+                    <h1 style="font-size: 32px; font-weight: 700; color: var(--scaffold-text); margin-bottom: 12px; line-height: 1.2;">Premium Wireless Noise-Cancelling Headphones</h1>
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                        <div style="display: flex; gap: 4px;">
+                            <span style="color: var(--accent); font-size: 18px;">★★★★★</span>
+                        </div>
+                        <span style="font-size: 14px; color: var(--scaffold-text);">4.8/5.0</span>
+                        <span style="font-size: 14px; color: var(--scaffold-text-muted);">(2,847 reviews)</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <span class="badge badge-primary selectable" data-color-group="primary">Best Seller</span>
+                        <span class="badge badge-accent selectable" data-color-group="accent">Free Shipping</span>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div style="margin-bottom: 24px; padding: 16px; background: var(--scaffold-bg); border-radius: 8px; border: 1px solid var(--scaffold-border);">
+                    <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 8px;">
+                        <span style="font-size: 40px; font-weight: 700; color: var(--scaffold-text);">$239.99</span>
+                        <span style="font-size: 24px; color: var(--scaffold-text-muted); text-decoration: line-through;">$299.99</span>
+                        <span class="badge badge-accent selectable" data-color-group="accent" style="font-size: 14px; padding: 6px 12px;">Save $60</span>
+                    </div>
+                    <div style="font-size: 14px; color: var(--scaffold-text-muted);">
+                        In stock • Ships within 24 hours • Free returns within 30 days
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--scaffold-border);">
+                    <p style="font-size: 16px; line-height: 1.6; color: var(--scaffold-text); margin-bottom: 12px;">
+                        Experience studio-quality sound with industry-leading noise cancellation. These premium wireless headphones deliver up to 30 hours of battery life and feature multi-device connectivity.
+                    </p>
+                    <ul style="font-size: 14px; line-height: 1.8; color: var(--scaffold-text); list-style: none; padding-left: 0;">
+                        <li>Active Noise Cancellation (ANC)</li>
+                        <li>30-hour battery life with quick charging</li>
+                        <li>Premium comfort with memory foam ear cushions</li>
+                        <li>Multi-device pairing (Bluetooth 5.2)</li>
+                        <li>Voice assistant compatible</li>
+                    </ul>
+                </div>
+
+                <!-- Variant Selectors -->
+                <div style="margin-bottom: 24px;">
+                    <!-- Color Selection -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 12px;">
+                            Color: <span style="font-weight: 400;">Midnight Black</span>
+                        </label>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="card selectable" data-color-group="surface" style="width: 48px; height: 48px; min-height: 44px; border: 2px solid var(--primary); cursor: pointer; display: flex; align-items: center; justify-content: center; background: #1a1a1a;"></button>
+                            <button class="card selectable" data-color-group="surface" style="width: 48px; height: 48px; min-height: 44px; border: 1px solid var(--scaffold-border); cursor: pointer; display: flex; align-items: center; justify-content: center; background: #f5f5f5;"></button>
+                            <button class="card selectable" data-color-group="surface" style="width: 48px; height: 48px; min-height: 44px; border: 1px solid var(--scaffold-border); cursor: pointer; display: flex; align-items: center; justify-content: center; background: #4a90e2;"></button>
+                            <button class="card selectable" data-color-group="surface" style="width: 48px; height: 48px; min-height: 44px; border: 1px solid var(--scaffold-border); cursor: pointer; display: flex; align-items: center; justify-content: center; background: #e74c3c;"></button>
+                        </div>
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 12px;">
+                            Model: <span style="font-weight: 400;">Pro Edition</span>
+                        </label>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-outline selectable" data-color-group="secondary" style="min-width: 120px; min-height: 44px;">Standard</button>
+                            <button class="btn btn-primary selectable" data-color-group="primary" style="min-width: 120px; min-height: 44px;">Pro Edition</button>
+                            <button class="btn btn-outline selectable" data-color-group="secondary" style="min-width: 120px; min-height: 44px;">Max</button>
+                        </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 12px;">
+                            Quantity
+                        </label>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button class="btn btn-outline selectable" data-color-group="secondary" style="width: 44px; height: 44px; padding: 0; font-size: 18px;">−</button>
+                            <input type="number" value="1" min="1" class="input selectable" data-color-group="surface" style="width: 80px; text-align: center; padding: 12px; height: 44px;" />
+                            <button class="btn btn-outline selectable" data-color-group="secondary" style="width: 44px; height: 44px; padding: 0; font-size: 18px;">+</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+                    <button class="btn btn-primary selectable" data-color-group="primary" style="flex: 2; padding: 16px 32px; font-size: 16px; font-weight: 600; min-height: 48px;">
+                        Add to Cart
+                    </button>
+                    <button class="btn btn-outline selectable" data-color-group="primary" style="flex: 1; padding: 16px 32px; font-size: 16px; min-height: 48px;">
+                        Save
+                    </button>
+                </div>
+
+                <!-- Guarantee Info -->
+                <div class="card selectable" data-color-group="surface" style="padding: 16px;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; font-size: 13px; text-align: center;">
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 4px;">🚚</div>
+                            <div style="font-weight: 600; color: var(--scaffold-text); margin-bottom: 2px;">Free Shipping</div>
+                            <div style="color: var(--scaffold-text-muted);">On orders $50+</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 4px;">🔄</div>
+                            <div style="font-weight: 600; color: var(--scaffold-text); margin-bottom: 2px;">30-Day Returns</div>
+                            <div style="color: var(--scaffold-text-muted);">Money-back guarantee</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; margin-bottom: 4px;">🛡️</div>
+                            <div style="font-weight: 600; color: var(--scaffold-text); margin-bottom: 2px;">2-Year Warranty</div>
+                            <div style="color: var(--scaffold-text-muted);">Extended protection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Reviews Section -->
+        <div style="margin-bottom: 48px;">
+            <div class="card selectable" data-color-group="surface" style="padding: 32px;">
+                <!-- Reviews Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px;">
+                    <h2 style="font-size: 28px; font-weight: 700; color: var(--scaffold-text);">Customer Reviews</h2>
+                    <button class="btn btn-primary selectable" data-color-group="primary" style="min-height: 44px;">
+                        Write a Review
+                    </button>
+                </div>
+
+                <!-- Rating Summary -->
+                <div style="display: grid; grid-template-columns: 250px 1fr; gap: 32px; margin-bottom: 32px; padding-bottom: 32px; border-bottom: 1px solid var(--scaffold-border);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 56px; font-weight: 700; color: var(--scaffold-text); margin-bottom: 8px;">4.8</div>
+                        <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 8px;">
+                            <span style="color: var(--accent); font-size: 24px;">★★★★★</span>
+                        </div>
+                        <div style="font-size: 14px; color: var(--scaffold-text-muted);">Based on 2,847 reviews</div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 8px; justify-content: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 14px; color: var(--scaffold-text); min-width: 80px;">5 stars</span>
+                            <div style="flex: 1; height: 8px; background: var(--scaffold-bg); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 82%; height: 100%; background: var(--accent);"></div>
+                            </div>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); min-width: 60px;">2,335</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 14px; color: var(--scaffold-text); min-width: 80px;">4 stars</span>
+                            <div style="flex: 1; height: 8px; background: var(--scaffold-bg); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 12%; height: 100%; background: var(--accent);"></div>
+                            </div>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); min-width: 60px;">342</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 14px; color: var(--scaffold-text); min-width: 80px;">3 stars</span>
+                            <div style="flex: 1; height: 8px; background: var(--scaffold-bg); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 4%; height: 100%; background: var(--accent);"></div>
+                            </div>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); min-width: 60px;">114</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 14px; color: var(--scaffold-text); min-width: 80px;">2 stars</span>
+                            <div style="flex: 1; height: 8px; background: var(--scaffold-bg); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 1%; height: 100%; background: var(--scaffold-text-muted);"></div>
+                            </div>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); min-width: 60px;">28</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span style="font-size: 14px; color: var(--scaffold-text); min-width: 80px;">1 star</span>
+                            <div style="flex: 1; height: 8px; background: var(--scaffold-bg); border-radius: 4px; overflow: hidden;">
+                                <div style="width: 1%; height: 100%; background: var(--error);"></div>
+                            </div>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); min-width: 60px;">28</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review Filters -->
+                <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+                    <button class="btn btn-primary selectable" data-color-group="primary" style="min-height: 44px; padding: 8px 16px;">All Reviews</button>
+                    <button class="btn btn-outline selectable" data-color-group="secondary" style="min-height: 44px; padding: 8px 16px;">5 Stars</button>
+                    <button class="btn btn-outline selectable" data-color-group="secondary" style="min-height: 44px; padding: 8px 16px;">4 Stars</button>
+                    <button class="btn btn-outline selectable" data-color-group="secondary" style="min-height: 44px; padding: 8px 16px;">With Photos</button>
+                    <button class="btn btn-outline selectable" data-color-group="secondary" style="min-height: 44px; padding: 8px 16px;">Verified Purchase</button>
+                </div>
+
+                <!-- Individual Reviews -->
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <!-- Review 1 -->
+                    <div style="padding: 24px; background: var(--scaffold-bg); border-radius: 8px; border: 1px solid var(--scaffold-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-weight: 600; color: var(--scaffold-text); font-size: 16px;">Sarah M.</span>
+                                    <span class="badge badge-primary selectable" data-color-group="primary" style="font-size: 11px; padding: 4px 8px;">Verified Purchase</span>
+                                </div>
+                                <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                                    <span style="color: var(--accent); font-size: 16px;">★★★★★</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 13px; color: var(--scaffold-text-muted);">2 days ago</span>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Best headphones I've ever owned!</h4>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--scaffold-text); margin-bottom: 12px;">
+                            The sound quality is absolutely phenomenal. The noise cancellation works incredibly well - I can barely hear anything around me when it's on. Battery life has been great too, easily lasting multiple days of use. Highly recommend!
+                        </p>
+                        <div style="display: flex; gap: 16px; font-size: 13px; color: var(--scaffold-text-muted);">
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Helpful (124)</button>
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Reply</button>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div style="padding: 24px; background: var(--scaffold-bg); border-radius: 8px; border: 1px solid var(--scaffold-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-weight: 600; color: var(--scaffold-text); font-size: 16px;">James T.</span>
+                                    <span class="badge badge-primary selectable" data-color-group="primary" style="font-size: 11px; padding: 4px 8px;">Verified Purchase</span>
+                                </div>
+                                <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                                    <span style="color: var(--accent); font-size: 16px;">★★★★★</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 13px; color: var(--scaffold-text-muted);">1 week ago</span>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Perfect for travel and work</h4>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--scaffold-text); margin-bottom: 12px;">
+                            I use these daily for both work calls and music. The comfort level is outstanding - I can wear them for hours without any discomfort. The multi-device pairing is super convenient for switching between my laptop and phone.
+                        </p>
+                        <div style="display: flex; gap: 16px; font-size: 13px; color: var(--scaffold-text-muted);">
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Helpful (89)</button>
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Reply</button>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div style="padding: 24px; background: var(--scaffold-bg); border-radius: 8px; border: 1px solid var(--scaffold-border);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                                    <span style="font-weight: 600; color: var(--scaffold-text); font-size: 16px;">Emily R.</span>
+                                    <span class="badge badge-primary selectable" data-color-group="primary" style="font-size: 11px; padding: 4px 8px;">Verified Purchase</span>
+                                </div>
+                                <div style="display: flex; gap: 4px; margin-bottom: 4px;">
+                                    <span style="color: var(--accent); font-size: 16px;">★★★★☆</span>
+                                </div>
+                            </div>
+                            <span style="font-size: 13px; color: var(--scaffold-text-muted);">2 weeks ago</span>
+                        </div>
+                        <h4 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Great quality, slightly pricey</h4>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--scaffold-text); margin-bottom: 12px;">
+                            Overall very happy with the purchase. Sound quality is top-notch and the build feels premium. Only giving 4 stars because the price point is a bit high compared to competitors, but you definitely get what you pay for.
+                        </p>
+                        <div style="display: flex; gap: 16px; font-size: 13px; color: var(--scaffold-text-muted);">
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Helpful (67)</button>
+                            <button style="background: none; border: none; color: var(--scaffold-text-muted); cursor: pointer; padding: 0; min-height: 24px;">Reply</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Reviews -->
+                <div style="text-align: center; margin-top: 32px;">
+                    <button class="btn btn-outline selectable" data-color-group="primary" style="min-height: 44px; padding: 12px 32px;">
+                        Load More Reviews
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Related Products Section -->
+        <div style="margin-bottom: 48px;">
+            <h2 style="font-size: 28px; font-weight: 700; color: var(--scaffold-text); margin-bottom: 24px;">You May Also Like</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
+                <!-- Related Product 1 -->
+                <div class="card selectable" data-color-group="surface" style="cursor: pointer; transition: transform 200ms; min-height: 320px;">
+                    <div style="width: 100%; aspect-ratio: 1; background: var(--scaffold-bg); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        🎵
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Wireless Earbuds Pro</h3>
+                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+                        <span style="color: var(--accent); font-size: 14px;">★★★★☆</span>
+                        <span style="font-size: 13px; color: var(--scaffold-text-muted);">(1,234)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">$149.99</span>
+                        <button class="btn btn-primary selectable" data-color-group="primary" style="padding: 8px 12px; font-size: 13px; min-height: 36px;">Add</button>
+                    </div>
+                </div>
+
+                <!-- Related Product 2 -->
+                <div class="card selectable" data-color-group="surface" style="cursor: pointer; transition: transform 200ms; min-height: 320px;">
+                    <div style="width: 100%; aspect-ratio: 1; background: var(--scaffold-bg); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px; position: relative;">
+                        🔊
+                        <span class="badge badge-accent selectable" data-color-group="accent" style="position: absolute; top: 8px; right: 8px; font-size: 11px; padding: 4px 8px;">Sale</span>
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Smart Speaker Max</h3>
+                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+                        <span style="color: var(--accent); font-size: 14px;">★★★★★</span>
+                        <span style="font-size: 13px; color: var(--scaffold-text-muted);">(856)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">$199.99</span>
+                            <span style="font-size: 14px; color: var(--scaffold-text-muted); text-decoration: line-through; margin-left: 4px;">$249.99</span>
+                        </div>
+                        <button class="btn btn-primary selectable" data-color-group="primary" style="padding: 8px 12px; font-size: 13px; min-height: 36px;">Add</button>
+                    </div>
+                </div>
+
+                <!-- Related Product 3 -->
+                <div class="card selectable" data-color-group="surface" style="cursor: pointer; transition: transform 200ms; min-height: 320px;">
+                    <div style="width: 100%; aspect-ratio: 1; background: var(--scaffold-bg); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        🎙️
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Studio Microphone</h3>
+                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+                        <span style="color: var(--accent); font-size: 14px;">★★★★☆</span>
+                        <span style="font-size: 13px; color: var(--scaffold-text-muted);">(543)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">$179.99</span>
+                        <button class="btn btn-primary selectable" data-color-group="primary" style="padding: 8px 12px; font-size: 13px; min-height: 36px;">Add</button>
+                    </div>
+                </div>
+
+                <!-- Related Product 4 -->
+                <div class="card selectable" data-color-group="surface" style="cursor: pointer; transition: transform 200ms; min-height: 320px;">
+                    <div style="width: 100%; aspect-ratio: 1; background: var(--scaffold-bg); border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 48px;">
+                        📻
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 8px;">Bluetooth Adapter</h3>
+                    <div style="display: flex; gap: 4px; margin-bottom: 8px;">
+                        <span style="color: var(--accent); font-size: 14px;">★★★★★</span>
+                        <span style="font-size: 13px; color: var(--scaffold-text-muted);">(2,341)</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">$39.99</span>
+                        <button class="btn btn-primary selectable" data-color-group="primary" style="padding: 8px 12px; font-size: 13px; min-height: 36px;">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shopping Cart Sidebar (Fixed Position - Hidden by default) -->
+        <div style="position: fixed; top: 80px; right: 32px; width: 380px; z-index: 100; display: none;" id="cart-sidebar">
+            <div class="card selectable" data-color-group="surface" style="padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">Shopping Cart (3)</h3>
+                    <button style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--scaffold-text-muted); min-width: 32px; min-height: 32px;">×</button>
+                </div>
+
+                <!-- Cart Items -->
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
+                    <!-- Cart Item 1 -->
+                    <div style="display: flex; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--scaffold-border);">
+                        <div style="width: 80px; height: 80px; background: var(--scaffold-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">
+                            🎧
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Premium Headphones</h4>
+                            <div style="font-size: 13px; color: var(--scaffold-text-muted); margin-bottom: 8px;">Midnight Black - Pro</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 16px; font-weight: 700; color: var(--scaffold-text);">$239.99</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">−</button>
+                                    <span style="font-size: 14px; color: var(--scaffold-text);">1</span>
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Item 2 -->
+                    <div style="display: flex; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--scaffold-border);">
+                        <div style="width: 80px; height: 80px; background: var(--scaffold-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">
+                            🎵
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Wireless Earbuds Pro</h4>
+                            <div style="font-size: 13px; color: var(--scaffold-text-muted); margin-bottom: 8px;">White - Standard</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 16px; font-weight: 700; color: var(--scaffold-text);">$149.99</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">−</button>
+                                    <span style="font-size: 14px; color: var(--scaffold-text);">1</span>
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cart Item 3 -->
+                    <div style="display: flex; gap: 12px;">
+                        <div style="width: 80px; height: 80px; background: var(--scaffold-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; flex-shrink: 0;">
+                            📻
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <h4 style="font-size: 14px; font-weight: 600; color: var(--scaffold-text); margin-bottom: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Bluetooth Adapter</h4>
+                            <div style="font-size: 13px; color: var(--scaffold-text-muted); margin-bottom: 8px;">Universal</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 16px; font-weight: 700; color: var(--scaffold-text);">$39.99</span>
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">−</button>
+                                    <span style="font-size: 14px; color: var(--scaffold-text);">1</span>
+                                    <button style="background: var(--scaffold-bg); border: 1px solid var(--scaffold-border); width: 24px; height: 24px; border-radius: 4px; cursor: pointer; font-size: 12px; min-height: 24px;">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div style="padding-top: 20px; border-top: 2px solid var(--scaffold-border);">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                        <span style="color: var(--scaffold-text-muted);">Subtotal</span>
+                        <span style="color: var(--scaffold-text); font-weight: 600;">$429.97</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                        <span style="color: var(--scaffold-text-muted);">Shipping</span>
+                        <span style="color: var(--success); font-weight: 600;">FREE</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                        <span style="color: var(--scaffold-text-muted);">Tax</span>
+                        <span style="color: var(--scaffold-text); font-weight: 600;">$34.40</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px; padding-top: 12px; border-top: 1px solid var(--scaffold-border);">
+                        <span style="font-size: 18px; font-weight: 700; color: var(--scaffold-text);">Total</span>
+                        <span style="font-size: 20px; font-weight: 700; color: var(--scaffold-text);">$464.37</span>
+                    </div>
+
+                    <button class="btn btn-primary selectable" data-color-group="primary" style="width: 100%; padding: 16px; font-size: 16px; font-weight: 600; margin-bottom: 12px; min-height: 48px;">
+                        Proceed to Checkout
+                    </button>
+                    <button class="btn btn-outline selectable" data-color-group="secondary" style="width: 100%; padding: 12px; font-size: 14px; min-height: 44px;">
+                        Continue Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔗 Registry Report - profilepro-nextjs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .section-header .icon {
+            font-size: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.8rem;
+            color: #333;
+        }
+
+        .connection-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .connection-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .connection-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .connection-card.backend {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+
+        .connection-card.api {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        }
+
+        .connection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .connection-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge.database { background: #e3f2fd; color: #1976d2; }
+        .badge.cache { background: #f3e5f5; color: #7b1fa2; }
+        .badge.storage { background: #e8f5e9; color: #388e3c; }
+        .badge.llm { background: #fff3e0; color: #f57c00; }
+        .badge.payments { background: #e0f2f1; color: #00796b; }
+        .badge.email { background: #fce4ec; color: #c2185b; }
+
+        .connection-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .detail {
+            background: white;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .files-list {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px dashed rgba(0,0,0,0.1);
+        }
+
+        .files-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .files-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .file-tag {
+            background: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .readiness-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .readiness-score {
+            text-align: center;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .readiness-score .big-number {
+            font-size: 5rem;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .readiness-score .fraction {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        .readiness-score .label {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #667eea;
+            transition: width 1s ease;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .category-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .category-items {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            background: #f5f5f5;
+            border-radius: 6px;
+        }
+
+        .item-row.complete {
+            background: #e8f5e9;
+        }
+
+        .item-row.incomplete {
+            background: #ffebee;
+        }
+
+        .check {
+            font-size: 1.2rem;
+        }
+
+        .blockers-section {
+            background: #ff5252;
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+
+        .blockers-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .blocker-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .blocker-item {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .cost-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+
+        .cost-header {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cost-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .cost-item {
+            background: rgba(255,255,255,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .cost-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .cost-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 3rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔗 Connection Registry Report</h1>
+            <div class="subtitle">
+                <strong>profilepro-nextjs</strong> • Generated October 12, 2025 at 16:05
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="icon">🔗</div>
+                <div class="value">8</div>
+                <div class="label">Total Connections</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🔧</div>
+                <div class="value">3</div>
+                <div class="label">Backend Services</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🌐</div>
+                <div class="value">5</div>
+                <div class="label">External APIs</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon">🎯</div>
+                <div class="value">69%</div>
+                <div class="label">Commercial Ready</div>
+            </div>
+        </div>
+
+        <!-- Backend Connections -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">🔧</span>
+                <h2>Backend Connections (3)</h2>
+            </div>
+            <div class="connection-grid">
+
+                <div class="connection-card backend">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            📦 s3-prod
+                        </div>
+                        <span class="badge storage">storage</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">aws-s3</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">12 files</div>
+                        </div>
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">page.tsx</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">+7 more...</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card backend">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            🗄️ postgres-prod
+                        </div>
+                        <span class="badge database">database</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">postgresql</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">3 files</div>
+                        </div>
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">prisma.ts</div>
+                            <div class="file-tag">database-singleton.ts</div>
+                            <div class="file-tag">production-setup.ts</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card backend">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            ⚡ redis-prod
+                        </div>
+                        <span class="badge cache">cache</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">redis</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">1 files</div>
+                        </div>
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">complete-vertebrae-registry.ts</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- External APIs -->
+        <div class="section">
+            <div class="section-header">
+                <span class="icon">🌐</span>
+                <h2>External API Integrations (5)</h2>
+            </div>
+            <div class="connection-grid">
+
+                <div class="connection-card api">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            💳 stripe-prod
+                        </div>
+                        <span class="badge payments">payments</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">stripe</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">17 files</div>
+                        </div>
+
+                        <div class="detail">
+                            <div class="detail-label">Compliance</div>
+                            <div class="detail-value">PCI-DSS, SOC2</div>
+                        </div>
+
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">setup-stripe-products.js</div>
+                            <div class="file-tag">unified-money-manager.ts</div>
+                            <div class="file-tag">middleware.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">+12 more...</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card api">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            🤖 anthropic-prod
+                        </div>
+                        <span class="badge llm">llm</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">anthropic</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">18 files</div>
+                        </div>
+
+                    </div>
+
+                    <div class="cost-card">
+                        <div class="cost-header">💰 Cost Tracking</div>
+                        <div class="cost-details">
+                            <div class="cost-item">
+                                <div class="cost-value">$1,000</div>
+                                <div class="cost-label">Monthly Budget</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">real-time-consciousness-stream.ts</div>
+                            <div class="file-tag">page.tsx</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">+13 more...</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card api">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            📧 resend-prod
+                        </div>
+                        <span class="badge email">email</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">resend</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">2 files</div>
+                        </div>
+
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">route.ts</div>
+                            <div class="file-tag">claude-email-manager.ts</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card api">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            📧 sendgrid-prod
+                        </div>
+                        <span class="badge email">email</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">sendgrid</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">2 files</div>
+                        </div>
+
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">APIKeysManager.tsx</div>
+                            <div class="file-tag">complete-vertebrae-registry.ts</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="connection-card api">
+                    <div class="connection-header">
+                        <div class="connection-name">
+                            🤖 openai-prod
+                        </div>
+                        <span class="badge llm">llm</span>
+                    </div>
+                    <div class="connection-details">
+                        <div class="detail">
+                            <div class="detail-label">Provider</div>
+                            <div class="detail-value">openai</div>
+                        </div>
+                        <div class="detail">
+                            <div class="detail-label">Files Using</div>
+                            <div class="detail-value">1 files</div>
+                        </div>
+
+                        <div class="detail">
+                            <div class="detail-label">Compliance</div>
+                            <div class="detail-value">SOC2, GDPR</div>
+                        </div>
+
+                    </div>
+
+                    <div class="cost-card">
+                        <div class="cost-header">💰 Cost Tracking</div>
+                        <div class="cost-details">
+                            <div class="cost-item">
+                                <div class="cost-value">$1,000</div>
+                                <div class="cost-label">Monthly Budget</div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="files-list">
+                        <div class="files-label">📁 Used in:</div>
+                        <div class="files-items">
+                            <div class="file-tag">multiProviderRouter.ts</div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Commercial Readiness -->
+        <div class="section readiness-section">
+            <div class="section-header">
+                <span class="icon">🎯</span>
+                <h2>Commercial Readiness Score</h2>
+            </div>
+
+            <div class="readiness-score">
+                <div class="big-number">69%</div>
+                <div class="fraction">9 / 13 points</div>
+                <div class="label">Production Ready</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 69.23076923076923%">
+                        69%
+                    </div>
+                </div>
+            </div>
+
+            <div class="categories-grid">
+
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-name">Identity & Auth</div>
+                        <div class="category-score">2/4</div>
+                    </div>
+                    <div class="category-items">
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Oauth2</span>
+                        </div>
+
+                        <div class="item-row incomplete">
+                            <span class="check">❌</span>
+                            <span>Mfa</span>
+                        </div>
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Session Mgmt</span>
+                        </div>
+
+                        <div class="item-row incomplete">
+                            <span class="check">❌</span>
+                            <span>Password Recovery</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-name">Payments</div>
+                        <div class="category-score">4/4</div>
+                    </div>
+                    <div class="category-items">
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Provider</span>
+                        </div>
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Plans</span>
+                        </div>
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Trial</span>
+                        </div>
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Webhooks</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-name">Email Infrastructure</div>
+                        <div class="category-score">1/3</div>
+                    </div>
+                    <div class="category-items">
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Transactional</span>
+                        </div>
+
+                        <div class="item-row incomplete">
+                            <span class="check">❌</span>
+                            <span>Spf</span>
+                        </div>
+
+                        <div class="item-row incomplete">
+                            <span class="check">❌</span>
+                            <span>Dkim</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-name">Security</div>
+                        <div class="category-score">2/2</div>
+                    </div>
+                    <div class="category-items">
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Secrets Vault</span>
+                        </div>
+
+                        <div class="item-row complete">
+                            <span class="check">✅</span>
+                            <span>Ssl</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="blockers-section">
+                <div class="blockers-header">
+                    🚨 Blocking Layers (1)
+                </div>
+                <div class="blocker-list">
+
+                    <div class="blocker-item">❌ identity.password_recovery</div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            Generated by Registry Discovery Engine • 2025-10-12 16:05:21
+        </div>
+    </div>
+</body>
+</html>

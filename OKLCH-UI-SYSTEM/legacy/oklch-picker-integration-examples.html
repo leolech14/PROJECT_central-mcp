@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OKLCH Color Picker Integration Methods</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: oklch(98% 0.002 250);
+            color: oklch(15% 0.012 250);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: oklch(48% 0.10 240);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            color: oklch(42% 0.12 240);
+            border-bottom: 2px solid oklch(88% 0.004 250);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: oklch(35% 0.009 250);
+        }
+
+        .method-section {
+            background: white;
+            border: 1px solid oklch(88% 0.004 250);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px oklch(0% 0 0 / 0.06);
+        }
+
+        .demo-container {
+            background: oklch(95% 0.003 250);
+            border: 1px solid oklch(88% 0.004 250);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .code-block {
+            background: oklch(15% 0.012 250);
+            color: oklch(98% 0.002 250);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            color: oklch(98% 0.002 250);
+        }
+
+        .iframe-container {
+            border: 2px solid oklch(48% 0.10 240);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        iframe {
+            display: block;
+            border: none;
+        }
+
+        .color-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border: 1px solid oklch(88% 0.004 250);
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .color-swatch {
+            width: 100px;
+            height: 100px;
+            border: 2px solid oklch(88% 0.004 250);
+            border-radius: 8px;
+            box-shadow: 0 2px 8px oklch(0% 0 0 / 0.1);
+        }
+
+        .color-info {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.875rem;
+        }
+
+        .slider-container {
+            margin: 1rem 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: oklch(88% 0.004 250);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: oklch(48% 0.10 240);
+            cursor: pointer;
+            box-shadow: 0 2px 4px oklch(0% 0 0 / 0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: oklch(48% 0.10 240);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px oklch(0% 0 0 / 0.2);
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .pros, .cons {
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: oklch(96% 0.02 145);
+            border: 1px solid oklch(52% 0.12 145);
+        }
+
+        .cons {
+            background: oklch(96% 0.02 25);
+            border: 1px solid oklch(54% 0.16 25);
+        }
+
+        .pros h4, .cons h4 {
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .pros ul, .cons ul {
+            margin-left: 1.5rem;
+            font-size: 0.875rem;
+        }
+
+        .pros li {
+            color: oklch(45% 0.12 145);
+        }
+
+        .cons li {
+            color: oklch(48% 0.16 25);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: oklch(96% 0.02 240);
+            border-color: oklch(48% 0.10 240);
+            color: oklch(42% 0.12 240);
+        }
+
+        .alert-success {
+            background: oklch(96% 0.02 145);
+            border-color: oklch(52% 0.12 145);
+            color: oklch(45% 0.12 145);
+        }
+
+        @media (max-width: 768px) {
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 OKLCH Color Picker Integration - 5 Methods</h1>
+        <p style="font-size: 1.125rem; margin-bottom: 2rem;">
+            Complete guide to adding OKLCH color pickers to your HTML projects.
+            All methods work, choose based on your needs!
+        </p>
+
+        <!-- METHOD 1: IFRAME EMBED -->
+        <section class="method-section">
+            <h2>Method 1: Iframe Embed (Simplest) ⚡</h2>
+
+            <h3>Live Demo - OKLCH.com 2D Picker:</h3>
+            <div class="iframe-container">
+                <iframe src="https://oklch.com/" width="100%" height="600"></iframe>
+            </div>
+
+            <h3>Live Demo - OKLCH.com 3D Model Viewer:</h3>
+            <div class="iframe-container">
+                <iframe src="https://oklch.com/?3d=" width="100%" height="600"></iframe>
+            </div>
+
+            <h3>Code:</h3>
+            <div class="code-block"><code>&lt;!-- 2D Color Picker --&gt;
+&lt;iframe
+    src="https://oklch.com/"
+    width="800"
+    height="600"
+    frameborder="0"
+    title="OKLCH Color Picker"&gt;
+&lt;/iframe&gt;
+
+&lt;!-- 3D Model Viewer --&gt;
+&lt;iframe
+    src="https://oklch.com/?3d="
+    width="800"
+    height="600"
+    frameborder="0"
+    title="OKLCH 3D Model Viewer"&gt;
+&lt;/iframe&gt;</code></div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Pros</h4>
+                    <ul>
+                        <li>Zero setup - copy and paste</li>
+                        <li>Always up-to-date</li>
+                        <li>Full feature set from oklch.com</li>
+                        <li>Professional 3D visualization</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>❌ Cons</h4>
+                    <ul>
+                        <li>Requires internet connection</li>
+                        <li>No customization</li>
+                        <li>Cross-origin limitations</li>
+                        <li>Depends on external service</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHOD 2: NATIVE HTML COLOR INPUT -->
+        <section class="method-section">
+            <h2>Method 2: Native HTML + CSS OKLCH (Pure CSS) 🎨</h2>
+
+            <div class="alert alert-info">
+                <strong>Note:</strong> Modern browsers support OKLCH in CSS! Convert with JavaScript for display.
+            </div>
+
+            <h3>Live Demo:</h3>
+            <div class="demo-container">
+                <input type="color" id="nativeColorPicker" value="#3b82f6">
+                <div class="color-display">
+                    <div class="color-swatch" id="nativeColorSwatch" style="background: oklch(55% 0.12 240);"></div>
+                    <div class="color-info">
+                        <div>HEX: <span id="nativeHex">#3b82f6</span></div>
+                        <div>OKLCH: <span id="nativeOklch">oklch(55% 0.12 240)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Code:</h3>
+            <div class="code-block"><code>&lt;input type="color" id="colorPicker" value="#3b82f6"&gt;
+&lt;div id="colorDisplay"&gt;&lt;/div&gt;
+
+&lt;style&gt;
+    .color-swatch {
+        /* Browser-native OKLCH support! */
+        background: oklch(55% 0.12 240);
+    }
+&lt;/style&gt;
+
+&lt;script&gt;
+    // Convert HEX to OKLCH approximation
+    const picker = document.getElementById('colorPicker');
+    picker.addEventListener('input', (e) => {
+        const hex = e.target.value;
+        // Use Chroma.js or custom conversion (see Method 4)
+        console.log('Selected color:', hex);
+    });
+&lt;/script&gt;</code></div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Pros</h4>
+                    <ul>
+                        <li>Native browser support</li>
+                        <li>No dependencies</li>
+                        <li>Fast and lightweight</li>
+                        <li>CSS OKLCH syntax works in modern browsers</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>❌ Cons</h4>
+                    <ul>
+                        <li>Color picker shows RGB, not OKLCH sliders</li>
+                        <li>Need JavaScript for OKLCH conversion</li>
+                        <li>Limited browser support for OKLCH (Safari 15.4+, Chrome 111+)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHOD 3: CUSTOM SLIDERS -->
+        <section class="method-section">
+            <h2>Method 3: Custom OKLCH Sliders (Full Control) 🎛️</h2>
+
+            <h3>Live Demo:</h3>
+            <div class="demo-container">
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Lightness (L)</span>
+                        <span id="lValue">65%</span>
+                    </div>
+                    <input type="range" id="lSlider" min="0" max="100" value="65" step="1">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Chroma (C)</span>
+                        <span id="cValue">0.15</span>
+                    </div>
+                    <input type="range" id="cSlider" min="0" max="37" value="15" step="1">
+                </div>
+
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>Hue (H)</span>
+                        <span id="hValue">240°</span>
+                    </div>
+                    <input type="range" id="hSlider" min="0" max="360" value="240" step="1">
+                </div>
+
+                <div class="color-display">
+                    <div class="color-swatch" id="customColorSwatch"></div>
+                    <div class="color-info">
+                        <div>OKLCH: <span id="customOklch">oklch(65% 0.15 240)</span></div>
+                        <div>CSS: <span id="customCss">oklch(65% 0.15 240)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Code:</h3>
+            <div class="code-block"><code>&lt;div class="oklch-picker"&gt;
+    &lt;label&gt;Lightness: &lt;input type="range" id="l" min="0" max="100" value="65"&gt;&lt;/label&gt;
+    &lt;label&gt;Chroma: &lt;input type="range" id="c" min="0" max="37" value="15"&gt;&lt;/label&gt;
+    &lt;label&gt;Hue: &lt;input type="range" id="h" min="0" max="360" value="240"&gt;&lt;/label&gt;
+    &lt;div id="preview"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    const l = document.getElementById('l');
+    const c = document.getElementById('c');
+    const h = document.getElementById('h');
+    const preview = document.getElementById('preview');
+
+    function updateColor() {
+        const lVal = l.value;
+        const cVal = (c.value / 100).toFixed(2); // 0-0.37 range
+        const hVal = h.value;
+
+        const oklchColor = `oklch(${lVal}% ${cVal} ${hVal})`;
+        preview.style.background = oklchColor;
+        preview.textContent = oklchColor;
+    }
+
+    l.addEventListener('input', updateColor);
+    c.addEventListener('input', updateColor);
+    h.addEventListener('input', updateColor);
+    updateColor(); // Initial color
+&lt;/script&gt;</code></div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Pros</h4>
+                    <ul>
+                        <li>Direct OKLCH control</li>
+                        <li>Fully customizable UI</li>
+                        <li>No external dependencies</li>
+                        <li>Perfect for design systems</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>❌ Cons</h4>
+                    <ul>
+                        <li>Requires custom UI design</li>
+                        <li>Need gamut checking for valid colors</li>
+                        <li>No 2D/3D visualization</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHOD 4: CHROMA.JS LIBRARY -->
+        <section class="method-section">
+            <h2>Method 4: Chroma.js Library (Best Balance) ⚖️</h2>
+
+            <div class="alert alert-success">
+                <strong>Recommended!</strong> Chroma.js provides full OKLCH support with easy conversions.
+            </div>
+
+            <h3>Live Demo:</h3>
+            <div class="demo-container">
+                <input type="color" id="chromaColorPicker" value="#3b82f6">
+                <button onclick="randomColor()" style="padding: 0.5rem 1rem; margin-left: 1rem; border-radius: 6px; border: 1px solid oklch(88% 0.004 250); background: white; cursor: pointer;">Random Color</button>
+
+                <div class="color-display">
+                    <div class="color-swatch" id="chromaColorSwatch"></div>
+                    <div class="color-info">
+                        <div>HEX: <span id="chromaHex">#3b82f6</span></div>
+                        <div>RGB: <span id="chromaRgb">rgb(59, 130, 246)</span></div>
+                        <div>HSL: <span id="chromaHsl">hsl(217, 91%, 60%)</span></div>
+                        <div>OKLCH: <span id="chromaOklch">oklch(55% 0.12 240)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Code:</h3>
+            <div class="code-block"><code>&lt;!-- Include Chroma.js from CDN --&gt;
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"&gt;&lt;/script&gt;
+
+&lt;input type="color" id="colorPicker" value="#3b82f6"&gt;
+&lt;div id="colorInfo"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    const picker = document.getElementById('colorPicker');
+    const info = document.getElementById('colorInfo');
+
+    picker.addEventListener('input', (e) => {
+        const color = chroma(e.target.value);
+
+        // Get OKLCH values
+        const [l, c, h] = color.oklch();
+
+        // Display
+        info.innerHTML = `
+            HEX: ${color.hex()}&lt;br&gt;
+            RGB: ${color.css()}&lt;br&gt;
+            OKLCH: oklch(${(l*100).toFixed(0)}% ${c.toFixed(2)} ${h.toFixed(0)})
+        `;
+    });
+
+    // Create color from OKLCH
+    const oklchColor = chroma.oklch(0.55, 0.12, 240);
+    console.log('OKLCH to HEX:', oklchColor.hex());
+
+    // Generate color palette in OKLCH
+    const palette = chroma.scale(['oklch(30% 0.1 240)', 'oklch(90% 0.1 240)'])
+        .mode('oklch')
+        .colors(5);
+&lt;/script&gt;</code></div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Pros</h4>
+                    <ul>
+                        <li>Easy OKLCH ↔ HEX/RGB/HSL conversion</li>
+                        <li>Color scales and palettes in OKLCH</li>
+                        <li>Small library (~13KB gzipped)</li>
+                        <li>Well-documented and maintained</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>❌ Cons</h4>
+                    <ul>
+                        <li>External dependency</li>
+                        <li>No built-in UI components</li>
+                        <li>Need to build picker interface yourself</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- METHOD 5: OBSERVABLE EMBED -->
+        <section class="method-section">
+            <h2>Method 5: Observable Notebook Embed (Interactive) 📊</h2>
+
+            <div class="alert alert-info">
+                <strong>Observable notebooks</strong> can be embedded as interactive components with full OKLCH visualization.
+            </div>
+
+            <h3>Code:</h3>
+            <div class="code-block"><code>&lt;!-- Embed Observable OKLAB Color Wheel --&gt;
+&lt;iframe
+    width="100%"
+    height="684"
+    frameborder="0"
+    src="https://observablehq.com/embed/@shan/oklab-color-wheel?cells=viewof+color%2Ccolor"&gt;
+&lt;/iframe&gt;
+
+&lt;!-- Or load as JavaScript runtime --&gt;
+&lt;script type="module"&gt;
+    import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
+    import notebook from "https://api.observablehq.com/@shan/oklab-color-wheel.js";
+
+    const runtime = new Runtime();
+    const main = runtime.module(notebook, Inspector.into(document.body));
+&lt;/script&gt;</code></div>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>✅ Pros</h4>
+                    <ul>
+                        <li>Interactive visualizations ready-made</li>
+                        <li>Educational and professional</li>
+                        <li>Observable has many OKLCH examples</li>
+                        <li>Can embed just the parts you need</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>❌ Cons</h4>
+                    <ul>
+                        <li>Requires Observable runtime</li>
+                        <li>Heavier than other methods</li>
+                        <li>Need to learn Observable syntax</li>
+                        <li>External dependency on Observable</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- RECOMMENDATION -->
+        <section class="method-section">
+            <h2>🎯 Recommendation Matrix</h2>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+                    <thead>
+                        <tr style="background: oklch(48% 0.10 240); color: white;">
+                            <th style="padding: 0.75rem; text-align: left;">Use Case</th>
+                            <th style="padding: 0.75rem; text-align: left;">Best Method</th>
+                            <th style="padding: 0.75rem; text-align: left;">Why</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid oklch(88% 0.004 250);">
+                            <td style="padding: 0.75rem;">Quick demo/prototype</td>
+                            <td style="padding: 0.75rem;"><strong>Method 1: Iframe</strong></td>
+                            <td style="padding: 0.75rem;">Zero setup, full features</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid oklch(88% 0.004 250);">
+                            <td style="padding: 0.75rem;">Design system with tokens</td>
+                            <td style="padding: 0.75rem;"><strong>Method 3: Custom Sliders</strong></td>
+                            <td style="padding: 0.75rem;">Direct OKLCH control, matches your UI</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid oklch(88% 0.004 250);">
+                            <td style="padding: 0.75rem;">Production app</td>
+                            <td style="padding: 0.75rem;"><strong>Method 4: Chroma.js</strong></td>
+                            <td style="padding: 0.75rem;">Reliable, lightweight, great conversions</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid oklch(88% 0.004 250);">
+                            <td style="padding: 0.75rem;">Educational content</td>
+                            <td style="padding: 0.75rem;"><strong>Method 1 or 5</strong></td>
+                            <td style="padding: 0.75rem;">Professional 3D viz or interactive notebooks</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem;">Simple color selection</td>
+                            <td style="padding: 0.75rem;"><strong>Method 2: Native</strong></td>
+                            <td style="padding: 0.75rem;">No dependencies, CSS OKLCH works</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- INTEGRATION CODE -->
+        <section class="method-section">
+            <h2>🚀 Copy-Paste Integration for Our Design System</h2>
+
+            <div class="code-block"><code>&lt;!-- Add to your HTML --&gt;
+&lt;section class="design-system-section"&gt;
+    &lt;h2&gt;Color Picker Tools&lt;/h2&gt;
+
+    &lt;!-- Method 1: 3D Viewer --&gt;
+    &lt;div class="color-tool"&gt;
+        &lt;h3&gt;OKLCH 3D Color Space Explorer&lt;/h3&gt;
+        &lt;iframe
+            src="https://oklch.com/?3d="
+            width="100%"
+            height="600"
+            style="border: 2px solid var(--border); border-radius: var(--radius-lg);"&gt;
+        &lt;/iframe&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Method 4: Chroma.js with Custom UI --&gt;
+    &lt;div class="color-tool"&gt;
+        &lt;h3&gt;Design Token Color Picker&lt;/h3&gt;
+        &lt;div class="token-picker"&gt;
+            &lt;input type="color" id="tokenPicker"&gt;
+            &lt;div id="tokenOutput"&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+    document.getElementById('tokenPicker').addEventListener('input', (e) => {
+        const color = chroma(e.target.value);
+        const [l, c, h] = color.oklch();
+
+        document.getElementById('tokenOutput').innerHTML = `
+            &lt;code&gt;--color: oklch(${(l*100).toFixed(0)}% ${c.toFixed(2)} ${h.toFixed(0)});&lt;/code&gt;
+        `;
+    });
+&lt;/script&gt;</code></div>
+        </section>
+    </div>
+
+    <script>
+        // Method 2: Native HTML Color Input Demo
+        const nativePicker = document.getElementById('nativeColorPicker');
+        const nativeSwatch = document.getElementById('nativeColorSwatch');
+        const nativeHex = document.getElementById('nativeHex');
+        const nativeOklch = document.getElementById('nativeOklch');
+
+        nativePicker.addEventListener('input', (e) => {
+            const hex = e.target.value;
+            nativeHex.textContent = hex;
+            // Simple approximation - in production use Chroma.js
+            nativeSwatch.style.background = hex;
+            nativeOklch.textContent = `oklch(from ${hex} l c h)`;
+        });
+
+        // Method 3: Custom Sliders Demo
+        const lSlider = document.getElementById('lSlider');
+        const cSlider = document.getElementById('cSlider');
+        const hSlider = document.getElementById('hSlider');
+        const lValue = document.getElementById('lValue');
+        const cValue = document.getElementById('cValue');
+        const hValue = document.getElementById('hValue');
+        const customSwatch = document.getElementById('customColorSwatch');
+        const customOklch = document.getElementById('customOklch');
+        const customCss = document.getElementById('customCss');
+
+        function updateCustomColor() {
+            const l = lSlider.value;
+            const c = (cSlider.value / 100).toFixed(2);
+            const h = hSlider.value;
+
+            lValue.textContent = `${l}%`;
+            cValue.textContent = c;
+            hValue.textContent = `${h}°`;
+
+            const oklchColor = `oklch(${l}% ${c} ${h})`;
+            customSwatch.style.background = oklchColor;
+            customOklch.textContent = oklchColor;
+            customCss.textContent = oklchColor;
+        }
+
+        lSlider.addEventListener('input', updateCustomColor);
+        cSlider.addEventListener('input', updateCustomColor);
+        hSlider.addEventListener('input', updateCustomColor);
+        updateCustomColor();
+    </script>
+
+    <!-- Chroma.js CDN for Method 4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+    <script>
+        // Method 4: Chroma.js Demo
+        const chromaPicker = document.getElementById('chromaColorPicker');
+        const chromaSwatch = document.getElementById('chromaColorSwatch');
+        const chromaHex = document.getElementById('chromaHex');
+        const chromaRgb = document.getElementById('chromaRgb');
+        const chromaHsl = document.getElementById('chromaHsl');
+        const chromaOklch = document.getElementById('chromaOklch');
+
+        function updateChromaColor(hex) {
+            const color = chroma(hex);
+            const [l, c, h] = color.oklch();
+
+            chromaSwatch.style.background = hex;
+            chromaHex.textContent = color.hex();
+            chromaRgb.textContent = color.css();
+            chromaHsl.textContent = color.css('hsl');
+            chromaOklch.textContent = `oklch(${(l*100).toFixed(0)}% ${c.toFixed(2)} ${h.toFixed(0)})`;
+        }
+
+        chromaPicker.addEventListener('input', (e) => {
+            updateChromaColor(e.target.value);
+        });
+
+        function randomColor() {
+            const color = chroma.random();
+            chromaPicker.value = color.hex();
+            updateChromaColor(color.hex());
+        }
+
+        // Initialize
+        updateChromaColor('#3b82f6');
+    </script>
+</body>
+</html>

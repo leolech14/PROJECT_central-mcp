@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central-MCP | Triple Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(10, 10, 15, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(20px);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00ffea 0%, #0099ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            height: calc(100vh - 80px);
+        }
+
+        /* Interface Panel */
+        .panel {
+            background: rgba(255, 255, 255, 0.02);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .panel:last-child {
+            border-right: none;
+        }
+
+        .panel-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .panel-icon {
+            font-size: 2rem;
+        }
+
+        .panel-title h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .panel-title p {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .panel-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Human Panel */
+        .panel.human {
+            background: linear-gradient(180deg, rgba(0, 255, 234, 0.02) 0%, rgba(10, 10, 15, 0) 100%);
+        }
+
+        .panel.human .panel-icon {
+            background: linear-gradient(135deg, #00ffea 0%, #0099ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Agent Panel */
+        .panel.agent {
+            background: linear-gradient(180deg, rgba(255, 0, 234, 0.02) 0%, rgba(10, 10, 15, 0) 100%);
+        }
+
+        .panel.agent .panel-icon {
+            background: linear-gradient(135deg, #ff00ea 0%, #ff0099 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Brain Panel */
+        .panel.brain {
+            background: linear-gradient(180deg, rgba(0, 255, 150, 0.02) 0%, rgba(10, 10, 15, 0) 100%);
+        }
+
+        .panel.brain .panel-icon {
+            background: linear-gradient(135deg, #00ff96 0%, #00ff00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00ffea 0%, #0099ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Terminal */
+        .terminal {
+            background: #000000;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+        }
+
+        .terminal-line {
+            margin-bottom: 0.5rem;
+            color: #00ff00;
+        }
+
+        .terminal-prompt {
+            color: #00ffea;
+        }
+
+        /* Agent Cards */
+        .agent-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 0, 234, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-name {
+            font-weight: 600;
+        }
+
+        .agent-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: rgba(0, 255, 0, 0.1);
+            color: #00ff00;
+        }
+
+        .agent-task {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff00ea 0%, #ff0099 100%);
+            transition: width 0.3s ease;
+        }
+
+        /* Activity Feed */
+        .activity-item {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid rgba(0, 255, 150, 0.3);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .activity-time {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 0.5rem 2rem;
+            background: rgba(10, 10, 15, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>🧠 Central-MCP | Triple Interface</h1>
+        <div class="status">
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>System Operational</span>
+            </div>
+            <div class="status-indicator">
+                <span>🤖 4 Agents Active</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Human Interface -->
+        <div class="panel human">
+            <div class="panel-header">
+                <div class="panel-icon">👤</div>
+                <div class="panel-title">
+                    <h2>HUMAN</h2>
+                    <p>Dashboard & Monitoring</p>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!-- System Metrics -->
+                <div class="dashboard-card">
+                    <div class="card-title">📊 System Overview</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">Tasks</div>
+                            <div class="card-value">32</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">Completed</div>
+                            <div class="card-value" style="background: linear-gradient(135deg, #00ff96 0%, #00ff00 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">24</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="dashboard-card">
+                    <div class="card-title">⚡ Quick Actions</div>
+                    <button style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #00ffea 0%, #0099ff 100%); border: none; border-radius: 6px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">View Full Dashboard</button>
+                    <button style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 0.5rem;">VM Terminals (Ctrl+6)</button>
+                    <button style="width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; color: white; font-weight: 600; cursor: pointer;">Agent Status</button>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="dashboard-card">
+                    <div class="card-title">📝 Activity Log</div>
+                    <div class="terminal">
+                        <div class="terminal-line"><span class="terminal-prompt">></span> System initialized</div>
+                        <div class="terminal-line"><span class="terminal-prompt">></span> Agent A connected</div>
+                        <div class="terminal-line"><span class="terminal-prompt">></span> Task T025 assigned to Agent B</div>
+                        <div class="terminal-line"><span class="terminal-prompt">></span> Image generated (8.3s)</div>
+                        <div class="terminal-line"><span class="terminal-prompt">></span> Agent C completed T023</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ground AI (Agents) Interface -->
+        <div class="panel agent">
+            <div class="panel-header">
+                <div class="panel-icon">🤖</div>
+                <div class="panel-title">
+                    <h2>GROUND AI</h2>
+                    <p>Active Agents</p>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!-- Agent A -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-name">🎯 Agent A | Coordinator</span>
+                        <span class="agent-status">ACTIVE</span>
+                    </div>
+                    <div class="agent-task">Coordinating task assignments</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                </div>
+
+                <!-- Agent B -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-name">🏗️ Agent B | Architecture</span>
+                        <span class="agent-status">WORKING</span>
+                    </div>
+                    <div class="agent-task">T025: Designing API endpoints</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%;"></div>
+                    </div>
+                </div>
+
+                <!-- Agent C -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-name">⚙️ Agent C | Backend</span>
+                        <span class="agent-status">ACTIVE</span>
+                    </div>
+                    <div class="agent-task">T023: Database optimization ✅</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <!-- Agent D -->
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <span class="agent-name">🎨 Agent D | UI</span>
+                        <span class="agent-status">IDLE</span>
+                    </div>
+                    <div class="agent-task">Waiting for next task...</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Terminal Access -->
+                <div class="dashboard-card" style="margin-top: 1rem;">
+                    <div class="card-title">💻 Agent Terminals</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button style="padding: 0.5rem; background: rgba(255, 0, 234, 0.1); border: 1px solid rgba(255, 0, 234, 0.3); border-radius: 4px; color: white; font-size: 0.875rem; cursor: pointer;">Agent A</button>
+                        <button style="padding: 0.5rem; background: rgba(255, 0, 234, 0.1); border: 1px solid rgba(255, 0, 234, 0.3); border-radius: 4px; color: white; font-size: 0.875rem; cursor: pointer;">Agent B</button>
+                        <button style="padding: 0.5rem; background: rgba(255, 0, 234, 0.1); border: 1px solid rgba(255, 0, 234, 0.3); border-radius: 4px; color: white; font-size: 0.875rem; cursor: pointer;">Agent C</button>
+                        <button style="padding: 0.5rem; background: rgba(255, 0, 234, 0.1); border: 1px solid rgba(255, 0, 234, 0.3); border-radius: 4px; color: white; font-size: 0.875rem; cursor: pointer;">Agent D</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Brain (Central-MCP) Interface -->
+        <div class="panel brain">
+            <div class="panel-header">
+                <div class="panel-icon">🧠</div>
+                <div class="panel-title">
+                    <h2>CENTRAL BRAIN</h2>
+                    <p>Orchestrator Intelligence</p>
+                </div>
+            </div>
+            <div class="panel-content">
+                <!-- Loops Status -->
+                <div class="dashboard-card">
+                    <div class="card-title">🔄 Auto-Proactive Loops</div>
+                    <div style="font-size: 0.875rem; line-height: 1.8;">
+                        <div>✅ Loop 0: System Status (5s)</div>
+                        <div>✅ Loop 1: Agent Discovery (60s)</div>
+                        <div>✅ Loop 2: Project Discovery (60s)</div>
+                        <div>✅ Loop 4: Progress Monitor (30s)</div>
+                        <div>✅ Loop 5: Status Analysis (300s)</div>
+                        <div>✅ Loop 6: Opportunity Scan (900s)</div>
+                        <div>✅ Loop 7: Spec Generation (600s)</div>
+                        <div>✅ Loop 8: Task Assignment (120s)</div>
+                        <div>✅ Loop 9: Git Monitor (60s)</div>
+                    </div>
+                    <div style="margin-top: 1rem; font-weight: 600; color: #00ff96;">
+                        9/9 LOOPS ACTIVE
+                    </div>
+                </div>
+
+                <!-- Brain Activity -->
+                <div class="dashboard-card">
+                    <div class="card-title">🧠 Intelligence Activity</div>
+                    <div class="activity-item">
+                        <div class="activity-time">2 seconds ago</div>
+                        <div>Assigned T025 to Agent B (best match)</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">15 seconds ago</div>
+                        <div>Detected Agent A progress update</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">32 seconds ago</div>
+                        <div>Generated spec for new feature</div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-time">1 minute ago</div>
+                        <div>Validated Agent C completion</div>
+                    </div>
+                </div>
+
+                <!-- System Health -->
+                <div class="dashboard-card">
+                    <div class="card-title">💚 System Health</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">CPU</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #00ff96;">23%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">RAM</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #00ff96;">41%</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">Uptime</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #00ff96;">24h</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.875rem; color: rgba(255, 255, 255, 0.6); margin-bottom: 0.5rem;">Tasks/hr</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #00ff96;">12</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div>Central-MCP v2.0 | Triple Interface</div>
+        <div>Human → Ground AI → Brain | Seamless Coordination</div>
+    </div>
+
+    <script>
+        // Real-time updates simulation
+        setInterval(() => {
+            // Update progress bars
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const current = parseInt(bar.style.width);
+                if (current < 100) {
+                    bar.style.width = (current + Math.random() * 5) + '%';
+                }
+            });
+
+            // Add random activity
+            if (Math.random() > 0.7) {
+                const activities = [
+                    'Agent heartbeat received',
+                    'Task progress updated',
+                    'New specification generated',
+                    'Image generation completed',
+                    'Agent coordination synchronized'
+                ];
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+
+                const terminalLines = document.querySelectorAll('.terminal-line');
+                if (terminalLines.length > 8) {
+                    terminalLines[0].remove();
+                }
+
+                const terminal = document.querySelector('.terminal');
+                const newLine = document.createElement('div');
+                newLine.className = 'terminal-line';
+                newLine.innerHTML = `<span class="terminal-prompt">></span> ${activity}`;
+                terminal.appendChild(newLine);
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+        }, 2000);
+
+        // Button actions
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (btn.textContent.includes('Full Dashboard')) {
+                    window.open('http://localhost:3003', '_blank');
+                } else if (btn.textContent.includes('VM Terminals')) {
+                    window.open('https://terminals.central-mcp.com', '_blank');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

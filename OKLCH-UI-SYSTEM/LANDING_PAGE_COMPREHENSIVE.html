@@ -1,0 +1,709 @@
+                <!-- ========== MARKETING LANDING PAGE ========== -->
+                <div class="mockup-page" id="mockup-landing" data-group="background" style="display: none;">
+                    <div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+
+                        <!-- ========== HERO SECTION ========== -->
+                        <div style="text-align: center; padding: var(--space-7) 0; margin-bottom: var(--space-7);">
+                            <!-- Hero Badge -->
+                            <div style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 24px;">
+                                <span style="display: inline-block; width: 8px; height: 8px; background: oklch(0.65 0.18 145); border-radius: 50%;"></span>
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--text);">Now Live - Version 2.0</span>
+                            </div>
+
+                            <!-- Hero Headline (24px as specified) -->
+                            <h1 style="font-size: var(--text-2xl); font-size: 56px; font-weight: 700; color: var(--text); margin-bottom: 24px; line-height: 1.1; max-width: 900px; margin-left: auto; margin-right: auto;">
+                                Transform Your Ideas Into Reality With Professional Design Tools
+                            </h1>
+
+                            <!-- Hero Subheadline -->
+                            <p style="font-size: 20px; color: var(--text-secondary); margin-bottom: 32px; max-width: 700px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                                Build stunning, accessible interfaces with our comprehensive UI system. From rapid prototyping to production deployment, we've got you covered.
+                            </p>
+
+                            <!-- Hero CTA Buttons (PRIMARY for maximum chroma) -->
+                            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px;">
+                                <button class="btn btn-primary selectable" data-group="primary" style="font-size: 18px; padding: 16px 32px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 8px;">
+                                    <span>Get Started Free</span>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </button>
+                                <button class="btn btn-outline selectable" data-group="surface" style="font-size: 18px; padding: 16px 32px; border-radius: var(--radius-md); display: flex; align-items: center; gap: 8px;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                    </svg>
+                                    <span>Watch Demo</span>
+                                </button>
+                            </div>
+
+                            <!-- Hero Image Placeholder -->
+                            <div class="card selectable" data-group="surface" style="padding: 24px; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--surface) 0%, var(--background) 100%);">
+                                <div style="aspect-ratio: 16/9; background: linear-gradient(135deg, oklch(0.95 0.01 270) 0%, oklch(0.98 0.005 270) 100%); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; border: 1px solid var(--border);">
+                                    <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="var(--text-secondary)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" opacity="0.3">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                        <polyline points="21 15 16 10 5 21"></polyline>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Social Proof Stats -->
+                            <div style="display: flex; justify-content: center; gap: 48px; margin-top: 48px; flex-wrap: wrap;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 4px;">50K+</div>
+                                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">Active Users</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 4px;">4.9/5</div>
+                                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">User Rating</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 32px; font-weight: 700; color: var(--text); margin-bottom: 4px;">99.9%</div>
+                                    <div style="font-size: var(--text-sm); color: var(--text-secondary);">Uptime SLA</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== FEATURE GRID (3x3 with 12-column grid and 16px gutters) ========== -->
+                        <div style="margin-bottom: var(--space-7);">
+                            <div style="text-align: center; margin-bottom: 48px;">
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Features</span>
+                                <h2 style="font-size: 40px; font-weight: 700; color: var(--text); margin-top: 12px; margin-bottom: 16px;">Everything You Need to Build Better</h2>
+                                <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Powerful features designed for modern product teams and individual creators alike.</p>
+                            </div>
+
+                            <!-- 12-column grid with 16px gutters -->
+                            <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px;">
+                                <!-- Feature Card 1 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.60 0.15 270 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Lightning Performance</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Optimized for speed with lazy loading, code splitting, and advanced caching strategies.</p>
+                                </div>
+
+                                <!-- Feature Card 2 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.65 0.15 210 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Enterprise Security</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Bank-grade encryption, SSO, and compliance with SOC 2, GDPR, and HIPAA standards.</p>
+                                </div>
+
+                                <!-- Feature Card 3 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.75 0.15 85 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Accessible Design</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">WCAG 2.2 AA compliant with keyboard navigation, screen reader support, and focus management.</p>
+                                </div>
+
+                                <!-- Feature Card 4 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.65 0.18 145 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                                            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Component Library</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">200+ pre-built components with full TypeScript support and comprehensive documentation.</p>
+                                </div>
+
+                                <!-- Feature Card 5 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.60 0.18 270 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Real-Time Collaboration</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Work together seamlessly with live cursors, comments, and version history.</p>
+                                </div>
+
+                                <!-- Feature Card 6 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.65 0.15 210 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Responsive Design</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Mobile-first approach with fluid layouts and breakpoint-based customization.</p>
+                                </div>
+
+                                <!-- Feature Card 7 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.75 0.15 85 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">Theme Customization</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Full theming control with CSS variables, dark mode, and custom color palettes.</p>
+                                </div>
+
+                                <!-- Feature Card 8 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.65 0.18 145 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">24/7 Support</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">Dedicated support team available around the clock with <5min response time.</p>
+                                </div>
+
+                                <!-- Feature Card 9 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="grid-column: span 4; padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="width: 48px; height: 48px; background: oklch(0.60 0.18 270 / 0.1); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 style="font-size: 20px; font-weight: 600; color: var(--text); margin-bottom: 12px;">API Integration</h3>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">RESTful and GraphQL APIs with webhooks, rate limiting, and comprehensive docs.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== SOCIAL PROOF (CUSTOMER LOGOS) ========== -->
+                        <div style="margin-bottom: var(--space-7); padding: var(--space-7) 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+                            <div style="text-align: center; margin-bottom: 32px;">
+                                <p style="font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Trusted by Industry Leaders</p>
+                            </div>
+                            <div style="display: flex; justify-content: center; align-items: center; gap: 48px; flex-wrap: wrap; opacity: 0.6;">
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text);">ACME Corp</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text);">TechStart</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text);">Innovate Labs</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text);">Digital Future</div>
+                                <div style="font-size: 24px; font-weight: 700; color: var(--text);">Cloud Systems</div>
+                            </div>
+                        </div>
+
+                        <!-- ========== TESTIMONIALS (SURFACE GROUP) ========== -->
+                        <div style="margin-bottom: var(--space-7);">
+                            <div style="text-align: center; margin-bottom: 48px;">
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Testimonials</span>
+                                <h2 style="font-size: 40px; font-weight: 700; color: var(--text); margin-top: 12px; margin-bottom: 16px;">Loved by Thousands</h2>
+                                <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Don't just take our word for it. Here's what our customers have to say.</p>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px;">
+                                <!-- Testimonial 1 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                        <div style="flex-shrink: 0;">
+                                            <div style="width: 48px; height: 48px; background: oklch(0.60 0.15 270 / 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--primary);">SJ</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Sarah Johnson</div>
+                                            <div style="font-size: var(--text-sm); color: var(--text-secondary);">Product Designer at TechCorp</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px; margin-bottom: 12px;">
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                    </div>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">"This platform has completely transformed our design workflow. The component library is incredibly comprehensive and the documentation is top-notch."</p>
+                                </div>
+
+                                <!-- Testimonial 2 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                        <div style="flex-shrink: 0;">
+                                            <div style="width: 48px; height: 48px; background: oklch(0.65 0.15 210 / 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--secondary);">MC</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Michael Chen</div>
+                                            <div style="font-size: var(--text-sm); color: var(--text-secondary);">Engineering Lead at StartupXYZ</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px; margin-bottom: 12px;">
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                    </div>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">"The performance optimizations and accessibility features are outstanding. We shipped our product 3x faster with confidence in quality."</p>
+                                </div>
+
+                                <!-- Testimonial 3 - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="padding: 32px; border-radius: var(--radius-md);">
+                                    <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                                        <div style="flex-shrink: 0;">
+                                            <div style="width: 48px; height: 48px; background: oklch(0.75 0.15 85 / 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; color: var(--accent);">EP</div>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text); margin-bottom: 2px;">Emily Parker</div>
+                                            <div style="font-size: var(--text-sm); color: var(--text-secondary);">CEO at InnovateLabs</div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 4px; margin-bottom: 12px;">
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                        <span style="color: oklch(0.70 0.18 70);">★</span>
+                                    </div>
+                                    <p style="font-size: var(--text-base); color: var(--text-secondary); line-height: 1.6;">"Best investment we've made. The real-time collaboration features and enterprise security give us peace of mind at scale."</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== PRICING TABLES (SURFACE + PRIMARY for recommended) ========== -->
+                        <div style="margin-bottom: var(--space-7);">
+                            <div style="text-align: center; margin-bottom: 48px;">
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Pricing</span>
+                                <h2 style="font-size: 40px; font-weight: 700; color: var(--text); margin-top: 12px; margin-bottom: 16px;">Simple, Transparent Pricing</h2>
+                                <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Choose the plan that fits your needs. All plans include 14-day free trial.</p>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 1000px; margin: 0 auto;">
+                                <!-- Free Plan - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="padding: 32px; border-radius: var(--radius-md); display: flex; flex-direction: column;">
+                                    <div style="margin-bottom: 24px;">
+                                        <div style="font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Free</div>
+                                        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-size: 48px; font-weight: 700; color: var(--text);">$0</span>
+                                            <span style="font-size: var(--text-base); color: var(--text-secondary);">/month</span>
+                                        </div>
+                                        <p style="font-size: var(--text-sm); color: var(--text-secondary);">Perfect for trying out</p>
+                                    </div>
+
+                                    <div style="flex: 1; margin-bottom: 24px;">
+                                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Up to 3 projects</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Basic components</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Community support</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">1 team member</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-outline selectable" data-group="surface" style="width: 100%; padding: 12px; border-radius: var(--radius-sm);">Get Started</button>
+                                </div>
+
+                                <!-- Pro Plan (Recommended) - PRIMARY GROUP for emphasis -->
+                                <div class="card selectable" data-group="primary" style="padding: 32px; border-radius: var(--radius-md); display: flex; flex-direction: column; border: 2px solid var(--primary); position: relative; box-shadow: 0 8px 24px oklch(0.60 0.18 270 / 0.15);">
+                                    <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 4px 16px; border-radius: var(--radius-sm); font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Recommended</div>
+
+                                    <div style="margin-bottom: 24px;">
+                                        <div style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Pro</div>
+                                        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-size: 48px; font-weight: 700; color: var(--text);">$49</span>
+                                            <span style="font-size: var(--text-base); color: var(--text-secondary);">/month</span>
+                                        </div>
+                                        <p style="font-size: var(--text-sm); color: var(--text-secondary);">For professional teams</p>
+                                    </div>
+
+                                    <div style="flex: 1; margin-bottom: 24px;">
+                                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Unlimited projects</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">All components</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Priority support</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Up to 10 team members</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Advanced analytics</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Version history</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-primary selectable" data-group="primary" style="width: 100%; padding: 12px; border-radius: var(--radius-sm);">Start Free Trial</button>
+                                </div>
+
+                                <!-- Enterprise Plan - SURFACE GROUP -->
+                                <div class="card selectable" data-group="surface" style="padding: 32px; border-radius: var(--radius-md); display: flex; flex-direction: column;">
+                                    <div style="margin-bottom: 24px;">
+                                        <div style="font-size: var(--text-sm); font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Enterprise</div>
+                                        <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;">
+                                            <span style="font-size: 48px; font-weight: 700; color: var(--text);">Custom</span>
+                                        </div>
+                                        <p style="font-size: var(--text-sm); color: var(--text-secondary);">For large organizations</p>
+                                    </div>
+
+                                    <div style="flex: 1; margin-bottom: 24px;">
+                                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Everything in Pro</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Unlimited team members</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Dedicated account manager</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">SSO & advanced security</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">Custom integrations</span>
+                                            </div>
+                                            <div style="display: flex; gap: 8px;">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                                </svg>
+                                                <span style="font-size: var(--text-sm); color: var(--text);">99.9% SLA guarantee</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button class="btn btn-outline selectable" data-group="surface" style="width: 100%; padding: 12px; border-radius: var(--radius-sm);">Contact Sales</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ========== FAQ ACCORDION (SURFACE GROUP with 8px border radius) ========== -->
+                        <div style="margin-bottom: var(--space-7);">
+                            <div style="text-align: center; margin-bottom: 48px;">
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">FAQ</span>
+                                <h2 style="font-size: 40px; font-weight: 700; color: var(--text); margin-top: 12px; margin-bottom: 16px;">Frequently Asked Questions</h2>
+                                <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Everything you need to know about our platform.</p>
+                            </div>
+
+                            <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;">
+                                <!-- FAQ Item 1 - SURFACE GROUP, --radius-md (8px) -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>How does the 14-day free trial work?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Start using our Pro plan immediately with full access to all features. No credit card required. After 14 days, you can choose to upgrade or continue with our Free plan.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 2 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>Can I change plans at any time?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate your billing accordingly.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 3 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>What payment methods do you accept?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        We accept all major credit cards (Visa, Mastercard, American Express), PayPal, and for Enterprise plans, we can arrange invoicing and wire transfers.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 4 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>Is my data secure?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Absolutely. We use bank-grade encryption (AES-256), SOC 2 Type II compliance, and regular security audits. Your data is backed up daily and stored in multiple geographic locations.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 5 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>Do you offer discounts for nonprofits or education?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Yes! We offer 50% discounts for verified nonprofits and educational institutions. Contact our sales team with your nonprofit or .edu email for details.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 6 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>What happens if I exceed my plan limits?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        We'll notify you via email when you're approaching your limits. You can upgrade at any time, and we'll never disable your account without warning.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 7 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>Can I export my data?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Yes! You can export all your data at any time in standard formats (JSON, CSV, HTML). We believe in data portability and never lock you in.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 8 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>What's your refund policy?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        We offer a 30-day money-back guarantee. If you're not satisfied for any reason within the first 30 days, we'll provide a full refund, no questions asked.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 9 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>Do you provide training and onboarding?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        Pro and Enterprise plans include comprehensive onboarding. We offer video tutorials, documentation, live webinars, and for Enterprise customers, dedicated training sessions with your team.
+                                    </div>
+                                </details>
+
+                                <!-- FAQ Item 10 -->
+                                <details class="card selectable" data-group="surface" style="padding: 0; border-radius: var(--radius-md); overflow: hidden;">
+                                    <summary style="padding: 24px; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: var(--text);">
+                                        <span>How do I contact support?</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+                                    </summary>
+                                    <div style="padding: 0 24px 24px; color: var(--text-secondary); line-height: 1.6;">
+                                        You can reach us via live chat (in-app), email (support@example.com), or phone for Pro/Enterprise customers. Our team is available 24/7 with average response time under 5 minutes.
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <!-- ========== CONTACT FORM (SURFACE GROUP) ========== -->
+                        <div style="margin-bottom: var(--space-7);">
+                            <div style="text-align: center; margin-bottom: 48px;">
+                                <span style="font-size: var(--text-sm); font-weight: 600; color: var(--primary); text-transform: uppercase; letter-spacing: 1px;">Contact</span>
+                                <h2 style="font-size: 40px; font-weight: 700; color: var(--text); margin-top: 12px; margin-bottom: 16px;">Get in Touch</h2>
+                                <p style="font-size: 18px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">Have questions? We'd love to hear from you. Send us a message and we'll respond within 24 hours.</p>
+                            </div>
+
+                            <div class="card selectable" data-group="surface" style="max-width: 600px; margin: 0 auto; padding: 40px; border-radius: var(--radius-md);">
+                                <form style="display: flex; flex-direction: column; gap: 24px;">
+                                    <!-- Name Input - SURFACE GROUP -->
+                                    <div>
+                                        <label for="contact-name" style="display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text); margin-bottom: 8px;">Name *</label>
+                                        <input type="text" id="contact-name" required class="selectable" data-group="surface" style="width: 100%; padding: 12px 16px; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: var(--text-base); color: var(--text); transition: border-color 200ms;" placeholder="John Doe">
+                                    </div>
+
+                                    <!-- Email Input - SURFACE GROUP -->
+                                    <div>
+                                        <label for="contact-email" style="display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text); margin-bottom: 8px;">Email *</label>
+                                        <input type="email" id="contact-email" required class="selectable" data-group="surface" style="width: 100%; padding: 12px 16px; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: var(--text-base); color: var(--text); transition: border-color 200ms;" placeholder="john@example.com">
+                                    </div>
+
+                                    <!-- Subject Input - SURFACE GROUP -->
+                                    <div>
+                                        <label for="contact-subject" style="display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text); margin-bottom: 8px;">Subject</label>
+                                        <input type="text" id="contact-subject" class="selectable" data-group="surface" style="width: 100%; padding: 12px 16px; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: var(--text-base); color: var(--text); transition: border-color 200ms;" placeholder="How can we help?">
+                                    </div>
+
+                                    <!-- Message Textarea - SURFACE GROUP -->
+                                    <div>
+                                        <label for="contact-message" style="display: block; font-size: var(--text-sm); font-weight: 600; color: var(--text); margin-bottom: 8px;">Message *</label>
+                                        <textarea id="contact-message" required rows="6" class="selectable" data-group="surface" style="width: 100%; padding: 12px 16px; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: var(--text-base); color: var(--text); transition: border-color 200ms; resize: vertical; font-family: inherit;" placeholder="Tell us more about your needs..."></textarea>
+                                    </div>
+
+                                    <!-- Submit Button - PRIMARY GROUP -->
+                                    <button type="submit" class="btn btn-primary selectable" data-group="primary" style="padding: 14px 32px; border-radius: var(--radius-sm); font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                        <span>Send Message</span>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                        </svg>
+                                    </button>
+
+                                    <p style="font-size: var(--text-xs); color: var(--text-secondary); text-align: center; margin: 0;">
+                                        By submitting this form, you agree to our Privacy Policy and Terms of Service.
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- ========== FOOTER (BACKGROUND GROUP with darker shade) ========== -->
+                        <footer data-group="background" style="border-top: 1px solid var(--border); padding-top: var(--space-7); margin-top: var(--space-7);">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 48px; margin-bottom: 48px;">
+                                <!-- Company Column -->
+                                <div>
+                                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px;">Company</h3>
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">About Us</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Careers</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Press</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Blog</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Product Column -->
+                                <div>
+                                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px;">Product</h3>
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Features</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Pricing</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Security</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Roadmap</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Resources Column -->
+                                <div>
+                                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px;">Resources</h3>
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Documentation</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">API Reference</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Community</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Support</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Legal Column -->
+                                <div>
+                                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 16px;">Legal</h3>
+                                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Privacy Policy</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Terms of Service</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">Cookie Policy</a></li>
+                                        <li><a href="#" style="font-size: var(--text-base); color: var(--text-secondary); text-decoration: none; transition: color 200ms;">GDPR</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Footer Bottom -->
+                            <div style="border-top: 1px solid var(--border); padding-top: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px;">
+                                <div style="font-size: var(--text-sm); color: var(--text-secondary);">
+                                    © 2025 YourCompany. All rights reserved.
+                                </div>
+
+                                <!-- Social Media Links -->
+                                <div style="display: flex; gap: 16px; align-items: center;">
+                                    <a href="#" aria-label="Twitter" style="color: var(--text-secondary); transition: color 200ms;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+                                        </svg>
+                                    </a>
+                                    <a href="#" aria-label="GitHub" style="color: var(--text-secondary); transition: color 200ms;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="#" aria-label="LinkedIn" style="color: var(--text-secondary); transition: color 200ms;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                        </svg>
+                                    </a>
+                                    <a href="#" aria-label="YouTube" style="color: var(--text-secondary); transition: color 200ms;">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>

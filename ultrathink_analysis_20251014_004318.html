@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>999X-RAY Analysis Report - PROJECT_central-mcp</title>
+<style>
+
+  :root{
+    /* Light Theme Colors */
+    --bg: oklch(98% 0.003 264);
+    --surface: oklch(95% 0.006 264);
+    --surface-2: oklch(92% 0.008 264);
+    --text: oklch(15% 0.015 264);
+    --muted: oklch(45% 0.01 264);
+    --border: oklch(78% 0.012 264);
+    --accent: oklch(55% 0.16 240);
+    --text-primary: oklch(15% 0.015 264);
+    --text-secondary: oklch(45% 0.01 264);
+    --text-on-surface: oklch(15% 0.015 264);
+    --text-on-surface-2: oklch(15% 0.015 264);
+    --text-on-accent: oklch(1 0 0);
+    --text-interactive: oklch(25% 0.015 264);
+    --text-interactive-hover: oklch(5% 0.02 264);
+
+    /* Semantic Colors */
+    --success: oklch(65% 0.15 166);
+    --warning: oklch(75% 0.12 75);
+    --danger: oklch(65% 0.18 25);
+
+    /* Priority Colors */
+    --p0: oklch(65% 0.18 25);
+    --p1: oklch(75% 0.12 75);
+    --p2: oklch(70% 0.15 255);
+
+    /* Temperature Scale */
+    --temp-cold: oklch(48% 0.19 265);
+    --temp-cool: oklch(73% 0.23 255);
+    --temp-neutral: oklch(83% 0.15 166);
+    --temp-warm: oklch(82% 0.17 75);
+    --temp-hot: oklch(72% 0.26 25);
+
+    /* Typography & Spacing */
+    --radius: 12px;
+    --ui: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --h1: clamp(24px,3vw,32px);
+    --h2: clamp(20px,2.5vw,26px);
+    --h3: 18px;
+    --body: 14px;
+    --small: 13px;
+    --card-padding: 20px;
+    --card-gap: 24px;
+    --grid-gap: 16px;
+    --max-width: 1200px;
+
+    /* Animations */
+    --fade-in: opacity 0.3s ease-in-out;
+    --slide-up: transform 0.3s ease-out;
+    --pulse: transform 0.2s ease-in-out;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 oklch(0% 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px oklch(0% 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px oklch(0% 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px oklch(0% 0 0 / 0.1);
+    --shadow-none: none;
+    --shadow-inner: inset 0 2px 4px 0 oklch(0% 0 0 / 0.05);
+  }
+
+  /* Dark Theme */
+  @media (prefers-color-scheme: dark) {
+    :root{
+      --bg: oklch(11% 0.006 264);
+      --surface: oklch(15% 0.008 264);
+      --surface-2: oklch(20% 0.01 264);
+      --text: oklch(95% 0.008 264);
+      --muted: oklch(60% 0.012 264);
+      --border: oklch(26% 0.011 264);
+      --accent: oklch(65% 0.16 240);
+      --text-primary: oklch(95% 0.008 264);
+      --text-secondary: oklch(65% 0.012 264);
+      --text-on-surface: oklch(95% 0.008 264);
+      --text-on-surface-2: oklch(95% 0.008 264);
+      --text-on-accent: oklch(1 0 0);
+      --text-interactive: oklch(75% 0.012 264);
+      --text-interactive-hover: oklch(1 0 0);
+    }
+  }
+
+  /* Base Styles */
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--ui);font-size:var(--body);line-height:1.6;color:var(--text);background:var(--bg);min-height:100vh}
+
+  /* Container */
+  .container{max-width:var(--max-width);margin:0 auto;padding:20px}
+
+  /* Header */
+  .header{text-align:center;padding:40px 0;border-bottom:1px solid var(--border);margin-bottom:var(--card-gap)}
+  .title{font-size:var(--h1);font-weight:700;color:var(--text-primary);margin-bottom:8px}
+  .subtitle{font-size:var(--h2);color:var(--text-secondary);margin-bottom:16px}
+  .meta{font-size:var(--small);color:var(--muted)}
+
+  /* Cards */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:var(--card-padding);margin-bottom:var(--card-gap);box-shadow:var(--shadow-sm);transition:var(--fade-in)}
+  .card:hover{box-shadow:var(--shadow-md)}
+  .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .card-title{font-size:var(--h3);font-weight:600;color:var(--text-primary)}
+  .card-subtitle{font-size:var(--small);color:var(--text-secondary)}
+
+  /* Metrics Grid */
+  .metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--grid-gap);margin-bottom:var(--card-gap)}
+  .metric{text-align:center;padding:16px;background:var(--surface-2);border-radius:var(--radius);border:1px solid var(--border)}
+  .metric-value{font-size:var(--h2);font-weight:700;color:var(--text-primary);margin-bottom:4px}
+  .metric-label{font-size:var(--small);color:var(--text-secondary)}
+
+  /* Tables */
+  .table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--border);border-radius:8px;background:var(--surface);overflow:hidden}
+  .table th{background:var(--surface-2);padding:12px;text-align:left;font-weight:600;color:var(--text-primary);border-bottom:1px solid var(--border)}
+  .table td{padding:12px;border-bottom:1px solid var(--border)}
+  .table tr:last-child td{border-bottom:none}
+  .table tr:hover{background:var(--bg)}
+
+  /* Pills & Badges */
+  .pill{display:inline-block;padding:4px 8px;border-radius:999px;background:var(--surface-2);font-size:12px;color:var(--text);font-weight:500;border:1px solid var(--border)}
+  .priority-p0{background:var(--p0);color:white}
+  .priority-p1{background:var(--p1);color:white}
+  .priority-p2{background:var(--p2);color:white}
+
+  /* Temperature colors */
+  .temp-cold{color:var(--temp-cold)}
+  .temp-cool{color:var(--temp-cool)}
+  .temp-neutral{color:var(--temp-neutral)}
+  .temp-warm{color:var(--temp-warm)}
+  .temp-hot{color:var(--temp-hot)}
+
+  /* Utility classes */
+  .text-center{text-align:center}
+  .text-right{text-align:right}
+  .font-mono{font-family:var(--mono)}
+  .text-muted{color:var(--muted)}
+  .text-success{color:var(--success)}
+  .text-warning{color:var(--warning)}
+  .text-danger{color:var(--danger)}
+  .mb-0{margin-bottom:0}
+  .mb-1{margin-bottom:8px}
+  .mb-2{margin-bottom:16px}
+  .mb-3{margin-bottom:24px}
+
+  /* Development Tracking Components */
+  .code-block{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto}
+  .code-block pre{font-family:var(--mono);font-size:13px;line-height:1.4;margin:0;white-space:pre;overflow-x:auto}
+
+  /* Heat Map Calendar Styles */
+  .calendar-container{background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:24px}
+  .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+  .calendar-title{font-size:18px;font-weight:600;color:var(--text-primary)}
+  .calendar-stats{display:flex;gap:16px}
+  .calendar-stat{text-align:center}
+  .calendar-stat-value{font-size:24px;font-weight:700;color:var(--accent)}
+  .calendar-stat-label{font-size:12px;color:var(--text-secondary)}
+  .calendar-grid{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;margin-bottom:20px}
+  .calendar-month-labels{display:grid;grid-template-columns:repeat(53,1fr);gap:2px;margin-bottom:8px;font-size:10px;color:var(--text-secondary)}
+  .calendar-day{aspect-ratio:1;border-radius:2px;cursor:pointer;transition:var(--fade-in)}
+  .calendar-day:hover{transform:var(--pulse);box-shadow:var(--shadow-md)}
+  .calendar-legend{display:flex;justify-content:center;align-items:center;gap:8px;font-size:12px;color:var(--text-secondary)}
+  .legend-item{display:flex;align-items:center;gap:4px}
+  .legend-color{width:12px;height:12px;border-radius:2px}
+
+  /* Heat Map Intensity Levels */
+  .intensity-0{background:var(--bg)}
+  .intensity-1{background:oklch(95% 0.006 264)}
+  .intensity-2{background:oklch(85% 0.012 264)}
+  .intensity-3{background:oklch(75% 0.018 264)}
+  .intensity-4{background:oklch(65% 0.024 240)}
+  .intensity-5{background:oklch(55% 0.16 240)}
+
+  /* Timeline Styles */
+  .timeline{position:relative;padding-left:20px}
+  .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border)}
+  .timeline-item{position:relative;margin-bottom:24px}
+  .timeline-marker{position:absolute;left:-16px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:2px solid var(--surface)}
+  .timeline-content{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px}
+  .timeline-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .timeline-meta{font-size:var(--small);color:var(--text-secondary)}
+  .timeline-files{font-family:var(--mono);font-size:13px;color:var(--text-secondary)}
+
+  /* Clusters Grid */
+  .clusters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:var(--grid-gap)}
+  .cluster-card{background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:16px}
+  .cluster-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .cluster-title{font-weight:600;color:var(--text-primary)}
+  .cluster-count{font-size:var(--small);color:var(--text-secondary);background:var(--surface);padding:4px 8px;border-radius:4px}
+  .cluster-files{font-family:var(--mono);font-size:13px;color:var(--text-secondary)}
+
+  /* Purpose Grid */
+  .purpose-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:var(--grid-gap)}
+  .purpose-category{border-radius:8px;padding:16px;color:white}
+  .purpose-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .purpose-title{font-weight:600;font-size:16px}
+  .purpose-count{font-size:var(--small);opacity:0.9;background:rgba(0,0,0,0.2);padding:4px 8px;border-radius:4px}
+  .purpose-files{font-family:var(--mono);font-size:13px;opacity:0.9}
+
+  /* Responsive */
+  @media (max-width:768px){
+    .container{padding:16px}
+    .metrics-grid{grid-template-columns:1fr}
+    .table{font-size:13px}
+    .table th,.table td{padding:8px}
+    .card{padding:16px}
+    .clusters-grid{grid-template-columns:1fr}
+    .purpose-grid{grid-template-columns:1fr}
+    .timeline{padding-left:16px}
+    .timeline-header{flex-direction:column;align-items:flex-start}
+    .calendar-container{padding:16px}
+    .calendar-header{flex-direction:column;gap:12px}
+    .calendar-stats{justify-content:center}
+    .calendar-grid{grid-template-columns:repeat(53,1fr);gap:1px}
+    .calendar-month-labels{font-size:8px}
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <header class="header">
+      <h1 class="title">🔍 999X-RAY Development Analysis Report</h1>
+      <div class="subtitle">PROJECT_central-mcp</div>
+      <div class="meta">
+        Generated: 2025-10-14 03:43:21 |
+        Path: /Users/lech/PROJECTS_all/PROJECT_central-mcp |
+        Model: llama3.1:8b
+      </div>
+    </header>
+
+    <!-- Overview Dashboard -->
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-value">999</div>
+        <div class="metric-label">Files Analyzed</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">34.1MB</div>
+        <div class="metric-label">Total Size</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">111</div>
+        <div class="metric-label">Subdirectories</div>
+      </div>
+      <div class="metric">
+        <div class="metric-value">0</div>
+        <div class="metric-label">Work Sessions</div>
+      </div>
+    </div>
+
+    <!-- Work Sessions Heat Map Calendar -->
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <div class="calendar-title">📅 Work Sessions Heat Map</div>
+        <div class="calendar-stats">
+          <div class="calendar-stat">
+            <div class="calendar-stat-value">0</div>
+            <div class="calendar-stat-label">Total Sessions</div>
+          </div>
+          <div class="calendar-stat">
+            <div class="calendar-stat-value">0</div>
+            <div class="calendar-stat-label">Active Days</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-month-labels">
+        <div style="grid-column: span 4;">Jan</div>
+        <div style="grid-column: span 4;">Feb</div>
+        <div style="grid-column: span 5;">Mar</div>
+        <div style="grid-column: span 4;">Apr</div>
+        <div style="grid-column: span 4;">May</div>
+        <div style="grid-column: span 4;">Jun</div>
+        <div style="grid-column: span 5;">Jul</div>
+        <div style="grid-column: span 4;">Aug</div>
+        <div style="grid-column: span 4;">Sep</div>
+        <div style="grid-column: span 4;">Oct</div>
+        <div style="grid-column: span 5;">Nov</div>
+        <div style="grid-column: span 4;">Dec</div>
+      </div>
+
+      <div class="calendar-grid" id="calendar-grid">
+        <!-- Calendar days will be populated by JavaScript -->
+      </div>
+
+      <div class="calendar-legend">
+        <div class="legend-item">
+          <div class="legend-color intensity-0"></div>
+          <span>No activity</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color intensity-1"></div>
+          <span>Low</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color intensity-2"></div>
+          <span>Medium</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color intensity-3"></div>
+          <span>High</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color intensity-4"></div>
+          <span>Very High</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color intensity-5"></div>
+          <span>Peak</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Directory Tree Structure -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🌳 Directory Tree Structure</div>
+          <div class="card-subtitle">Complete hierarchical view of analyzed directory</div>
+        </div>
+      </div>
+      <div class="code-block">
+        <pre>📁 PROJECT_central-mcp/
+├── 📁 PROJECT_central-mcp/
+    ├── 📝 CENTRAL_MCP_INTEGRATION_ANALYSIS.md
+    ├── 📝 CENTRAL_MCP_WHITE_PAPER_2025.md
+    ├── 📝 CLAUDE.md
+    ├── 📝 CONTENT_QUALITY_AUDIT_REPORT.md
+    ├── 📝 CURRENT_WHEREABOUTS_SYSTEM_ANALYSIS.md
+    ├── 📝 DEPLOYMENT_READINESS_ASSESSMENT.md
+    ├── 📝 GEMINI-THREAD-FOR-CORE-MIND-IDEA.md
+    ├── 📝 PROPERTY_SEARCH_INTEGRATION.md
+    ├── 📝 REGISTRY_COMPLETION_REPORT_2025-10-13.md
+    ├── 📝 TECHNICAL_DEBT_ANALYSIS.md
+    ├── 📝 ULTRATHINK_999X_RAY_DAILY_CONSOLIDATION_2025-10-13.md
+    ├── 📝 ULTRATHINK_FRONTEND_REVOLUTION_REQUIREMENTS.md
+    ├── 📝 ULTRATHINK_REGISTRY_AUDIT_2025-10-13.md
+    ├── 📝 ULTRATHINK_VECTOR_UI_ANALYSIS.md
+    ├── 📝 auto-science-paper-generator.md
+    ├── 📋 connections_registry.json
+    ├── 🌐 domain-intelligence-fully-capable.html
+    ├── 🌐 domain-risk-value-enhanced.html
+    ├── 🌐 domain-risk-value-simple.html
+    ├── 🌐 domain-risk-value-with-charts.html
+    ├── 🌐 domain-search-effectiveness-guide.html
+    ├── 📄 file_analysis_cache.db
+    ├── 📝 gemini-context.md
+    ├── 🐍 mr-fix-my-project-please.py
+    ├── 📋 tools_registry.json
+    ├── 📁 central-mcp/
+        ├── 📝 2025-10-13_PHYISOLOGY_VALIDATION_CORRECTIVE_LETTER.md
+        ├── 📝 CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md
+        ├── 📝 CENTRAL_MCP_ENVIRONMENT_PRINCIPLES.md
+        ├── 📝 CENTRAL_MCP_HEALTH_ASSESSMENT_2025-10-13.md
+        ├── 📝 CENTRAL_MCP_MULTI_REGISTRY_ARCHITECTURE.md
+        ├── 📝 CENTRAL_MCP_PHYSIOLOGY_SYSTEM.md
+        ├── 📝 KNOWLEDGE_SPACE_DEPLOYMENT_COMPLETE.md
+        ├── 📝 KNOWLEDGE_SPACE_README_PARSING_SYSTEM.md
+        ├── 📝 MULTI_REGISTRY_SYSTEM_COMPLETE.md
+        ├── 📝 OPENAI_LLM_ACTIVATION_COMPLETE.md
+        ├── 📝 PHYSIOLOGY_SYSTEM_COMPLETE.md
+        ├── 📝 README_ENHANCED_DETECTION.md
+        ├── ⚛️ SELF-AUDIT-ISSUE.TSX
+        ├── 📄 deploy-implementation-gap-registry-fixed.cjs
+        ├── 📄 deploy-implementation-gap-registry.cjs
+        ├── 📄 deploy-vision-registry.cjs
+        ├── 📋 mcp.json
+        ├── 📋 package-lock.json
+        ├── 📋 package.json
+        ├── 📄 package.json.backup
+        ├── 📄 photon-lite.cjs
+        ├── 📄 test-file-preview.cjs
+        ├── 📄 test-file-types.cjs
+        ├── 📄 test_complete_integration.cjs
+        ├── 📄 test_validation_engine.cjs
+    ├── 📁 central-mcp-dashboard/
+        ├── 📋 package.json
+    ├── 📁 components/
+        ├── ⚛️ DomainRiskValueAppEnhanced.tsx
+    ├── 📁 docs/
+        ├── 📝 DEPLOYMENT_SUMMARY_2025-10-13.md
+        ├── 📝 ENHANCED_DETECTION_VALIDATION_REPORT_2025-10-13.md
+        ├── 📝 ENHANCED_MODEL_DETECTION_SYSTEM.md
+        ├── 📝 MODEL_DETECTION_TROUBLESHOOTING.md
+        ├── 📝 OPEN_TASKS_COMPLETION_REPORT_2025-10-13.md
+    ├── 📁 scripts/
+        ├── 📜 deploy-enhanced-detection.sh
+        ├── 🟨 run-enhanced-detection-tests.js
+        ├── 🟨 validate-enhanced-detection.js
+        ├── 📁 PROJECTS_REGISTRY/
+            ├── 📝 CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md
+            ├── 📝 README.md
+            ├── 📝 REGISTRY_INDEX.md
+        ├── 📁 coverage/
+            ├── 📋 coverage-summary.json
+        ├── 📁 data/
+            ├── 📄 registry.db
+            ├── 📄 registry.db-shm
+            ├── 📄 registry.db-wal
+            ├── 📄 registry.db.backup.20251013_164823
+            ├── 📄 registry.db.backup.20251013_164852
+        ├── 📁 dist/
+            ├── 🔷 index.d.ts
+            ├── 📄 index.d.ts.map
+            ├── 🟨 index.js
+            ├── 📄 index.js.map
+            ├── 🔷 multi-registry-tools.d.ts
+            ├── 📄 multi-registry-tools.d.ts.map
+            ├── 🟨 multi-registry-tools.js
+            ├── 📄 multi-registry-tools.js.map
+            ├── 🔷 physiology-validation-engine.d.ts
+            ├── 📄 physiology-validation-engine.d.ts.map
+            ├── 🟨 physiology-validation-engine.js
+            ├── 📄 physiology-validation-engine.js.map
+            ├── 🔷 standalone-a2a-vm-server.d.ts
+            ├── 📄 standalone-a2a-vm-server.d.ts.map
+            ├── 🟨 standalone-a2a-vm-server.js
+            ├── 📄 standalone-a2a-vm-server.js.map
+        ├── 📁 docs/
+            ├── 📝 0000_DAY13_02-45_CRITICAL_IMPLEMENTATION_AUDIT_ULTRATHINK.md
+            ├── 📝 DATABASE_IMPROVEMENTS_INTEGRATION_GUIDE.md
+            ├── 📝 KNOWLEDGE_SPACE_API_DOCUMENTATION.md
+        ├── 📁 public/
+            ├── 🌐 central-mcp-dashboard.html
+            ├── 🌐 knowledge-space.html
+            ├── 🌐 ui-configpro-dashboard.html
+        ├── 📁 scripts/
+            ├── 🗃️ create_physiology_validation_system.sql
+            ├── 🗃️ create_trust_system.sql
+            ├── 🗃️ create_vision_registry.sql
+            ├── 📜 deploy-database-improvements.sh
+            ├── 🗃️ deploy_confidence_systems.sql
+            ├── 📜 deploy_multi_registry_system.sh
+            ├── 📜 deploy_physiology_system.sh
+            ├── 🗃️ enhance_tasks_registry_with_completion_standards.sql
+            ├── 🗃️ fix_trust_system.sql
+        ├── 📁 src/
+            ├── 📄 agent-trust-engine.cjs
+            ├── 📄 implementegrating-final-system.cjs
+            ├── 🔷 index.ts
+            ├── 📄 loop10-agent-trust-assessment.cjs
+            ├── 🔷 multi-registry-tools.ts
+            ├── 🔷 physiology-validation-engine.ts
+            ├── 📄 trust-enhanced-validation-engine.cjs
+            ├── 📄 ultrathink-performance-intelligence.cjs
+            ├── 📄 working-validation-engine.cjs
+            ├── 🟨 working-validation-engine.js
+            ├── 📁 SPECIALIZED_KNOWLEDGE_PACKS/
+                ├── 📝 README.md
+            ├── 📁 a2a/
+                ├── 🔷 A2AServer.d.ts
+                ├── 📄 A2AServer.d.ts.map
+                ├── 🟨 A2AServer.js
+                ├── 📄 A2AServer.js.map
+                ├── 🔷 AgentRegistry.d.ts
+                ├── 📄 AgentRegistry.d.ts.map
+                ├── 🟨 AgentRegistry.js
+                ├── 📄 AgentRegistry.js.map
+                ├── 🔷 MCPBridge.d.ts
+                ├── 📄 MCPBridge.d.ts.map
+                ├── 🟨 MCPBridge.js
+                ├── 📄 MCPBridge.js.map
+                ├── 🔷 MessageRouter.d.ts
+                ├── 📄 MessageRouter.d.ts.map
+                ├── 🟨 MessageRouter.js
+                ├── 📄 MessageRouter.js.map
+                ├── 🔷 WebSocketTransport.d.ts
+                ├── 📄 WebSocketTransport.d.ts.map
+                ├── 🟨 WebSocketTransport.js
+                ├── 📄 WebSocketTransport.js.map
+                ├── 🔷 index.d.ts
+                ├── 📄 index.d.ts.map
+                ├── 🟨 index.js
+                ├── 📄 index.js.map
+                ├── 🔷 types.d.ts
+                ├── 📄 types.d.ts.map
+                ├── 🟨 types.js
+                ├── 📄 types.js.map
+            ├── 📁 ai/
+                ├── 🔷 LLMOrchestrator.d.ts
+                ├── 📄 LLMOrchestrator.d.ts.map
+                ├── 🟨 LLMOrchestrator.js
+                ├── 📄 LLMOrchestrator.js.map
+                ├── 🔷 ModelRegistry.d.ts
+                ├── 📄 ModelRegistry.d.ts.map
+                ├── 🟨 ModelRegistry.js
+                ├── 📄 ModelRegistry.js.map
+            ├── 📁 ai-brain/
+                ├── 🔷 Llama24HBrainService.d.ts
+                ├── 📄 Llama24HBrainService.d.ts.map
+                ├── 🟨 Llama24HBrainService.js
+                ├── 📄 Llama24HBrainService.js.map
+            ├── 📁 api/
+                ├── 🟨 MonitoringAPI.js
+                ├── 📄 MonitoringAPI.js.map
+                ├── 🔷 agent-reality-api.d.ts
+                ├── 📄 agent-reality-api.d.ts.map
+                ├── 🟨 agent-reality-api.js
+                ├── 📄 agent-reality-api.js.map
+                ├── 🔷 atomic-systems.d.ts
+                ├── 📄 atomic-systems.d.ts.map
+                ├── 🟨 atomic-systems.js
+                ├── 📄 atomic-systems.js.map
+                ├── 🔷 model-detection-api.d.ts
+                ├── 📄 model-detection-api.d.ts.map
+                ├── 🟨 model-detection-api.js
+                ├── 📄 model-detection-api.js.map
+                ├── 🔷 runpod.d.ts
+                ├── 📄 runpod.d.ts.map
+                ├── 🟨 runpod.js
+                ├── 📄 runpod.js.map
+                ├── 🔷 universal-write.d.ts
+                ├── 📄 universal-write.d.ts.map
+                ├── 🟨 universal-write.js
+                ├── 📄 universal-write.js.map
+            ├── 📁 auth/
+                ├── 🔷 ApiKeyManager.d.ts
+                ├── 📄 ApiKeyManager.d.ts.map
+                ├── 🟨 ApiKeyManager.js
+                ├── 📄 ApiKeyManager.js.map
+                ├── 🔷 Authentication.d.ts
+                ├── 📄 Authentication.d.ts.map
+                ├── 🟨 Authentication.js
+                ├── 📄 Authentication.js.map
+                ├── 🔷 PermissionChecker.d.ts
+                ├── 📄 PermissionChecker.d.ts.map
+                ├── 🟨 PermissionChecker.js
+                ├── 📄 PermissionChecker.js.map
+                ├── 🔷 SessionManager.d.ts
+                ├── 📄 SessionManager.d.ts.map
+                ├── 🟨 SessionManager.js
+                ├── 📄 SessionManager.js.map
+                ├── 🔷 TokenManager.d.ts
+                ├── 📄 TokenManager.d.ts.map
+                ├── 🟨 TokenManager.js
+                ├── 📄 TokenManager.js.map
+            ├── 📁 auto-proactive/
+                ├── 🔷 ActiveConfigurationDetector.d.ts
+                ├── 📄 ActiveConfigurationDetector.d.ts.map
+                ├── 🟨 ActiveConfigurationDetector.js
+                ├── 📄 ActiveConfigurationDetector.js.map
+                ├── 🔷 AgentAutoDiscoveryLoop.d.ts
+                ├── 📄 AgentAutoDiscoveryLoop.d.ts.map
+                ├── 🟨 AgentAutoDiscoveryLoop.js
+                ├── 📄 AgentAutoDiscoveryLoop.js.map
+                ├── 🔷 AgentRealityVerificationSystem.d.ts
+                ├── 📄 AgentRealityVerificationSystem.d.ts.map
+                ├── 🟨 AgentRealityVerificationSystem.js
+                ├── 📄 AgentRealityVerificationSystem.js.map
+                ├── 🔷 AutoProactiveEngine.d.ts
+                ├── 📄 AutoProactiveEngine.d.ts.map
+                ├── 🟨 AutoProactiveEngine.js
+                ├── 📄 AutoProactiveEngine.js.map
+                ├── 🔷 BaseLoop.d.ts
+                ├── 📄 BaseLoop.d.ts.map
+                ├── 🟨 BaseLoop.js
+                ├── 📄 BaseLoop.js.map
+                ├── 🔷 DetectionSelfCorrection.d.ts
+                ├── 📄 DetectionSelfCorrection.d.ts.map
+                ├── 🟨 DetectionSelfCorrection.js
+                ├── 📄 DetectionSelfCorrection.js.map
+                ├── 🔷 EventBus.d.ts
+                ├── 📄 EventBus.d.ts.map
+                ├── 🟨 EventBus.js
+                ├── 📄 EventBus.js.map
+                ├── 🔷 GitPushMonitor.d.ts
+                ├── 📄 GitPushMonitor.d.ts.map
+                ├── 🟨 GitPushMonitor.js
+                ├── 📄 GitPushMonitor.js.map
+                ├── 🔷 ModelCapabilityVerifier.d.ts
+                ├── 📄 ModelCapabilityVerifier.d.ts.map
+                ├── 🟨 ModelCapabilityVerifier.js
+                ├── 📄 ModelCapabilityVerifier.js.map
+                ├── 🔷 ModelDetectionSystem.d.ts
+                ├── 📄 ModelDetectionSystem.d.ts.map
+                ├── 🟨 ModelDetectionSystem.js
+                ├── 📄 ModelDetectionSystem.js.map
+                ├── 🔷 OpportunityScanningLoop.d.ts
+                ├── 📄 OpportunityScanningLoop.d.ts.map
+                ├── 🟨 OpportunityScanningLoop.js
+                ├── 📄 OpportunityScanningLoop.js.map
+                ├── 🔷 ProgressMonitoringLoop.d.ts
+                ├── 📄 ProgressMonitoringLoop.d.ts.map
+                ├── 🟨 ProgressMonitoringLoop.js
+                ├── 📄 ProgressMonitoringLoop.js.map
+                ├── 🔷 ProjectDiscoveryLoop.d.ts
+                ├── 📄 ProjectDiscoveryLoop.d.ts.map
+                ├── 🟨 ProjectDiscoveryLoop.js
+                ├── 📄 ProjectDiscoveryLoop.js.map
+                ├── 🔷 RunPodMonitorLoop.d.ts
+                ├── 📄 RunPodMonitorLoop.d.ts.map
+                ├── 🟨 RunPodMonitorLoop.js
+                ├── 📄 RunPodMonitorLoop.js.map
+                ├── 🔷 SpecGenerationLoop.d.ts
+                ├── 📄 SpecGenerationLoop.d.ts.map
+                ├── 🟨 SpecGenerationLoop.js
+                ├── 📄 SpecGenerationLoop.js.map
+                ├── 🔷 StatusAnalysisLoop.d.ts
+                ├── 📄 StatusAnalysisLoop.d.ts.map
+                ├── 🟨 StatusAnalysisLoop.js
+                ├── 📄 StatusAnalysisLoop.js.map
+                ├── 🔷 SystemStatusLoop.d.ts
+                ├── 📄 SystemStatusLoop.d.ts.map
+                ├── 🟨 SystemStatusLoop.js
+                ├── 📄 SystemStatusLoop.js.map
+                ├── 🔷 TaskAssignmentLoop.d.ts
+                ├── 📄 TaskAssignmentLoop.d.ts.map
+                ├── 🟨 TaskAssignmentLoop.js
+                ├── 📄 TaskAssignmentLoop.js.map
+            ├── 📁 auto-tasks/
+                ├── 🔷 ThreadSaveTaskCreator.d.ts
+                ├── 📄 ThreadSaveTaskCreator.d.ts.map
+                ├── 🟨 ThreadSaveTaskCreator.js
+                ├── 📄 ThreadSaveTaskCreator.js.map
+            ├── 📁 clients/
+                ├── 🔷 BaseAIClient.d.ts
+                ├── 📄 BaseAIClient.d.ts.map
+                ├── 🟨 BaseAIClient.js
+                ├── 📄 BaseAIClient.js.map
+                ├── 🔷 ZAIClient.d.ts
+                ├── 📄 ZAIClient.d.ts.map
+                ├── 🟨 ZAIClient.js
+                ├── 📄 ZAIClient.js.map
+            ├── 📁 confidence/
+                ├── 🔷 AdvancedSelfAuditSystem.d.ts
+                ├── 📄 AdvancedSelfAuditSystem.d.ts.map
+                ├── 🟨 AdvancedSelfAuditSystem.js
+                ├── 📄 AdvancedSelfAuditSystem.js.map
+                ├── 🔷 ConfidenceCalibrationSystem.d.ts
+                ├── 📄 ConfidenceCalibrationSystem.d.ts.map
+                ├── 🟨 ConfidenceCalibrationSystem.js
+                ├── 📄 ConfidenceCalibrationSystem.js.map
+                ├── 🔷 CounterfactualAnalysisSystem.d.ts
+                ├── 📄 CounterfactualAnalysisSystem.d.ts.map
+                ├── 🟨 CounterfactualAnalysisSystem.js
+                ├── 📄 CounterfactualAnalysisSystem.js.map
+                ├── 🔷 EnhancedCognitiveBiasSystem.d.ts
+                ├── 📄 EnhancedCognitiveBiasSystem.d.ts.map
+                ├── 🟨 EnhancedCognitiveBiasSystem.js
+                ├── 📄 EnhancedCognitiveBiasSystem.js.map
+                ├── 🔷 MetacognitiveAwarenessModule.d.ts
+                ├── 📄 MetacognitiveAwarenessModule.d.ts.map
+                ├── 🟨 MetacognitiveAwarenessModule.js
+                ├── 📄 MetacognitiveAwarenessModule.js.map
+                ├── 🔷 MultiModalEvidenceFusion.d.ts
+                ├── 📄 MultiModalEvidenceFusion.d.ts.map
+                ├── 🟨 MultiModalEvidenceFusion.js
+                ├── 📄 MultiModalEvidenceFusion.js.map
+                ├── 🔷 TemporalConfidenceTracker.d.ts
+                ├── 📄 TemporalConfidenceTracker.d.ts.map
+                ├── 🟨 TemporalConfidenceTracker.js
+                ├── 📄 TemporalConfidenceTracker.js.map
+                ├── 🔷 UnifiedConfidenceSystem.d.ts
+                ├── 📄 UnifiedConfidenceSystem.d.ts.map
+                ├── 🟨 UnifiedConfidenceSystem.js
+                ├── 📄 UnifiedConfidenceSystem.js.map
+            ├── 📁 config/
+                ├── 🔷 secureServer.d.ts
+                ├── 📄 secureServer.d.ts.map
+                ├── 🟨 secureServer.js
+                ├── 📄 secureServer.js.map
+            ├── 📁 core/
+                ├── 🔷 AgentConnectionAPI.d.ts
+                ├── 📄 AgentConnectionAPI.d.ts.map
+                ├── 🟨 AgentConnectionAPI.js
+                ├── 📄 AgentConnectionAPI.js.map
+                ├── 🔷 AgentContextBuilder.d.ts
+                ├── 📄 AgentContextBuilder.d.ts.map
+                ├── 🟨 AgentContextBuilder.js
+                ├── 📄 AgentContextBuilder.js.map
+                ├── 🔷 BestPracticesEngine.d.ts
+                ├── 📄 BestPracticesEngine.d.ts.map
+                ├── 🟨 BestPracticesEngine.js
+                ├── 📄 BestPracticesEngine.js.map
+                ├── 🔷 ContextAPI.d.ts
+                ├── 📄 ContextAPI.d.ts.map
+                ├── 🟨 ContextAPI.js
+                ├── 📄 ContextAPI.js.map
+                ├── 🔷 ContextManager.d.ts
+                ├── 📄 ContextManager.d.ts.map
+                ├── 🟨 ContextManager.js
+                ├── 📄 ContextManager.js.map
+                ├── 🔷 CostAwareScheduler.d.ts
+                ├── 📄 CostAwareScheduler.d.ts.map
+                ├── 🟨 CostAwareScheduler.js
+                ├── 📄 CostAwareScheduler.js.map
+                ├── 🔷 KeepInTouchEnforcer.d.ts
+                ├── 📄 KeepInTouchEnforcer.d.ts.map
+                ├── 🟨 KeepInTouchEnforcer.js
+                ├── 📄 KeepInTouchEnforcer.js.map
+                ├── 🔷 ModelDiscovery.d.ts
+                ├── 📄 ModelDiscovery.d.ts.map
+                ├── 🟨 ModelDiscovery.js
+                ├── 📄 ModelDiscovery.js.map
+                ├── 🔷 SwarmCoordinator.d.ts
+                ├── 📄 SwarmCoordinator.d.ts.map
+                ├── 🟨 SwarmCoordinator.js
+                ├── 📄 SwarmCoordinator.js.map
+                ├── 🔷 UniversalAgentRegistry.d.ts
+                ├── 📄 UniversalAgentRegistry.d.ts.map
+                ├── 🟨 UniversalAgentRegistry.js
+                ├── 📄 UniversalAgentRegistry.js.map
+            ├── 📁 database/
+                ├── 🔷 ConnectionPool.d.ts
+                ├── 📄 ConnectionPool.d.ts.map
+                ├── 🟨 ConnectionPool.js
+                ├── 📄 ConnectionPool.js.map
+                ├── 🟨 DatabaseFactory.js
+                ├── 📄 DatabaseFactory.js.map
+                ├── 🔷 DatabaseInitializer.d.ts
+                ├── 📄 DatabaseInitializer.d.ts.map
+                ├── 🟨 DatabaseInitializer.js
+                ├── 📄 DatabaseInitializer.js.map
+                ├── 🔷 DatabaseIntegrityValidator.d.ts
+                ├── 📄 DatabaseIntegrityValidator.d.ts.map
+                ├── 🟨 DatabaseIntegrityValidator.js
+                ├── 📄 DatabaseIntegrityValidator.js.map
+                ├── 🔷 DatabaseMonitor.d.ts
+                ├── 📄 DatabaseMonitor.d.ts.map
+                ├── 🟨 DatabaseMonitor.js
+                ├── 📄 DatabaseMonitor.js.map
+                ├── 🔷 JsonHelpers.d.ts
+                ├── 📄 JsonHelpers.d.ts.map
+                ├── 🟨 JsonHelpers.js
+                ├── 📄 JsonHelpers.js.map
+                ├── 🔷 OptimizedDetectionQueries.d.ts
+                ├── 📄 OptimizedDetectionQueries.d.ts.map
+                ├── 🟨 OptimizedDetectionQueries.js
+                ├── 📄 OptimizedDetectionQueries.js.map
+            ├── 📁 deployment/
+                ├── 🔷 AutoDeployer.d.ts
+                ├── 📄 AutoDeployer.d.ts.map
+                ├── 🟨 AutoDeployer.js
+                ├── 📄 AutoDeployer.js.map
+            ├── 📁 discovery/
+                ├── 🔷 AgentRecognizer.d.ts
+                ├── 📄 AgentRecognizer.d.ts.map
+                ├── 🟨 AgentRecognizer.js
+                ├── 📄 AgentRecognizer.js.map
+                ├── 🔷 ContextExtractor.d.ts
+                ├── 📄 ContextExtractor.d.ts.map
+                ├── 🟨 ContextExtractor.js
+                ├── 📄 ContextExtractor.js.map
+                ├── 🔷 DiscoveryEngine.d.ts
+                ├── 📄 DiscoveryEngine.d.ts.map
+                ├── 🟨 DiscoveryEngine.js
+                ├── 📄 DiscoveryEngine.js.map
+                ├── 🔷 JobProposalEngine.d.ts
+                ├── 📄 JobProposalEngine.d.ts.map
+                ├── 🟨 JobProposalEngine.js
+                ├── 📄 JobProposalEngine.js.map
+                ├── 🔷 ProjectDetector.d.ts
+                ├── 📄 ProjectDetector.d.ts.map
+                ├── 🟨 ProjectDetector.js
+                ├── 📄 ProjectDetector.js.map
+                ├── 🔷 index.d.ts
+                ├── 📄 index.d.ts.map
+                ├── 🟨 index.js
+                ├── 📄 index.js.map
+            ├── 📁 events/
+                ├── 🔷 EventBroadcaster.d.ts
+                ├── 📄 EventBroadcaster.d.ts.map
+                ├── 🟨 EventBroadcaster.js
+                ├── 📄 EventBroadcaster.js.map
+            ├── 📁 git/
+                ├── 🔷 GitIntelligenceEngine.d.ts
+                ├── 📄 GitIntelligenceEngine.d.ts.map
+                ├── 🟨 GitIntelligenceEngine.js
+                ├── 📄 GitIntelligenceEngine.js.map
+            ├── 📁 health/
+                ├── 🔷 HealthChecker.d.ts
+                ├── 📄 HealthChecker.d.ts.map
+                ├── 🟨 HealthChecker.js
+                ├── 📄 HealthChecker.js.map
+            ├── 📁 hybrid/
+                ├── 🔷 BossModeSwitchingSystem.d.ts
+                ├── 📄 BossModeSwitchingSystem.d.ts.map
+                ├── 🟨 BossModeSwitchingSystem.js
+                ├── 📄 BossModeSwitchingSystem.js.map
+            ├── 📁 integration/
+                ├── 🔷 DatabaseIntegrationLayer.d.ts
+                ├── 📄 DatabaseIntegrationLayer.d.ts.map
+                ├── 🟨 DatabaseIntegrationLayer.js
+                ├── 📄 DatabaseIntegrationLayer.js.map
+            ├── 📁 intelligence/
+                ├── 🔷 ConversationCapture.d.ts
+                ├── 📄 ConversationCapture.d.ts.map
+                ├── 🟨 ConversationCapture.js
+                ├── 📄 ConversationCapture.js.map
+                ├── 🔷 EventAnalyzer.d.ts
+                ├── 📄 EventAnalyzer.d.ts.map
+                ├── 🟨 EventAnalyzer.js
+                ├── 📄 EventAnalyzer.js.map
+                ├── 🔷 IntelligenceEngine.d.ts
+                ├── 📄 IntelligenceEngine.d.ts.map
+                ├── 🟨 IntelligenceEngine.js
+                ├── 📄 IntelligenceEngine.js.map
+                ├── 🔷 IntelligenceServer.d.ts
+                ├── 📄 IntelligenceServer.d.ts.map
+                ├── 🟨 IntelligenceServer.js
+                ├── 📄 IntelligenceServer.js.map
+                ├── 🔷 IntelligentTaskGenerator.d.ts
+                ├── 📄 IntelligentTaskGenerator.d.ts.map
+                ├── 🟨 IntelligentTaskGenerator.js
+                ├── 📄 IntelligentTaskGenerator.js.map
+                ├── 🔷 OptimizationSuggestor.d.ts
+                ├── 📄 OptimizationSuggestor.d.ts.map
+                ├── 🟨 OptimizationSuggestor.js
+                ├── 📄 OptimizationSuggestor.js.map
+                ├── 🔷 PatternDetector.d.ts
+                ├── 📄 PatternDetector.d.ts.map
+                ├── 🟨 PatternDetector.js
+                ├── 📄 PatternDetector.js.map
+                ├── 🔷 PredictionEngine.d.ts
+                ├── 📄 PredictionEngine.d.ts.map
+                ├── 🟨 PredictionEngine.js
+                ├── 📄 PredictionEngine.js.map
+                ├── 🔷 SessionManager.d.ts
+                ├── 📄 SessionManager.d.ts.map
+                ├── 🟨 SessionManager.js
+                ├── 📄 SessionManager.js.map
+            ├── 📁 middleware/
+                ├── 🔷 inputValidation.d.ts
+                ├── 📄 inputValidation.d.ts.map
+                ├── 🟨 inputValidation.js
+                ├── 📄 inputValidation.js.map
+                ├── 🔷 security.d.ts
+                ├── 📄 security.d.ts.map
+                ├── 🟨 security.js
+                ├── 📄 security.js.map
+                ├── 🔷 session.d.ts
+                ├── 📄 session.d.ts.map
+                ├── 🟨 session.js
+                ├── 📄 session.js.map
+            ├── 📁 monitoring/
+                ├── 🟨 PrometheusExporter.js
+                ├── 📄 PrometheusExporter.js.map
+            ├── 📁 orchestration/
+                ├── 🔷 AgentDeploymentOrchestrator.d.ts
+                ├── 📄 AgentDeploymentOrchestrator.d.ts.map
+                ├── 🟨 AgentDeploymentOrchestrator.js
+                ├── 📄 AgentDeploymentOrchestrator.js.map
+                ├── 🔷 CuratedContentManager.d.ts
+                ├── 📄 CuratedContentManager.d.ts.map
+                ├── 🟨 CuratedContentManager.js
+                ├── 📄 CuratedContentManager.js.map
+            ├── 📁 performance/
+                ├── 🔷 DetectionCache.d.ts
+                ├── 📄 DetectionCache.d.ts.map
+                ├── 🟨 DetectionCache.js
+                ├── 📄 DetectionCache.js.map
+            ├── 📁 photon/
+                ├── 🟨 MonitoringServer.js
+                ├── 📄 MonitoringServer.js.map
+                ├── 🔷 PhotonAPI.d.ts
+                ├── 📄 PhotonAPI.d.ts.map
+                ├── 🟨 PhotonAPI.js
+                ├── 📄 PhotonAPI.js.map
+                ├── 🔷 PhotonCore-Lite.d.ts
+                ├── 📄 PhotonCore-Lite.d.ts.map
+                ├── 🟨 PhotonCore-Lite.js
+                ├── 📄 PhotonCore-Lite.js.map
+                ├── 🔷 PhotonCore.d.ts
+                ├── 📄 PhotonCore.d.ts.map
+                ├── 🟨 PhotonCore.js
+                ├── 📄 PhotonCore.js.map
+                ├── 🔷 PhotonIntegrations.d.ts
+                ├── 📄 PhotonIntegrations.d.ts.map
+                ├── 🟨 PhotonIntegrations.js
+                ├── 📄 PhotonIntegrations.js.map
+                ├── 🔷 PhotonServer-Lite.d.ts
+                ├── 📄 PhotonServer-Lite.d.ts.map
+                ├── 🟨 PhotonServer-Lite.js
+                ├── 📄 PhotonServer-Lite.js.map
+                ├── 🔷 PhotonServer.d.ts
+                ├── 📄 PhotonServer.d.ts.map
+                ├── 🟨 PhotonServer.js
+                ├── 📄 PhotonServer.js.map
+            ├── 📁 registry/
+                ├── 🔷 CentralSystemsRegistry.d.ts
+                ├── 📄 CentralSystemsRegistry.d.ts.map
+                ├── 🟨 CentralSystemsRegistry.js
+                ├── 📄 CentralSystemsRegistry.js.map
+                ├── 🔷 CentralSystemsRegistry.test.d.ts
+                ├── 📄 CentralSystemsRegistry.test.d.ts.map
+                ├── 🟨 CentralSystemsRegistry.test.js
+                ├── 📄 CentralSystemsRegistry.test.js.map
+                ├── 🔷 DependencyResolver.d.ts
+                ├── 📄 DependencyResolver.d.ts.map
+                ├── 🟨 DependencyResolver.js
+                ├── 📄 DependencyResolver.js.map
+                ├── 🟨 EnhancedTaskStore.js
+                ├── 📄 EnhancedTaskStore.js.map
+                ├── 🔷 GitTracker.d.ts
+                ├── 📄 GitTracker.d.ts.map
+                ├── 🟨 GitTracker.js
+                ├── 📄 GitTracker.js.map
+                ├── 🔷 IntegratedTaskRegistry.d.ts
+                ├── 📄 IntegratedTaskRegistry.d.ts.map
+                ├── 🟨 IntegratedTaskRegistry.js
+                ├── 📄 IntegratedTaskRegistry.js.map
+                ├── 🟨 JsonTaskStore.js
+                ├── 📄 JsonTaskStore.js.map
+                ├── 🔷 RulesRegistry.d.ts
+                ├── 📄 RulesRegistry.d.ts.map
+                ├── 🟨 RulesRegistry.js
+                ├── 📄 RulesRegistry.js.map
+                ├── 🔷 TaskRegistry.d.ts
+                ├── 📄 TaskRegistry.d.ts.map
+                ├── 🟨 TaskRegistry.js
+                ├── 📄 TaskRegistry.js.map
+                ├── 🔷 TaskStore.d.ts
+                ├── 📄 TaskStore.d.ts.map
+                ├── 🟨 TaskStore.js
+                ├── 📄 TaskStore.js.map
+            ├── 📁 security/
+                ├── 🔷 SecurityValidator.d.ts
+                ├── 📄 SecurityValidator.d.ts.map
+                ├── 🟨 SecurityValidator.js
+                ├── 📄 SecurityValidator.js.map
+            ├── 📁 spec/
+                ├── 🔷 DependencyEditsAnalyzer.d.ts
+                ├── 📄 DependencyEditsAnalyzer.d.ts.map
+                ├── 🟨 DependencyEditsAnalyzer.js
+                ├── 📄 DependencyEditsAnalyzer.js.map
+                ├── 🔷 GraniteDoclingRAG.d.ts
+                ├── 📄 GraniteDoclingRAG.d.ts.map
+                ├── 🟨 GraniteDoclingRAG.js
+                ├── 📄 GraniteDoclingRAG.js.map
+                ├── 🔷 MegaProjectAnalyzer.d.ts
+                ├── 📄 MegaProjectAnalyzer.d.ts.map
+                ├── 🟨 MegaProjectAnalyzer.js
+                ├── 📄 MegaProjectAnalyzer.js.map
+                ├── 🔷 RAGIndexBuilder.d.ts
+                ├── 📄 RAGIndexBuilder.d.ts.map
+                ├── 🟨 RAGIndexBuilder.js
+                ├── 📄 RAGIndexBuilder.js.map
+                ├── 🔷 ReverseSpecGenerator.d.ts
+                ├── 📄 ReverseSpecGenerator.d.ts.map
+                ├── 🟨 ReverseSpecGenerator.js
+                ├── 📄 ReverseSpecGenerator.js.map
+                ├── 🔷 SpecDetectionEngine.d.ts
+                ├── 📄 SpecDetectionEngine.d.ts.map
+                ├── 🟨 SpecDetectionEngine.js
+                ├── 📄 SpecDetectionEngine.js.map
+            ├── 📁 spec-generator/
+                ├── 🔷 ContextAnalyzer.d.ts
+                ├── 📄 ContextAnalyzer.d.ts.map
+                ├── 🟨 ContextAnalyzer.js
+                ├── 📄 ContextAnalyzer.js.map
+                ├── 🔷 LLMSpecConverter.d.ts
+                ├── 📄 LLMSpecConverter.d.ts.map
+                ├── 🟨 LLMSpecConverter.js
+                ├── 📄 LLMSpecConverter.js.map
+                ├── 🔷 SemanticExtractor.d.ts
+                ├── 📄 SemanticExtractor.d.ts.map
+                ├── 🟨 SemanticExtractor.js
+                ├── 📄 SemanticExtractor.js.map
+                ├── 🔷 SpecGenerator.d.ts
+                ├── 📄 SpecGenerator.d.ts.map
+                ├── 🟨 SpecGenerator.js
+                ├── 📄 SpecGenerator.js.map
+                ├── 🔷 SpecNormalizer.d.ts
+                ├── 📄 SpecNormalizer.d.ts.map
+                ├── 🟨 SpecNormalizer.js
+                ├── 📄 SpecNormalizer.js.map
+            ├── 📁 tools/
+                ├── 🔷 BaseToolWithEvents.d.ts
+                ├── 📄 BaseToolWithEvents.d.ts.map
+                ├── 🟨 BaseToolWithEvents.js
+                ├── 📄 BaseToolWithEvents.js.map
+                ├── 🔷 centralSystems.d.ts
+                ├── 📄 centralSystems.d.ts.map
+                ├── 🟨 centralSystems.js
+                ├── 📄 centralSystems.js.map
+                ├── 🔷 claimTask.d.ts
+                ├── 📄 claimTask.d.ts.map
+                ├── 🟨 claimTask.js
+                ├── 📄 claimTask.js.map
+                ├── 🔷 completeTask-old.d.ts
+                ├── 📄 completeTask-old.d.ts.map
+                ├── 🟨 completeTask-old.js
+                ├── 📄 completeTask-old.js.map
+                ├── 🔷 completeTask.d.ts
+                ├── 📄 completeTask.d.ts.map
+                ├── 🟨 completeTask.js
+                ├── 📄 completeTask.js.map
+                ├── 🔷 getAgentStatus.d.ts
+                ├── 📄 getAgentStatus.d.ts.map
+                ├── 🟨 getAgentStatus.js
+                ├── 📄 getAgentStatus.js.map
+                ├── 🔷 getAvailableTasks.d.ts
+                ├── 📄 getAvailableTasks.d.ts.map
+                ├── 🟨 getAvailableTasks.js
+                ├── 📄 getAvailableTasks.js.map
+                ├── 🔷 getDashboard.d.ts
+                ├── 📄 getDashboard.d.ts.map
+                ├── 🟨 getDashboard.js
+                ├── 📄 getDashboard.js.map
+                ├── 🔷 index.d.ts
+                ├── 📄 index.d.ts.map
+                ├── 🟨 index.js
+                ├── 📄 index.js.map
+                ├── 🔷 updateProgress.d.ts
+                ├── 📄 updateProgress.d.ts.map
+                ├── 🟨 updateProgress.js
+                ├── 📄 updateProgress.js.map
+            ├── 📁 transport/
+                ├── 🔷 WebSocketTransport.d.ts
+                ├── 📄 WebSocketTransport.d.ts.map
+                ├── 🟨 WebSocketTransport.js
+                ├── 📄 WebSocketTransport.js.map
+            ├── 📁 types/
+                ├── 🔷 Task.d.ts
+                ├── 📄 Task.d.ts.map
+                ├── 🟨 Task.js
+                ├── 📄 Task.js.map
+            ├── 📁 utils/
+                ├── 🔷 eventUtils.d.ts
+                ├── 📄 eventUtils.d.ts.map
+                ├── 🟨 eventUtils.js
+                ├── 📄 eventUtils.js.map
+                ├── 🔷 logger.d.ts
+                ├── 📄 logger.d.ts.map
+                ├── 🟨 logger.js
+                ├── 📄 logger.js.map
+            ├── 📁 validation/
+                ├── 🔷 SpecFrontmatterParser.d.ts
+                ├── 📄 SpecFrontmatterParser.d.ts.map
+                ├── 🟨 SpecFrontmatterParser.js
+                ├── 📄 SpecFrontmatterParser.js.map
+                ├── 🔷 SpecLifecycleValidator.d.ts
+                ├── 📄 SpecLifecycleValidator.d.ts.map
+                ├── 🟨 SpecLifecycleValidator.js
+                ├── 📄 SpecLifecycleValidator.js.map
+                ├── 🔷 TotalityVerificationSystem.d.ts
+                ├── 📄 TotalityVerificationSystem.d.ts.map
+                ├── 🟨 TotalityVerificationSystem.js
+                ├── 📄 TotalityVerificationSystem.js.map
+            ├── 📁 api/
+                ├── 🟨 knowledge-space-client.js
+                ├── 🔷 knowledge-space.ts
+                ├── 🔷 model-detection-api.ts
+            ├── 📁 auto-proactive/
+                ├── 🔷 ActiveConfigurationDetector.ts
+                ├── 🔷 AgentAutoDiscoveryLoop.ts
+                ├── 🔷 AutoProactiveEngine.ts
+                ├── 🔷 DetectionSelfCorrection.ts
+                ├── 🔷 ModelCapabilityVerifier.ts
+                ├── 🔷 ModelDetectionSystem.ts
+                ├── 🔷 RunPodMonitorLoop.ts
+            ├── 📁 confidence/
+                ├── 🔷 AdvancedSelfAuditSystem.ts
+                ├── 🔷 ConfidenceCalibrationSystem.ts
+                ├── 🔷 CounterfactualAnalysisSystem.ts
+                ├── 🔷 EnhancedCognitiveBiasSystem.ts
+                ├── 🔷 MetacognitiveAwarenessModule.ts
+                ├── 🔷 MultiModalEvidenceFusion.ts
+                ├── 📝 README.md
+                ├── 🔷 TemporalConfidenceTracker.ts
+                ├── 🔷 UnifiedConfidenceSystem.ts
+            ├── 📁 database/
+                ├── 🔷 OptimizedDetectionQueries.ts
+            ├── 📁 integration/
+                ├── 🔷 DatabaseIntegrationLayer.ts
+            ├── 📁 performance/
+                ├── 🔷 DetectionCache.ts
+            ├── 📁 registry/
+                ├── 🔷 CentralSystemsRegistry.test.ts
+                ├── 🔷 CentralSystemsRegistry.ts
+                ├── 🔷 IntegratedTaskRegistry.ts
+                ├── 🔷 TaskRegistry.ts
+            ├── 📁 security/
+                ├── 🔷 SecurityValidator.ts
+            ├── 📁 tools/
+                ├── 🔷 centralSystems.ts
+                ├── 🔷 claimTask.ts
+                ├── 🔷 completeTask.ts
+                ├── 🔷 getAvailableTasks.ts
+                ├── 🔷 index.ts
+                ├── 📄 index.ts.backup
+            ├── 📁 types/
+                ├── 🔷 knowledge-space.ts
+            ├── 📁 utils/
+                ├── 🔷 FilePreviewHelper.ts
+                ├── 🔷 KnowledgePackProcessor.ts
+                ├── 🔷 ReadmeParser.ts
+            ├── 📁 helpers/
+                ├── 🔷 claude-config.ts
+                ├── 🔷 database.ts
+            ├── 📁 integration/
+                ├── 🔷 ModelDetectionSystem.integration.test.ts
+                ├── 🔷 enhanced-model-detection.integration.test.ts
+            ├── 📁 unit/
+                ├── 🔷 TaskStore.test.ts
+                ├── 📁 ai-integration/
+                    ├── 📝 README.md
+                ├── 📁 backend-services/
+                    ├── 📝 README.md
+                ├── 📁 deployment/
+                    ├── 📝 README.md
+                ├── 📁 miscellaneous/
+                    ├── 📝 README.md
+                ├── 📁 voice-systems/
+                    ├── 📝 README.md
+                ├── 📁 web-development/
+                    ├── 📝 README.md
+                ├── 📁 tools/
+                    ├── 🌐 BaseToolWithEvents.ts.html
+                    ├── 🌐 claimTask.ts.html
+                    ├── 🌐 completeTask-old.ts.html
+                    ├── 🌐 completeTask.ts.html
+                    ├── 🌐 getAgentStatus.ts.html
+                    ├── 🌐 getAvailableTasks.ts.html
+                    ├── 🌐 getDashboard.ts.html
+                    ├── 🌐 updateProgress.ts.html
+                ├── 📁 transport/
+                    ├── 🌐 WebSocketTransport.ts.html
+                    ├── 🌐 index.html
+                ├── 📁 utils/
+                    ├── 🌐 eventUtils.ts.html
+                    ├── 🌐 index.html
+                    ├── 🌐 logger.ts.html
+                ├── 📁 validation/
+                    ├── 🌐 SpecFrontmatterParser.ts.html
+                    ├── 🌐 SpecLifecycleValidator.ts.html
+                    ├── 🌐 TotalityVerificationSystem.ts.html
+                    ├── 🌐 index.html
+                ├── 📁 middleware/
+                    ├── 🔷 authenticateWebSocket.d.ts
+                    ├── 📄 authenticateWebSocket.d.ts.map
+                    ├── 🟨 authenticateWebSocket.js
+                    ├── 📄 authenticateWebSocket.js.map
+                    ├── 🔷 authorizeAction.d.ts
+                    ├── 📄 authorizeAction.d.ts.map
+                    ├── 🟨 authorizeAction.js
+                    ├── 📄 authorizeAction.js.map
+                ├── 📁 cost/
+                    ├── 🔷 checkUsageLimits.d.ts
+                    ├── 📄 checkUsageLimits.d.ts.map
+                    ├── 🟨 checkUsageLimits.js
+                    ├── 📄 checkUsageLimits.js.map
+                    ├── 🔷 estimateTaskCost.d.ts
+                    ├── 📄 estimateTaskCost.d.ts.map
+                    ├── 🟨 estimateTaskCost.js
+                    ├── 📄 estimateTaskCost.js.map
+                ├── 📁 discovery/
+                    ├── 🔷 analyzeProject.d.ts
+                    ├── 📄 analyzeProject.d.ts.map
+                    ├── 🟨 analyzeProject.js
+                    ├── 📄 analyzeProject.js.map
+                    ├── 🔷 contextTools.d.ts
+                    ├── 📄 contextTools.d.ts.map
+                    ├── 🟨 contextTools.js
+                    ├── 📄 contextTools.js.map
+                    ├── 🔷 discoverEnvironment.d.ts
+                    ├── 📄 discoverEnvironment.d.ts.map
+                    ├── 🟨 discoverEnvironment.js
+                    ├── 📄 discoverEnvironment.js.map
+                    ├── 🔷 getContextStats.d.ts
+                    ├── 📄 getContextStats.d.ts.map
+                    ├── 🟨 getContextStats.js
+                    ├── 📄 getContextStats.js.map
+                    ├── 🔷 retrieveContext.d.ts
+                    ├── 📄 retrieveContext.d.ts.map
+                    ├── 🟨 retrieveContext.js
+                    ├── 📄 retrieveContext.js.map
+                    ├── 🔷 searchContext.d.ts
+                    ├── 📄 searchContext.d.ts.map
+                    ├── 🟨 searchContext.js
+                    ├── 📄 searchContext.js.map
+                    ├── 🔷 uploadContext.d.ts
+                    ├── 📄 uploadContext.d.ts.map
+                    ├── 🟨 uploadContext.js
+                    ├── 📄 uploadContext.js.map
+                ├── 📁 health/
+                    ├── 🔷 getSystemHealth.d.ts
+                    ├── 📄 getSystemHealth.d.ts.map
+                    ├── 🟨 getSystemHealth.js
+                    ├── 📄 getSystemHealth.js.map
+                ├── 📁 intelligence/
+                    ├── 🔷 agentConnect.d.ts
+                    ├── 📄 agentConnect.d.ts.map
+                    ├── 🟨 agentConnect.js
+                    ├── 📄 agentConnect.js.map
+                    ├── 🔷 agentDisconnect.d.ts
+                    ├── 📄 agentDisconnect.d.ts.map
+                    ├── 🟨 agentDisconnect.js
+                    ├── 📄 agentDisconnect.js.map
+                    ├── 🔷 agentHeartbeat.d.ts
+                    ├── 📄 agentHeartbeat.d.ts.map
+                    ├── 🟨 agentHeartbeat.js
+                    ├── 📄 agentHeartbeat.js.map
+                    ├── 🔷 captureMessage.d.ts
+                    ├── 📄 captureMessage.d.ts.map
+                    ├── 🟨 captureMessage.js
+                    ├── 📄 captureMessage.js.map
+                    ├── 🔷 connectToMCP.d.ts
+                    ├── 📄 connectToMCP.d.ts.map
+                    ├── 🟨 connectToMCP.js
+                    ├── 📄 connectToMCP.js.map
+                    ├── 🔷 getSwarmDashboard.d.ts
+                    ├── 📄 getSwarmDashboard.d.ts.map
+                    ├── 🟨 getSwarmDashboard.js
+                    ├── 📄 getSwarmDashboard.js.map
+                    ├── 🔷 uploadProjectContext.d.ts
+                    ├── 📄 uploadProjectContext.d.ts.map
+                    ├── 🟨 uploadProjectContext.js
+                    ├── 📄 uploadProjectContext.js.map
+                    ├── 🔷 visualMCPCall.d.ts
+                    ├── 📄 visualMCPCall.d.ts.map
+                    ├── 🟨 visualMCPCall.js
+                    ├── 📄 visualMCPCall.js.map
+                ├── 📁 keepintouch/
+                    ├── 🔷 agentCheckIn.d.ts
+                    ├── 📄 agentCheckIn.d.ts.map
+                    ├── 🟨 agentCheckIn.js
+                    ├── 📄 agentCheckIn.js.map
+                    ├── 🔷 requestCompletionPermission.d.ts
+                    ├── 📄 requestCompletionPermission.d.ts.map
+                    ├── 🟨 requestCompletionPermission.js
+                    ├── 📄 requestCompletionPermission.js.map
+                ├── 📁 mcp/
+                    ├── 🔷 getSystemStatus.d.ts
+                    ├── 📄 getSystemStatus.d.ts.map
+                    ├── 🟨 getSystemStatus.js
+                    ├── 📄 getSystemStatus.js.map
+                ├── 📁 rules/
+                    ├── 🔷 createRule.d.ts
+                    ├── 📄 createRule.d.ts.map
+                    ├── 🟨 createRule.js
+                    ├── 📄 createRule.js.map
+                    ├── 🔷 deleteRule.d.ts
+                    ├── 📄 deleteRule.d.ts.map
+                    ├── 🟨 deleteRule.js
+                    ├── 📄 deleteRule.js.map
+                    ├── 🔷 getRules.d.ts
+                    ├── 📄 getRules.d.ts.map
+                    ├── 🟨 getRules.js
+                    ├── 📄 getRules.js.map
+                    ├── 🔷 rulesTools.d.ts
+                    ├── 📄 rulesTools.d.ts.map
+                    ├── 🟨 rulesTools.js
+                    ├── 📄 rulesTools.js.map
+                    ├── 🔷 updateRule.d.ts
+                    ├── 📄 updateRule.d.ts.map
+                    ├── 🟨 updateRule.js
+                    ├── 📄 updateRule.js.map
+                ├── 📁 runpod/
+                    ├── 🔷 runpodIntegration.d.ts
+                    ├── 📄 runpodIntegration.d.ts.map
+                    ├── 🟨 runpodIntegration.js
+                    ├── 📄 runpodIntegration.js.map
+                ├── 📁 ui/
+                    ├── 🔷 getKnowledge.d.ts
+                    ├── 📄 getKnowledge.d.ts.map
+                    ├── 🟨 getKnowledge.js
+                    ├── 📄 getKnowledge.js.map
+                    ├── 🔷 uiConfigPro.d.ts
+                    ├── 📄 uiConfigPro.d.ts.map
+                    ├── 🟨 uiConfigPro.js
+                    ├── 📄 uiConfigPro.js.map
+                ├── 📁 visual/
+                    ├── 🔷 discoverComfyUIWorkflows.d.ts
+                    ├── 📄 discoverComfyUIWorkflows.d.ts.map
+                    ├── 🟨 discoverComfyUIWorkflows.js
+                    ├── 📄 discoverComfyUIWorkflows.js.map
+                    ├── 🔷 generateImage.d.ts
+                    ├── 📄 generateImage.d.ts.map
+                    ├── 🟨 generateImage.js
+                    ├── 📄 generateImage.js.map
+                ├── 📁 vm/
+                    ├── 🔷 executeBash.d.ts
+                    ├── 📄 executeBash.d.ts.map
+                    ├── 🟨 executeBash.js
+                    ├── 📄 executeBash.js.map
+                    ├── 🔷 index.d.ts
+                    ├── 📄 index.d.ts.map
+                    ├── 🟨 index.js
+                    ├── 📄 index.js.map
+                    ├── 🔷 listVMDirectory.d.ts
+                    ├── 📄 listVMDirectory.d.ts.map
+                    ├── 🟨 listVMDirectory.js
+                    ├── 📄 listVMDirectory.js.map
+                    ├── 🔷 readVMFile.d.ts
+                    ├── 📄 readVMFile.d.ts.map
+                    ├── 🟨 readVMFile.js
+                    ├── 📄 readVMFile.js.map
+                    ├── 🔷 writeVMFile.d.ts
+                    ├── 📄 writeVMFile.d.ts.map
+                    ├── 🟨 writeVMFile.js
+                    ├── 📄 writeVMFile.js.map
+                ├── 📁 youtube/
+                    ├── 🔷 processYouTube.d.ts
+                    ├── 📄 processYouTube.d.ts.map
+                    ├── 🟨 processYouTube.js
+                    ├── 📄 processYouTube.js.map
+                ├── 📁 migrations/
+                    ├── 🗃️ 026_enhanced_model_detection.sql
+                ├── 📁 mcp/
+                    ├── 🔷 getSystemStatus.ts
+                ├── 📁 xray-tool/
+                    ├── 🔷 index.d.ts
+                    ├── 📄 index.d.ts.map
+                    ├── 🟨 index.js
+                    ├── 📄 index.js.map
+                ├── 📁 __tests__/
+                    ├── 🔷 ReadmeParser.test.ts
+                ├── 📁 auto-proactive/
+                    ├── 🔷 ActiveConfigurationDetector.test.ts
+                    ├── 🔷 DetectionSelfCorrection.test.ts
+                    ├── 🔷 EnhancedModelDetectionSystem.test.ts
+                    ├── 🔷 ModelCapabilityVerifier.test.ts
+                ├── 📁 database/
+                    ├── 🔷 JsonHelpers.test.ts
+                    ├── 📁 knowledge/
+                        ├── ⚛️ FilePreview.tsx
+                        ├── ⚛️ KnowledgeCategoryCard.tsx
+                    ├── 📁 cost/
+                        ├── 🌐 checkUsageLimits.ts.html
+                        ├── 🌐 estimateTaskCost.ts.html
+                        ├── 🌐 index.html
+                    ├── 📁 discovery/
+                        ├── 🌐 analyzeProject.ts.html
+                        ├── 🌐 contextTools.ts.html
+                        ├── 🌐 discoverEnvironment.ts.html
+                        ├── 🌐 getContextStats.ts.html
+                        ├── 🌐 index.html
+                        ├── 🌐 retrieveContext.ts.html
+                        ├── 🌐 searchContext.ts.html
+                        ├── 🌐 uploadContext.ts.html
+                    ├── 📁 health/
+                        ├── 🌐 getSystemHealth.ts.html
+                        ├── 🌐 index.html
+                    ├── 📁 intelligence/
+                        ├── 🌐 agentConnect.ts.html
+                        ├── 🌐 agentDisconnect.ts.html
+                        ├── 🌐 agentHeartbeat.ts.html
+                        ├── 🌐 captureMessage.ts.html
+                        ├── 🌐 connectToMCP.ts.html
+                        ├── 🌐 getSwarmDashboard.ts.html
+                        ├── 🌐 index.html
+                        ├── 🌐 uploadProjectContext.ts.html
+                        ├── 🌐 visualMCPCall.ts.html
+                    ├── 📁 keepintouch/
+                        ├── 🌐 agentCheckIn.ts.html
+                        ├── 🌐 index.html
+                        ├── 🌐 requestCompletionPermission.ts.html
+                    ├── 📁 mcp/
+                        ├── 🌐 getSystemStatus.ts.html
+                        ├── 🌐 index.html
+                    ├── 📁 rules/
+                        ├── 🌐 index.html
+                        ├── 🌐 rulesTools.ts.html
+                    ├── 📁 runpod/
+                        ├── 🌐 index.html
+                        ├── 🌐 runpodIntegration.ts.html
+                    ├── 📁 ui/
+                        ├── 🌐 getKnowledge.ts.html
+                        ├── 🌐 index.html
+                        ├── 🌐 uiConfigPro.ts.html
+                    ├── 📁 vm/
+                        ├── 🌐 executeBash.ts.html
+                        ├── 🌐 index.html
+                        ├── 🌐 listVMDirectory.ts.html
+                        ├── 🌐 readVMFile.ts.html
+                        ├── 🌐 writeVMFile.ts.html
+                    ├── 📁 youtube/
+                        ├── 🌐 index.html
+                        ├── 🌐 processYouTube.ts.html
+                    ├── 📁 tools/
+                        ├── 🔷 analyzeRecentFiles.d.ts
+                        ├── 📄 analyzeRecentFiles.d.ts.map
+                        ├── 🟨 analyzeRecentFiles.js
+                        ├── 📄 analyzeRecentFiles.js.map
+                        ├── 🔷 checkOllamaStatus.d.ts
+                        ├── 📄 checkOllamaStatus.d.ts.map
+                        ├── 🟨 checkOllamaStatus.js
+                        ├── 📄 checkOllamaStatus.js.map
+                        ├── 🔷 getAnalysisStats.d.ts
+                        ├── 📄 getAnalysisStats.d.ts.map
+                        ├── 🟨 getAnalysisStats.js
+                        ├── 📄 getAnalysisStats.js.map
+                        ├── 🔷 getFileSummary.d.ts
+                        ├── 📄 getFileSummary.d.ts.map
+                        ├── 🟨 getFileSummary.js
+                        ├── 📄 getFileSummary.js.map
+                        ├── 🔷 searchFileAnalysis.d.ts
+                        ├── 📄 searchFileAnalysis.d.ts.map
+                        ├── 🟨 searchFileAnalysis.js
+                        ├── 📄 searchFileAnalysis.js.map
+                    ├── 📁 tools/
+                        ├── 🐍 ULTRATHINK_FILE_ANALYZER.py
+                        ├── 🔷 analyzeRecentFiles.d.ts
+                        ├── 📄 analyzeRecentFiles.d.ts.map
+                        ├── 🟨 analyzeRecentFiles.js
+                        ├── 📄 analyzeRecentFiles.js.map
+                        ├── 🔷 analyzeRecentFiles.ts
+                        ├── 🔷 checkOllamaStatus.d.ts
+                        ├── 📄 checkOllamaStatus.d.ts.map
+                        ├── 🟨 checkOllamaStatus.js
+                        ├── 📄 checkOllamaStatus.js.map
+                        ├── 🔷 checkOllamaStatus.ts
+                        ├── 🔷 getAnalysisStats.d.ts
+                        ├── 📄 getAnalysisStats.d.ts.map
+                        ├── 🟨 getAnalysisStats.js
+                        ├── 📄 getAnalysisStats.js.map
+                        ├── 🔷 getAnalysisStats.ts
+                        ├── 🔷 getFileSummary.d.ts
+                        ├── 📄 getFileSummary.d.ts.map
+                        ├── 🟨 getFileSummary.js
+                        ├── 📄 getFileSummary.js.map
+                        ├── 🔷 getFileSummary.ts
+                        ├── 📄 requirements.txt
+                        ├── 🔷 searchFileAnalysis.d.ts
+                        ├── 📄 searchFileAnalysis.d.ts.map
+                        ├── 🟨 searchFileAnalysis.js
+                        ├── 📄 searchFileAnalysis.js.map
+                        ├── 🔷 searchFileAnalysis.ts
+                        ├── 🐍 ultrathink_mcp_server.py
+                    ├── 📁 types/
+                        ├── 🔷 ultrathink.d.ts
+                        ├── 📄 ultrathink.d.ts.map
+                        ├── 🟨 ultrathink.js
+                        ├── 📄 ultrathink.js.map
+                        ├── 📁 knowledge-packs/
+                            ├── 🔷 route.ts
+                        ├── 📁 preview/
+                            ├── 🔷 route.ts
+                        ├── 📁 readme/
+                            ├── 🔷 route.ts
+                        └── 📁 space/
+                            └── 🔷 route.ts</pre>
+      </div>
+    </div>
+
+    <!-- Work Sessions Timeline -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">⏰ PROJECT-WISE Work Sessions Timeline</div>
+          <div class="card-subtitle">4-HOUR ULTRATHINK sessions grouped by project mother directories</div>
+        </div>
+      </div>
+      <div class="timeline">
+
+      </div>
+    </div>
+
+    <!-- Directory Clusters -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🗂️ Directory Clusters</div>
+          <div class="card-subtitle">Files grouped by directory correlations</div>
+        </div>
+      </div>
+      <div class="clusters-grid">
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">tools</div>
+            <div class="cluster-count">102 files</div>
+          </div>
+          <div class="cluster-files">
+            searchFileAnalysis.d.ts, searchFileAnalysis.d.ts.map, searchFileAnalysis.js, searchFileAnalysis.js.map, getFileSummary.d.ts, getFileSummary.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">auto-proactive</div>
+            <div class="cluster-count">83 files</div>
+          </div>
+          <div class="cluster-files">
+            AutoProactiveEngine.d.ts, AutoProactiveEngine.d.ts.map, AutoProactiveEngine.js, AutoProactiveEngine.js.map, RunPodMonitorLoop.d.ts, RunPodMonitorLoop.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">intelligence</div>
+            <div class="cluster-count">77 files</div>
+          </div>
+          <div class="cluster-files">
+            visualMCPCall.d.ts, visualMCPCall.d.ts.map, visualMCPCall.js, visualMCPCall.js.map, PredictionEngine.d.ts, PredictionEngine.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">discovery</div>
+            <div class="cluster-count">60 files</div>
+          </div>
+          <div class="cluster-files">
+            analyzeProject.d.ts, analyzeProject.d.ts.map, analyzeProject.js, analyzeProject.js.map, contextTools.d.ts, contextTools.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">confidence</div>
+            <div class="cluster-count">41 files</div>
+          </div>
+          <div class="cluster-files">
+            UnifiedConfidenceSystem.d.ts, UnifiedConfidenceSystem.d.ts.map, UnifiedConfidenceSystem.js, UnifiedConfidenceSystem.js.map, MultiModalEvidenceFusion.d.ts, MultiModalEvidenceFusion.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">registry</div>
+            <div class="cluster-count">40 files</div>
+          </div>
+          <div class="cluster-files">
+            TaskStore.d.ts, TaskStore.d.ts.map, TaskStore.js, TaskStore.js.map, EnhancedTaskStore.js, EnhancedTaskStore.js.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">core</div>
+            <div class="cluster-count">40 files</div>
+          </div>
+          <div class="cluster-files">
+            UniversalAgentRegistry.d.ts, UniversalAgentRegistry.d.ts.map, UniversalAgentRegistry.js, UniversalAgentRegistry.js.map, SwarmCoordinator.d.ts, SwarmCoordinator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">database</div>
+            <div class="cluster-count">28 files</div>
+          </div>
+          <div class="cluster-files">
+            OptimizedDetectionQueries.d.ts, OptimizedDetectionQueries.d.ts.map, OptimizedDetectionQueries.js, OptimizedDetectionQueries.js.map, DatabaseIntegrityValidator.d.ts, DatabaseIntegrityValidator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">a2a</div>
+            <div class="cluster-count">28 files</div>
+          </div>
+          <div class="cluster-files">
+            index.d.ts, index.d.ts.map, index.js, index.js.map, A2AServer.d.ts, A2AServer.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">photon</div>
+            <div class="cluster-count">26 files</div>
+          </div>
+          <div class="cluster-files">
+            PhotonServer.d.ts, PhotonServer.d.ts.map, PhotonServer.js, PhotonServer.js.map, PhotonServer-Lite.d.ts, PhotonServer-Lite.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">PROJECT_central-mcp</div>
+            <div class="cluster-count">25 files</div>
+          </div>
+          <div class="cluster-files">
+            file_analysis_cache.db, PROPERTY_SEARCH_INTEGRATION.md, domain-intelligence-fully-capable.html, domain-search-effectiveness-guide.html, domain-risk-value-with-charts.html, domain-risk-value-simple.html (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">central-mcp</div>
+            <div class="cluster-count">25 files</div>
+          </div>
+          <div class="cluster-files">
+            mcp.json, OPENAI_LLM_ACTIVATION_COMPLETE.md, photon-lite.cjs, test-file-types.cjs, test-file-preview.cjs, CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">api</div>
+            <div class="cluster-count">25 files</div>
+          </div>
+          <div class="cluster-files">
+            knowledge-space-client.js, knowledge-space.ts, runpod.d.ts, runpod.d.ts.map, runpod.js, runpod.js.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">vm</div>
+            <div class="cluster-count">25 files</div>
+          </div>
+          <div class="cluster-files">
+            index.d.ts, index.d.ts.map, index.js, index.js.map, listVMDirectory.d.ts, listVMDirectory.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">spec</div>
+            <div class="cluster-count">24 files</div>
+          </div>
+          <div class="cluster-files">
+            SpecDetectionEngine.d.ts, SpecDetectionEngine.d.ts.map, SpecDetectionEngine.js, SpecDetectionEngine.js.map, ReverseSpecGenerator.d.ts, ReverseSpecGenerator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">rules</div>
+            <div class="cluster-count">22 files</div>
+          </div>
+          <div class="cluster-files">
+            updateRule.d.ts, updateRule.d.ts.map, updateRule.js, updateRule.js.map, getRules.d.ts, getRules.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">spec-generator</div>
+            <div class="cluster-count">20 files</div>
+          </div>
+          <div class="cluster-files">
+            SpecNormalizer.d.ts, SpecNormalizer.d.ts.map, SpecNormalizer.js, SpecNormalizer.js.map, SpecGenerator.d.ts, SpecGenerator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">middleware</div>
+            <div class="cluster-count">20 files</div>
+          </div>
+          <div class="cluster-files">
+            session.d.ts, session.d.ts.map, session.js, session.js.map, inputValidation.d.ts, inputValidation.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">auth</div>
+            <div class="cluster-count">20 files</div>
+          </div>
+          <div class="cluster-files">
+            SessionManager.d.ts, SessionManager.d.ts.map, SessionManager.js, SessionManager.js.map, Authentication.d.ts, Authentication.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">dist</div>
+            <div class="cluster-count">16 files</div>
+          </div>
+          <div class="cluster-files">
+            standalone-a2a-vm-server.d.ts, standalone-a2a-vm-server.d.ts.map, standalone-a2a-vm-server.js, standalone-a2a-vm-server.js.map, physiology-validation-engine.d.ts, physiology-validation-engine.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">validation</div>
+            <div class="cluster-count">16 files</div>
+          </div>
+          <div class="cluster-files">
+            TotalityVerificationSystem.d.ts, TotalityVerificationSystem.d.ts.map, TotalityVerificationSystem.js, TotalityVerificationSystem.js.map, SpecLifecycleValidator.d.ts, SpecLifecycleValidator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">utils</div>
+            <div class="cluster-count">14 files</div>
+          </div>
+          <div class="cluster-files">
+            KnowledgePackProcessor.ts, FilePreviewHelper.ts, ReadmeParser.ts, eventUtils.d.ts, eventUtils.d.ts.map, eventUtils.js (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">scripts</div>
+            <div class="cluster-count">12 files</div>
+          </div>
+          <div class="cluster-files">
+            deploy_confidence_systems.sql, fix_trust_system.sql, create_trust_system.sql, run-enhanced-detection-tests.js, deploy_physiology_system.sh, create_physiology_validation_system.sql (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">ui</div>
+            <div class="cluster-count">11 files</div>
+          </div>
+          <div class="cluster-files">
+            uiConfigPro.d.ts, uiConfigPro.d.ts.map, uiConfigPro.js, uiConfigPro.js.map, getKnowledge.d.ts, getKnowledge.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">cost</div>
+            <div class="cluster-count">11 files</div>
+          </div>
+          <div class="cluster-files">
+            checkUsageLimits.d.ts, checkUsageLimits.d.ts.map, checkUsageLimits.js, checkUsageLimits.js.map, estimateTaskCost.d.ts, estimateTaskCost.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">keepintouch</div>
+            <div class="cluster-count">11 files</div>
+          </div>
+          <div class="cluster-files">
+            requestCompletionPermission.d.ts, requestCompletionPermission.d.ts.map, requestCompletionPermission.js, requestCompletionPermission.js.map, agentCheckIn.d.ts, agentCheckIn.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">health</div>
+            <div class="cluster-count">10 files</div>
+          </div>
+          <div class="cluster-files">
+            getSystemHealth.d.ts, getSystemHealth.d.ts.map, getSystemHealth.js, getSystemHealth.js.map, HealthChecker.d.ts, HealthChecker.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">src</div>
+            <div class="cluster-count">10 files</div>
+          </div>
+          <div class="cluster-files">
+            ultrathink-performance-intelligence.cjs, implementegrating-final-system.cjs, loop10-agent-trust-assessment.cjs, trust-enhanced-validation-engine.cjs, agent-trust-engine.cjs, working-validation-engine.cjs (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">types</div>
+            <div class="cluster-count">9 files</div>
+          </div>
+          <div class="cluster-files">
+            knowledge-space.ts, Task.d.ts, Task.d.ts.map, Task.js, Task.js.map, ultrathink.js.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">docs</div>
+            <div class="cluster-count">8 files</div>
+          </div>
+          <div class="cluster-files">
+            0000_DAY13_02-45_CRITICAL_IMPLEMENTATION_AUDIT_ULTRATHINK.md, KNOWLEDGE_SPACE_API_DOCUMENTATION.md, OPEN_TASKS_COMPLETION_REPORT_2025-10-13.md, ENHANCED_DETECTION_VALIDATION_REPORT_2025-10-13.md, DEPLOYMENT_SUMMARY_2025-10-13.md, MODEL_DETECTION_TROUBLESHOOTING.md (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">visual</div>
+            <div class="cluster-count">8 files</div>
+          </div>
+          <div class="cluster-files">
+            discoverComfyUIWorkflows.d.ts, discoverComfyUIWorkflows.d.ts.map, discoverComfyUIWorkflows.js, discoverComfyUIWorkflows.js.map, generateImage.d.ts, generateImage.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">clients</div>
+            <div class="cluster-count">8 files</div>
+          </div>
+          <div class="cluster-files">
+            ZAIClient.d.ts, ZAIClient.d.ts.map, ZAIClient.js, ZAIClient.js.map, BaseAIClient.d.ts, BaseAIClient.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">orchestration</div>
+            <div class="cluster-count">8 files</div>
+          </div>
+          <div class="cluster-files">
+            CuratedContentManager.d.ts, CuratedContentManager.d.ts.map, CuratedContentManager.js, CuratedContentManager.js.map, AgentDeploymentOrchestrator.d.ts, AgentDeploymentOrchestrator.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">ai</div>
+            <div class="cluster-count">8 files</div>
+          </div>
+          <div class="cluster-files">
+            LLMOrchestrator.d.ts, LLMOrchestrator.d.ts.map, LLMOrchestrator.js, LLMOrchestrator.js.map, ModelRegistry.d.ts, ModelRegistry.d.ts.map (+2 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">mcp</div>
+            <div class="cluster-count">7 files</div>
+          </div>
+          <div class="cluster-files">
+            getSystemStatus.d.ts, getSystemStatus.d.ts.map, getSystemStatus.js, getSystemStatus.js.map, getSystemStatus.ts, getSystemStatus.ts.html (+1 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">integration</div>
+            <div class="cluster-count">7 files</div>
+          </div>
+          <div class="cluster-files">
+            DatabaseIntegrationLayer.d.ts, DatabaseIntegrationLayer.d.ts.map, DatabaseIntegrationLayer.js, DatabaseIntegrationLayer.js.map, ModelDetectionSystem.integration.test.ts, enhanced-model-detection.integration.test.ts (+1 more)
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">runpod</div>
+            <div class="cluster-count">6 files</div>
+          </div>
+          <div class="cluster-files">
+            runpodIntegration.d.ts, runpodIntegration.d.ts.map, runpodIntegration.js, runpodIntegration.js.map, runpodIntegration.ts.html, index.html
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">youtube</div>
+            <div class="cluster-count">6 files</div>
+          </div>
+          <div class="cluster-files">
+            processYouTube.d.ts, processYouTube.d.ts.map, processYouTube.js, processYouTube.js.map, processYouTube.ts.html, index.html
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">transport</div>
+            <div class="cluster-count">6 files</div>
+          </div>
+          <div class="cluster-files">
+            WebSocketTransport.d.ts, WebSocketTransport.d.ts.map, WebSocketTransport.js, WebSocketTransport.js.map, WebSocketTransport.ts.html, index.html
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">data</div>
+            <div class="cluster-count">5 files</div>
+          </div>
+          <div class="cluster-files">
+            registry.db-shm, registry.db-wal, registry.db, registry.db.backup.20251013_164852, registry.db.backup.20251013_164823
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">deployment</div>
+            <div class="cluster-count">5 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md, AutoDeployer.d.ts, AutoDeployer.d.ts.map, AutoDeployer.js, AutoDeployer.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">security</div>
+            <div class="cluster-count">5 files</div>
+          </div>
+          <div class="cluster-files">
+            SecurityValidator.d.ts, SecurityValidator.d.ts.map, SecurityValidator.js, SecurityValidator.js.map, SecurityValidator.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">performance</div>
+            <div class="cluster-count">5 files</div>
+          </div>
+          <div class="cluster-files">
+            DetectionCache.d.ts, DetectionCache.d.ts.map, DetectionCache.js, DetectionCache.js.map, DetectionCache.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">hybrid</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            BossModeSwitchingSystem.d.ts, BossModeSwitchingSystem.d.ts.map, BossModeSwitchingSystem.js, BossModeSwitchingSystem.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">config</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            secureServer.d.ts, secureServer.d.ts.map, secureServer.js, secureServer.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">auto-tasks</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            ThreadSaveTaskCreator.d.ts, ThreadSaveTaskCreator.d.ts.map, ThreadSaveTaskCreator.js, ThreadSaveTaskCreator.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">ai-brain</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            Llama24HBrainService.d.ts, Llama24HBrainService.d.ts.map, Llama24HBrainService.js, Llama24HBrainService.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">git</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            GitIntelligenceEngine.d.ts, GitIntelligenceEngine.d.ts.map, GitIntelligenceEngine.js, GitIntelligenceEngine.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">events</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            EventBroadcaster.d.ts, EventBroadcaster.d.ts.map, EventBroadcaster.js, EventBroadcaster.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">xray-tool</div>
+            <div class="cluster-count">4 files</div>
+          </div>
+          <div class="cluster-files">
+            index.js.map, index.js, index.d.ts.map, index.d.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">PROJECTS_REGISTRY</div>
+            <div class="cluster-count">3 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md, CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md, REGISTRY_INDEX.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">public</div>
+            <div class="cluster-count">3 files</div>
+          </div>
+          <div class="cluster-files">
+            ui-configpro-dashboard.html, central-mcp-dashboard.html, knowledge-space.html
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">knowledge</div>
+            <div class="cluster-count">2 files</div>
+          </div>
+          <div class="cluster-files">
+            KnowledgeCategoryCard.tsx, FilePreview.tsx
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">monitoring</div>
+            <div class="cluster-count">2 files</div>
+          </div>
+          <div class="cluster-files">
+            PrometheusExporter.js, PrometheusExporter.js.map
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">helpers</div>
+            <div class="cluster-count">2 files</div>
+          </div>
+          <div class="cluster-files">
+            claude-config.ts, database.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">components</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            DomainRiskValueAppEnhanced.tsx
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">preview</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            route.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">__tests__</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            ReadmeParser.test.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">space</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            route.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">knowledge-packs</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            route.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">SPECIALIZED_KNOWLEDGE_PACKS</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">central-mcp-dashboard</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            package.json
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">miscellaneous</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">readme</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            route.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">backend-services</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">web-development</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">ai-integration</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">voice-systems</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            README.md
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">migrations</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            026_enhanced_model_detection.sql
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">unit</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            TaskStore.test.ts
+          </div>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-header">
+            <div class="cluster-title">coverage</div>
+            <div class="cluster-count">1 files</div>
+          </div>
+          <div class="cluster-files">
+            coverage-summary.json
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- File Purpose Analysis -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🎯 File Purpose Analysis</div>
+          <div class="card-subtitle">Files categorized by purpose and function</div>
+        </div>
+      </div>
+      <div class="purpose-grid">
+
+        <div class="purpose-category" style="background: --p0;">
+          <div class="purpose-header">
+            <div class="purpose-title">Documentation</div>
+            <div class="purpose-count">20 files</div>
+          </div>
+          <div class="purpose-files">
+            domain-search-effectiveness-guide.html, README.md, KNOWLEDGE_SPACE_API_DOCUMENTATION.md, ReadmeParser.test.ts, KNOWLEDGE_SPACE_README_PARSING_SYSTEM.md...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --accent;">
+          <div class="purpose-header">
+            <div class="purpose-title">Code</div>
+            <div class="purpose-count">405 files</div>
+          </div>
+          <div class="purpose-files">
+            DomainRiskValueAppEnhanced.tsx, knowledge-space-client.js, KnowledgeCategoryCard.tsx, FilePreview.tsx, knowledge-space.ts...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --p1;">
+          <div class="purpose-header">
+            <div class="purpose-title">Config</div>
+            <div class="purpose-count">18 files</div>
+          </div>
+          <div class="purpose-files">
+            ui-configpro-dashboard.html, ActiveConfigurationDetector.d.ts, ActiveConfigurationDetector.d.ts.map, ActiveConfigurationDetector.js, ActiveConfigurationDetector.js.map...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --warning;">
+          <div class="purpose-header">
+            <div class="purpose-title">Build</div>
+            <div class="purpose-count">22 files</div>
+          </div>
+          <div class="purpose-files">
+            route.ts, route.ts, route.ts, route.ts, RAGIndexBuilder.d.ts...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --p2;">
+          <div class="purpose-header">
+            <div class="purpose-title">Data</div>
+            <div class="purpose-count">14 files</div>
+          </div>
+          <div class="purpose-files">
+            mcp.json, tools_registry.json, package.json, package.json, deploy_confidence_systems.sql...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --surface-2;">
+          <div class="purpose-header">
+            <div class="purpose-title">Temp</div>
+            <div class="purpose-count">5 files</div>
+          </div>
+          <div class="purpose-files">
+            file_analysis_cache.db, DetectionCache.d.ts.map, DetectionCache.js.map, TemporalConfidenceTracker.d.ts.map, TemporalConfidenceTracker.js.map
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --surface-2;">
+          <div class="purpose-header">
+            <div class="purpose-title">Backup</div>
+            <div class="purpose-count">7 files</div>
+          </div>
+          <div class="purpose-files">
+            completeTask-old.d.ts.map, completeTask-old.js.map, package.json.backup, index.ts.backup, registry.db.backup.20251013_164852...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --surface-2;">
+          <div class="purpose-header">
+            <div class="purpose-title">Test</div>
+            <div class="purpose-count">52 files</div>
+          </div>
+          <div class="purpose-files">
+            test-file-types.cjs, test-file-preview.cjs, SpecNormalizer.d.ts, SpecNormalizer.d.ts.map, SpecNormalizer.js...
+          </div>
+        </div>
+
+        <div class="purpose-category" style="background: --surface-2;">
+          <div class="purpose-header">
+            <div class="purpose-title">Other</div>
+            <div class="purpose-count">456 files</div>
+          </div>
+          <div class="purpose-files">
+            PROPERTY_SEARCH_INTEGRATION.md, domain-intelligence-fully-capable.html, domain-risk-value-with-charts.html, domain-risk-value-simple.html, domain-risk-value-enhanced.html...
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Version Tracking -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🔄 Version Tracking</div>
+          <div class="card-subtitle">Files with detected version patterns</div>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Base Name</th>
+            <th>Versions</th>
+            <th>Total Size</th>
+            <th>Latest File</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td colspan="4" class="text-center text-muted">No version patterns detected</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Duplicate Files -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">🔁 Duplicate Files</div>
+          <div class="card-subtitle">Files with identical content</div>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Content Hash</th>
+            <th>Count</th>
+            <th>Total Size</th>
+            <th>Files</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td class="font-mono">8d2b3d020238...</td>
+            <td>2</td>
+            <td>52.0KB</td>
+            <td>CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md, CENTRAL_MCP_COMPLETE_ON_OFF_REGISTRY.md</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">675707f0b8bf...</td>
+            <td>2</td>
+            <td>15.6KB</td>
+            <td>searchFileAnalysis.js, searchFileAnalysis.js</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">14fc1bdc7690...</td>
+            <td>2</td>
+            <td>15.5KB</td>
+            <td>getAnalysisStats.js, getAnalysisStats.js</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">3295c5ff61f5...</td>
+            <td>2</td>
+            <td>13.0KB</td>
+            <td>getFileSummary.js, getFileSummary.js</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">3a54e5e2e1c2...</td>
+            <td>2</td>
+            <td>11.1KB</td>
+            <td>analyzeRecentFiles.js, analyzeRecentFiles.js</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">3c6d14af2a07...</td>
+            <td>2</td>
+            <td>2.9KB</td>
+            <td>analyzeRecentFiles.d.ts, analyzeRecentFiles.d.ts</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">c41b6115c3cc...</td>
+            <td>2</td>
+            <td>2.3KB</td>
+            <td>searchFileAnalysis.d.ts, searchFileAnalysis.d.ts</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">a46326d87248...</td>
+            <td>2</td>
+            <td>2.1KB</td>
+            <td>getFileSummary.d.ts, getFileSummary.d.ts</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">df131fdc1fc9...</td>
+            <td>2</td>
+            <td>1.4KB</td>
+            <td>checkOllamaStatus.d.ts, checkOllamaStatus.d.ts</td>
+          </tr>
+
+          <tr>
+            <td class="font-mono">22fe490cb98d...</td>
+            <td>2</td>
+            <td>1.1KB</td>
+            <td>getAnalysisStats.d.ts, getAnalysisStats.d.ts</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Statistics Summary -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">📈 Development Statistics</div>
+          <div class="card-subtitle">Comprehensive analysis statistics</div>
+        </div>
+      </div>
+      <div class="metrics-grid">
+
+        <div class="metric">
+          <div class="metric-value">0</div>
+          <div class="metric-label">Days Span</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">999.0</div>
+          <div class="metric-label">Files/Day</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">22:00</div>
+          <div class="metric-label">Peak Hour</div>
+        </div>
+
+        <div class="metric">
+          <div class="metric-value">352.1</div>
+          <div class="metric-label">Files/Second</div>
+        </div>
+      </div>
+    </div>
+
+      <!-- JavaScript for Heat Map Calendar -->
+    <script>
+      // Calendar data from the analysis
+      const calendarData = {"heat_map_data": [], "total_active_days": 0, "peak_day": null, "total_sessions": 0, "date_range": {"start": null, "end": null}};
+
+      // Populate heat map calendar
+      function populateCalendar() {
+        const grid = document.getElementById('calendar-grid');
+        if (!grid) return;
+
+        const heatMapData = calendarData.heat_map_data || [];
+        const dataMap = new Map(heatMapData.map(d => [d.date, d]));
+
+        // Create calendar for current year
+        const today = new Date();
+        const startOfYear = new Date(today.getFullYear(), 0, 1);
+
+        // Clear grid
+        grid.innerHTML = '';
+
+        // Fill in days from start of year to today
+        let currentDate = new Date(startOfYear);
+
+        while (currentDate <= today) {
+          const dateStr = currentDate.toISOString().split('T')[0];
+          const dayData = dataMap.get(dateStr);
+          const intensity = dayData ? dayData.intensity : 0;
+
+          const dayElement = document.createElement('div');
+          dayElement.className = `calendar-day intensity-${intensity}`;
+          dayElement.title = dayData ?
+            `{dateStr}: {dayData.sessions} sessions, {(dayData.total_duration/3600).toFixed(1)}h total` :
+            `{dateStr}: No activity`;
+
+          grid.appendChild(dayElement);
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+      }
+
+      // Initialize calendar when page loads
+      document.addEventListener('DOMContentLoaded', populateCalendar);
+    </script>
+
+    <!-- Footer -->
+    <footer class="header" style="margin-top: 48px; border-top: 1px solid var(--border);">
+      <div class="meta">
+        🔍 Generated by 999X-RAY Development Tracker |
+        🤖 AI-Powered Comprehensive Analysis |
+        ⚡ 352.1 files/second |
+        💾 0.0% cache efficiency
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

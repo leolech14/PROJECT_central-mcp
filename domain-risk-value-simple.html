@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Risk & Value App - Simple Working Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #262626;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-emerald: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #404040;
+            --border-light: #333;
+            --shadow-lg: 0 8px 32px rgba(16, 185, 129, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: bold;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, var(--accent-emerald) 0%, #065f46 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-light);
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: var(--radius-sm);
+            color: var(--accent-emerald);
+            font-weight: 500;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-group input,
+        .input-group textarea {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+            border-color: var(--accent-emerald);
+        }
+
+        .input-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+
+        .input-help {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .grid {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .grid-cols-1 { grid-template-columns: 1fr; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+        @media (max-width: 1024px) {
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .card-content {
+                padding: 1.5rem;
+            }
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 95, 70, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-emerald), transparent);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card.blue {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-card.blue::before {
+            background: linear-gradient(90deg, var(--accent-blue), transparent);
+        }
+
+        .stat-card.amber {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .stat-card.amber::before {
+            background: linear-gradient(90deg, var(--accent-amber), transparent);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-card.red::before {
+            background: linear-gradient(90deg, var(--accent-red), transparent);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            opacity: 0.8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent-emerald) 0%, #065f46 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .button-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .button-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .decision-badge {
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+
+        .decision-badge.buy {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+        }
+
+        .decision-badge.wait {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+            color: var(--accent-amber);
+        }
+
+        .decision-header {
+            font-weight: bold;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .decision-sub {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-bottom: 1rem;
+        }
+
+        .decision-numbers {
+            text-align: right;
+        }
+
+        .decision-main {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .decision-vs {
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+
+        .tabs {
+            margin-top: 1.5rem;
+        }
+
+        .tab-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.25rem;
+            background: var(--bg-tertiary);
+            padding: 0.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-button {
+            padding: 0.75rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: calc(var(--radius) - 4px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tab-button.active {
+            background: var(--accent-emerald);
+            color: white;
+        }
+
+        .tab-content {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-emerald);
+        }
+
+        .section-title h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .chart-container {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .chart-placeholder {
+            text-align: center;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .cost-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .cost-row.highlight {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .cost-label {
+            color: var(--text-secondary);
+        }
+
+        .cost-row.highlight .cost-label {
+            color: var(--accent-emerald);
+            font-weight: 600;
+        }
+
+        .cost-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .cost-row.highlight .cost-value {
+            color: var(--accent-emerald);
+            font-weight: bold;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, var(--border-color), transparent);
+            margin: 1.5rem 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 48px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border-color);
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-emerald);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 3rem;
+        }
+
+        /* Icon styles */
+        .icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Domain Risk & Value App</h1>
+                <p class="header-subtitle">
+                    Advanced domain analysis with hazard modeling and investment decision support
+                </p>
+            </div>
+            <div class="controls">
+                <div class="status-badge">
+                    <div class="status-dot"></div>
+                    <span>Local • Offline</span>
+                </div>
+                <div class="control-row">
+                    <label>Max readability</label>
+                    <label class="switch">
+                        <input type="checkbox" id="maxReadability" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="control-row">
+                    <label>High contrast</label>
+                    <label class="switch">
+                        <input type="checkbox" id="highContrast" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="control-row">
+                    <label>Large text</label>
+                    <label class="switch">
+                        <input type="checkbox" id="largeText">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="card-content">
+                <div class="grid grid-cols-3" style="gap: 2rem;">
+                    <div>
+                        <div class="input-group">
+                            <label>Domain Name</label>
+                            <input type="text" id="domain" value="centralmcp.ai" placeholder="example.ai">
+                            <div class="input-help">
+                                💡 Enter your desired domain (e.g., centralmcp.ai) • Use lowercase and TLD
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2" style="gap: 1rem;">
+                            <div class="input-group">
+                                <label>Registration Years</label>
+                                <input type="number" id="years" min="1" max="10" value="2">
+                            </div>
+                            <div class="input-group">
+                                <label>Aftermarket Value ($)</label>
+                                <input type="number" id="aftermarketMid" value="2000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="grid grid-cols-2" style="gap: 1rem;">
+                            <div class="input-group">
+                                <label>Base Price ($/year)</label>
+                                <input type="number" id="tldBasePrice" value="80">
+                            </div>
+                            <div class="input-group">
+                                <label>Renewal Price ($/year)</label>
+                                <input type="number" id="renewalPrice" value="80">
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label>Checkout Discount ($)</label>
+                            <input type="number" id="buyNowDiscount" value="20">
+                        </div>
+                        <div class="grid grid-cols-3" style="gap: 0.75rem;">
+                            <div class="input-group">
+                                <label>Base λ (/mo)</label>
+                                <input type="number" id="baseLambda" step="0.001" value="0.005">
+                            </div>
+                            <div class="input-group">
+                                <label>Exposure ×</label>
+                                <input type="number" id="exposureMult" step="0.05" value="1.25">
+                            </div>
+                            <div class="input-group">
+                                <label>Scarcity ×</label>
+                                <input type="number" id="scarcityMult" step="0.05" value="1.1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="input-group">
+                            <label>📊 Google Trends Data</label>
+                            <div class="input-help">
+                                Weekly scores (0–100), comma-separated. Copy from Google Trends manually.
+                            </div>
+                            <textarea id="trendText" placeholder="e.g. 0,0,0,3,5,8,13,21,34,55,89">0,0,0,2,1,0,0,1,1,2,3,4,5,6,6,7,8,10,12,11,13,15,18,20,23,22,24,27,29,32,34,33,36,38,35,40</textarea>
+                            <div class="button-group">
+                                <button class="button button-secondary" onclick="useDemoData()">
+                                    🎯 Use Demo Data
+                                </button>
+                                <button class="button button-secondary" onclick="clearData()">
+                                    🗑️ Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3" style="gap: 2rem;">
+            <div class="card" style="grid-column: span 2;">
+                <div class="card-content">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2>Trends & Hazard Analysis</h2>
+                            <div class="section-subtitle">Risk assessment based on demand patterns and volatility</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            📈 Trend Chart Visualization Area<br>
+                            <small>Trend data would be displayed here in a full implementation</small>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4" style="gap: 1rem; margin-bottom: 2rem;">
+                        <div class="stat-card">
+                            <div class="stat-label">Composite Index</div>
+                            <div class="stat-value" id="compositeIndex">0.425</div>
+                            <div class="stat-sub">Momentum: 1.15 • Volatility: 1.12</div>
+                        </div>
+                        <div class="stat-card blue">
+                            <div class="stat-label">Hazard Rate λ</div>
+                            <div class="stat-value" id="hazardRate">0.0082</div>
+                            <div class="stat-sub">Multiplier: 1.34</div>
+                        </div>
+                        <div class="stat-card amber">
+                            <div class="stat-label">Mean Time To Taken</div>
+                            <div class="stat-value" id="mttu">121.9 mo</div>
+                            <div class="stat-sub">Average time until registration</div>
+                        </div>
+                        <div class="stat-card red">
+                            <div class="stat-label">Risk within 24m</div>
+                            <div class="stat-value" id="risk24m">18.5%</div>
+                            <div class="stat-sub">Probability of being taken</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1rem;">
+                        <h3 style="margin-bottom: 1rem; font-weight: 600;">📈 Probability Timeline</h3>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            📊 Probability Curve Chart<br>
+                            <small>Risk probability over time would be displayed here</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-content">
+                    <div class="section-title">
+                        <div class="section-icon">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <rect x="4" y="2" width="16" height="20" rx="2"/>
+                                <line x1="8" y1="6" x2="16" y2="6"/>
+                                <line x1="8" y1="10" x2="16" y2="10"/>
+                                <line x1="8" y1="14" x2="12" y2="14"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2>Investment Analysis</h2>
+                            <div class="section-subtitle">Cost breakdown and recommendation</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <div class="cost-row">
+                            <span class="cost-label">Registration Cost</span>
+                            <span class="cost-value" id="regCost">2 × $80.00 = $160.00</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-label">Checkout Discount</span>
+                            <span class="cost-value" id="discount">− $20.00</span>
+                        </div>
+                        <div class="cost-row highlight">
+                            <span class="cost-label">Total Checkout Price</span>
+                            <span class="cost-value" id="totalPrice">$140.00</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-label">Monthly Equivalent</span>
+                            <span class="cost-value" id="monthly">$5.83/mo</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-label">2-Year Renewal Cost</span>
+                            <span class="cost-value" id="renewal">$160.00</span>
+                        </div>
+
+                        <div class="divider"></div>
+
+                        <div class="cost-row">
+                            <span class="cost-label">Aftermarket Value</span>
+                            <span class="cost-value" id="aftermarket">$2,000.00</span>
+                        </div>
+                        <div class="cost-row">
+                            <span class="cost-label">Risk Threshold (24m)</span>
+                            <span class="cost-value" id="riskThreshold">7.0%</span>
+                        </div>
+                        <div class="cost-row highlight">
+                            <span class="cost-label">Calculated Risk (24m)</span>
+                            <span class="cost-value" id="calculatedRisk">18.5%</span>
+                        </div>
+                    </div>
+
+                    <div class="decision-badge buy" id="decisionBadge">
+                        <div class="decision-header">🚀 RECOMMENDATION: BUY NOW</div>
+                        <div class="decision-sub">Model risk vs investment threshold analysis</div>
+                        <div class="decision-numbers">
+                            <div class="decision-main" id="decisionMain">18.5%</div>
+                            <div class="decision-vs">vs 7.0%</div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab-list">
+                            <button class="tab-button active" onclick="switchTab('explain')">
+                                📖 Explanation
+                            </button>
+                            <button class="tab-button" onclick="switchTab('math')">
+                                🧮 Mathematics
+                            </button>
+                        </div>
+
+                        <div class="tab-content" id="explainTab">
+                            <h4 style="color: var(--accent-emerald); margin-bottom: 1rem; font-weight: 600;">💡 How This Works</h4>
+                            <p style="margin-bottom: 1rem;">
+                                Domain value increases with backlinks, brand recognition, and real usage. Our hazard model estimates how quickly others might want this domain based on trend momentum and market volatility.
+                            </p>
+                            <ul style="list-style: none; padding: 0;">
+                                <li style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                                    <span style="color: var(--accent-emerald);">▸</span>
+                                    <span><strong>Composite Index:</strong> Recency-weighted interest × momentum × volatility</span>
+                                </li>
+                                <li style="margin-bottom: 0.5rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                                    <span style="color: var(--accent-emerald);">▸</span>
+                                    <span><strong>Hazard Rate λ:</strong> Scales from base via smooth multiplier of the index</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                                    <span style="color: var(--accent-emerald);">▸</span>
+                                    <span><strong>Decision Logic:</strong> Buy when risk probability exceeds investment threshold</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tab-content" id="mathTab" style="display: none;">
+                            <pre style="font-family: 'SF Mono', Monaco, 'Courier New', monospace; font-size: 0.875rem; line-height: 1.5; color: var(--accent-emerald); margin: 0; white-space: pre-wrap;">
+📊 Composite Index Formula:
+Index = (mean_recent_weighted/100) × momentumFactor × volatilityFactor
+
+⚡ Momentum Factor:
+momentumFactor = clamp(1 + 0.8 × ((R - P) / P), 0.6, 1.8)
+
+📈 Volatility Factor:
+volatilityFactor ≈ 1 + 0.5 × (std / 25)
+
+🎯 Lambda (Hazard Rate):
+λ = baseλ × [ 1 + 2 × ( max(Index - 0.10, 0) / (0.6 + max(Index - 0.10, 0)) ) ] × exposure × scarcity
+
+📅 Probability Calculations:
+P(taken ≤ T) = 1 - exp( -λ × T )
+MTTU = 1 / λ
+
+💰 Decision Threshold:
+Buy if P(≤ H) > C_now / (C_after - C_now)
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>
+                <p>© 2025 Domain Risk & Value App • Enhanced Readability Edition</p>
+                <p style="font-size: 0.75rem; margin-top: 0.5rem;">Built for fast offline investment analysis • No external API calls</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Utility functions
+        function clamp(n, lo, hi) { return Math.max(lo, Math.min(hi, n)); }
+
+        function momentumFactor(recentMean, priorMean) {
+            if (priorMean <= 0) return recentMean <= 0 ? 1.0 : 1.2;
+            const growth = (recentMean - priorMean) / priorMean;
+            return Math.max(0.6, Math.min(1.8, 1.0 + 0.8 * growth));
+        }
+
+        function volatilityFactor(series, safety = 0.2) {
+            if (!series.length) return 1.0;
+            const mean = series.reduce((a, b) => a + b, 0) / series.length;
+            const variance = series.reduce((a, b) => a + (b - mean) ** 2, 0) / series.length;
+            const std = Math.sqrt(variance);
+            const volNorm = Math.max(std, safety);
+            return Math.max(0.9, Math.min(1.4, 1.0 + 0.5 * (volNorm / 25.0)));
+        }
+
+        function weightedRecentMean(series) {
+            if (!series.length) return 0;
+            const w = series.map((_, i) => 0.5 + (i / (series.length - 1 || 1)) * 1.0);
+            const sumW = w.reduce((a, b) => a + b, 0);
+            return series.reduce((a, b, i) => a + b * w[i], 0) / sumW;
+        }
+
+        function compositeDemandIndex(series, recentWeeks = 12, priorWeeks = 12) {
+            const scores = series;
+            const n = scores.length;
+            let recent = [];
+            let prior = [];
+            if (n >= recentWeeks + priorWeeks) {
+                recent = scores.slice(n - recentWeeks);
+                prior = scores.slice(n - recentWeeks - priorWeeks, n - recentWeeks);
+            } else {
+                recent = scores.slice(Math.max(0, n - recentWeeks));
+                prior = scores.slice(0, Math.max(0, n - recent.length));
+            }
+            const rMean = recent.length ? recent.reduce((a, b) => a + b, 0) / recent.length : 0;
+            const pMean = prior.length ? prior.reduce((a, b) => a + b, 0) / prior.length : 0;
+            const mFac = momentumFactor(rMean, pMean);
+            const vFac = volatilityFactor(scores);
+            const recWeighted = weightedRecentMean(scores);
+            const demandComponent = (recWeighted / 100.0) * mFac * vFac;
+            return { rMean, pMean, mFac, vFac, recWeighted, demandComponent };
+        }
+
+        function lambdaFromIndex(baseLambda, index, exposureMult = 1, scarcityMult = 1) {
+            const x = Math.max(index - 0.10, 0.0);
+            const mult = 1.0 + 2.0 * (x / (0.6 + x));
+            return { lambda: baseLambda * mult * exposureMult * scarcityMult, mult };
+        }
+
+        function probTakenInMonths(lambda, months) {
+            return 1 - Math.exp(-lambda * months);
+        }
+
+        function formatPct(v, d = 1) { return `${(v * 100).toFixed(d)}%`; }
+        function fmtUSD(n) {
+            try {
+                return n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
+            } catch {
+                return `$${n.toFixed(2)}`;
+            }
+        }
+
+        const DEMO_SERIES = [0,0,0,2,1,0,0,1,1,2,3,4,5,6,6,7,8,10,12,11,13,15,18,20,23,22,24,27,29,32,34,33,36,38,35,40];
+
+        function calculateAll() {
+            // Get input values
+            const domain = document.getElementById('domain').value;
+            const years = parseInt(document.getElementById('years').value) || 2;
+            const tldBasePrice = parseFloat(document.getElementById('tldBasePrice').value) || 80;
+            const renewalPrice = parseFloat(document.getElementById('renewalPrice').value) || 80;
+            const buyNowDiscount = parseFloat(document.getElementById('buyNowDiscount').value) || 20;
+            const aftermarketMid = parseFloat(document.getElementById('aftermarketMid').value) || 2000;
+            const baseLambda = parseFloat(document.getElementById('baseLambda').value) || 0.005;
+            const exposureMult = parseFloat(document.getElementById('exposureMult').value) || 1.25;
+            const scarcityMult = parseFloat(document.getElementById('scarcityMult').value) || 1.1;
+            const horizonMonths = 24;
+            const trendText = document.getElementById('trendText').value;
+
+            // Parse trend series
+            const trendSeries = trendText
+                .split(/[\s,]+/)
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .map(Number)
+                .filter((n) => !Number.isNaN(n) && n >= 0);
+
+            // Calculate stats
+            const idx = compositeDemandIndex(trendSeries);
+            const { lambda, mult } = lambdaFromIndex(baseLambda, idx.demandComponent, exposureMult, scarcityMult);
+            const mttu = lambda > 0 ? 1 / lambda : Infinity;
+            const pH = probTakenInMonths(lambda, horizonMonths);
+
+            // Calculate totals
+            const reg = Math.max(years, 1) * tldBasePrice;
+            const discount = clamp(buyNowDiscount, 0, 1000);
+            const checkout = Math.max(0, reg - discount);
+            const monthly = checkout / (years * 12);
+            const renew2y = 2 * renewalPrice;
+            const pThreshold = (checkout > 0 && aftermarketMid > checkout)
+                ? (checkout / (aftermarketMid - checkout))
+                : 1;
+
+            // Update UI
+            document.getElementById('compositeIndex').textContent = idx.demandComponent.toFixed(3);
+            document.querySelector('.stat-card .stat-sub').textContent = `Momentum: ${idx.mFac.toFixed(2)} • Volatility: ${idx.vFac.toFixed(2)}`;
+
+            document.getElementById('hazardRate').textContent = lambda.toFixed(4);
+            document.querySelector('.stat-card.blue .stat-sub').textContent = `Multiplier: ${mult.toFixed(2)}`;
+
+            document.getElementById('mttu').textContent = `${mttu.toFixed(1)} mo`;
+
+            document.getElementById('risk24m').textContent = formatPct(pH);
+            document.querySelector('.stat-card.red .stat-sub').textContent = 'Probability of being taken';
+
+            // Update cost breakdown
+            document.getElementById('regCost').textContent = `${years} × ${fmtUSD(tldBasePrice)} = ${fmtUSD(reg)}`;
+            document.getElementById('discount').textContent = `− ${fmtUSD(discount)}`;
+            document.getElementById('totalPrice').textContent = fmtUSD(checkout);
+            document.getElementById('monthly').textContent = `${fmtUSD(monthly)}/mo`;
+            document.getElementById('renewal').textContent = fmtUSD(renew2y);
+            document.getElementById('aftermarket').textContent = fmtUSD(aftermarketMid);
+            document.getElementById('riskThreshold').textContent = formatPct(pThreshold, 1);
+            document.getElementById('calculatedRisk').textContent = formatPct(pH, 1);
+
+            // Update decision badge
+            const decisionBadge = document.getElementById('decisionBadge');
+            const decisionMain = document.getElementById('decisionMain');
+            const buy = pH > pThreshold;
+
+            if (buy) {
+                decisionBadge.className = 'decision-badge buy';
+                decisionBadge.querySelector('.decision-header').textContent = '🚀 RECOMMENDATION: BUY NOW';
+            } else {
+                decisionBadge.className = 'decision-badge wait';
+                decisionBadge.querySelector('.decision-header').textContent = '⏳ RECOMMENDATION: CAN WAIT';
+            }
+
+            decisionMain.textContent = formatPct(pH, 1);
+            decisionBadge.querySelector('.decision-vs').textContent = `vs ${formatPct(pThreshold, 1)}`;
+        }
+
+        function useDemoData() {
+            document.getElementById('trendText').value = DEMO_SERIES.join(',');
+            calculateAll();
+        }
+
+        function clearData() {
+            document.getElementById('trendText').value = '';
+            calculateAll();
+        }
+
+        function switchTab(tab) {
+            const explainTab = document.getElementById('explainTab');
+            const mathTab = document.getElementById('mathTab');
+            const tabButtons = document.querySelectorAll('.tab-button');
+
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'explain') {
+                explainTab.style.display = 'block';
+                mathTab.style.display = 'none';
+                tabButtons[0].classList.add('active');
+            } else {
+                explainTab.style.display = 'none';
+                mathTab.style.display = 'block';
+                tabButtons[1].classList.add('active');
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('input[type="number"], input[type="text"], textarea').forEach(input => {
+            input.addEventListener('input', calculateAll);
+        });
+
+        document.querySelectorAll('.switch input').forEach(switchInput => {
+            switchInput.addEventListener('change', function() {
+                document.body.classList.toggle('high-contrast', this.checked);
+            });
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateAll();
+        });
+    </script>
+</body>
+</html>

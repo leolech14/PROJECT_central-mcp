@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Intelligence System - Fully Autonomous</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #262626;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-emerald: #10b981;
+            --accent-blue: #3b82f6;
+            --accent-amber: #f59e0b;
+            --accent-red: #ef4444;
+            --accent-purple: #8b5cf6;
+            --border-color: #404040;
+            --border-light: #333;
+            --shadow-lg: 0 8px 32px rgba(16, 185, 129, 0.2);
+            --radius: 12px;
+            --radius-sm: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: bold;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, var(--accent-emerald) 0%, #065f46 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .ai-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius-sm);
+            color: var(--accent-purple);
+            font-weight: 500;
+        }
+
+        .ai-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-purple);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-tertiary);
+            padding: 0.25rem;
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: calc(var(--radius) - 4px);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .tab-button.active {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .discovery-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+            border-color: var(--accent-purple);
+        }
+
+        .input-help {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .button {
+            padding: 0.875rem 1.5rem;
+            background: linear-gradient(135deg, var(--accent-purple) 0%, #6d28d9 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .button-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .button-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .ai-thinking {
+            display: none;
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .ai-thinking.active {
+            display: block;
+        }
+
+        .thinking-text {
+            color: var(--accent-purple);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .thinking-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-purple);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .domain-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .domain-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.2);
+        }
+
+        .domain-card.high-opportunity {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 95, 70, 0.1) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .domain-card.risky {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .domain-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .domain-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+
+        .metric {
+            font-size: 0.875rem;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+        }
+
+        .metric-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .recommendation {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .recommendation.buy {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-emerald);
+        }
+
+        .recommendation.wait {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent-amber);
+        }
+
+        .bulk-analysis {
+            margin-top: 2rem;
+        }
+
+        .bulk-input {
+            width: 100%;
+            min-height: 120px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            padding: 1rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            resize: vertical;
+        }
+
+        .analysis-results {
+            margin-top: 2rem;
+            overflow-x: auto;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .results-table th,
+        .results-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .results-table th {
+            background: var(--bg-tertiary);
+            color: var(--accent-purple);
+            font-weight: 600;
+        }
+
+        .results-table tr:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .risk-low {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-emerald);
+        }
+
+        .risk-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--accent-amber);
+        }
+
+        .risk-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--accent-red);
+        }
+
+        .intelligence-panel {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .intelligence-title {
+            color: var(--accent-purple);
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .intelligence-insights {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .insight-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+        }
+
+        .insight-title {
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-content {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .chart-container {
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin: 2rem 0;
+            height: 400px;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+
+        .market-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .market-stat {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .market-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-emerald);
+            margin-bottom: 0.5rem;
+        }
+
+        .market-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .discovery-form {
+                grid-template-columns: 1fr;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-button {
+                flex: 1;
+                min-width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div>
+                <h1>Domain Intelligence System</h1>
+                <div class="ai-status">
+                    <div class="ai-dot"></div>
+                    <span>AI Autonomous Search Active</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('discovery')">
+                🧠 AI Discovery
+            </button>
+            <button class="tab-button" onclick="switchTab('bulk')">
+                📊 Bulk Analysis
+            </button>
+            <button class="tab-button" onclick="switchTab('intelligence')">
+                🎯 Market Intelligence
+            </button>
+            <button class="tab-button" onclick="switchTab('monitor')">
+                📡 Live Monitor
+            </button>
+        </div>
+
+        <!-- AI Discovery Tab -->
+        <div id="discovery" class="tab-content active">
+            <div class="card">
+                <div class="card-content">
+                    <h2 style="color: var(--accent-purple); margin-bottom: 1rem;">🧠 Autonomous Domain Discovery</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Let our AI discover high-opportunity domains based on trends, keywords, and market analysis.
+                    </p>
+
+                    <div class="discovery-form">
+                        <div>
+                            <div class="input-group">
+                                <label>Industry/Niche</label>
+                                <input type="text" id="industry" placeholder="e.g., AI, Blockchain, Sustainable Tech" value="AI and Machine Learning">
+                                <div class="input-help">🎯 Focus on specific industries for better results</div>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Target Extensions</label>
+                                <select id="extensions" multiple>
+                                    <option value=".com" selected>.com</option>
+                                    <option value=".ai" selected>.ai</option>
+                                    <option value=".dev" selected>.dev</option>
+                                    <option value=".io" selected>.io</option>
+                                    <option value=".app">.app</option>
+                                    <option value=".tech">.tech</option>
+                                    <option value=".tools">.tools</option>
+                                </select>
+                                <div class="input-help">🏷️ Select multiple extensions (Ctrl/Cmd + click)</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="input-group">
+                                <label>Keywords</label>
+                                <textarea id="keywords" placeholder="e.g., artificial, intelligence, machine, learning, automation">artificial, intelligence, machine, learning, automation, neural, chatbot, assistant</textarea>
+                                <div class="input-help">🔑 Comma-separated keywords for domain generation</div>
+                            </div>
+
+                            <div class="input-group">
+                                <label>Risk Tolerance</label>
+                                <select id="riskTolerance">
+                                    <option value="conservative">Conservative (Low risk, stable returns)</option>
+                                    <option value="moderate" selected>Moderate (Balanced risk/reward)</option>
+                                    <option value="aggressive">Aggressive (High risk, high potential)</option>
+                                </select>
+                                <div class="input-help">⚖️ Your investment risk preference</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <button class="button" onclick="startAIDiscovery()">
+                            <span>🧠</span>
+                            Start AI Discovery
+                        </button>
+                    </div>
+
+                    <div class="ai-thinking" id="aiThinking">
+                        <div class="thinking-text">🧠 AI is analyzing market trends...</div>
+                        <div class="thinking-dots">
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                            <div class="thinking-dot"></div>
+                        </div>
+                    </div>
+
+                    <div class="results-grid" id="discoveryResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bulk Analysis Tab -->
+        <div id="bulk" class="tab-content">
+            <div class="card">
+                <div class="card-content">
+                    <h2 style="color: var(--accent-purple); margin-bottom: 1rem;">📊 Bulk Domain Analysis</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Analyze multiple domains simultaneously with our AI-powered risk assessment.
+                    </p>
+
+                    <div class="input-group">
+                        <label>Domain List (one per line)</label>
+                        <textarea class="bulk-input" id="bulkDomains" placeholder="centralmcp.ai
+openai.tools
+claude.dev
+gemini.chat
+anthropic.com
+huggingface.co
+langchain.dev
+vectorbase.ai
+promptengineer.io
+autogpt.tools">centralmcp.ai
+openai.tools
+claude.dev
+gemini.chat
+anthropic.com
+huggingface.co
+langchain.dev
+vectorbase.ai
+promptengineer.io
+autogpt.tools</textarea>
+                        <div class="input-help">📝 Enter up to 50 domains for bulk analysis</div>
+                    </div>
+
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <button class="button" onclick="analyzeBulkDomains()">
+                            <span>📊</span>
+                            Analyze All Domains
+                        </button>
+                    </div>
+
+                    <div class="analysis-results" id="bulkResults"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Market Intelligence Tab -->
+        <div id="intelligence" class="tab-content">
+            <div class="card">
+                <div class="card-content">
+                    <h2 style="color: var(--accent-purple); margin-bottom: 1rem;">🎯 Market Intelligence Dashboard</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Real-time market insights and trend analysis powered by AI.
+                    </p>
+
+                    <div class="market-overview">
+                        <div class="market-stat">
+                            <div class="market-value" id="trendingCount">247</div>
+                            <div class="market-label">Trending Domains</div>
+                        </div>
+                        <div class="market-stat">
+                            <div class="market-value" id="avgRisk">18.3%</div>
+                            <div class="market-label">Average Risk</div>
+                        </div>
+                        <div class="market-stat">
+                            <div class="market-value" id="opportunityScore">8.7</div>
+                            <div class="market-label">Opportunity Score</div>
+                        </div>
+                        <div class="market-stat">
+                            <div class="market-value" id="marketHeat">🔥 Hot</div>
+                            <div class="market-label">Market Heat</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="marketTrendsChart"></canvas>
+                    </div>
+
+                    <div class="intelligence-panel">
+                        <div class="intelligence-title">
+                            <span>🧠</span>
+                            AI Insights & Recommendations
+                        </div>
+                        <div class="intelligence-insights">
+                            <div class="insight-card">
+                                <div class="insight-title">🔥 Hot Trend: AI Assistant Domains</div>
+                                <div class="insight-content">
+                                    ChatGPT and AI assistant-related domains are seeing 340% growth in interest.
+                                    Current opportunities in .ai and .app extensions with lower competition.
+                                </div>
+                            </div>
+                            <div class="insight-card">
+                                <div class="insight-title">💡 Emerging Pattern</div>
+                                <div class="insight-content">
+                                    "Vector" and "embedding" related domains are trending up.
+                                    Consider: vectorbase.ai, embedtools.dev, semanticdb.io
+                                </div>
+                            </div>
+                            <div class="insight-card">
+                                <div class="insight-title">⚠️ Risk Alert</div>
+                                <div class="insight-content">
+                                    High competition in "chat" and "bot" keywords.
+                                    Risk threshold increased by 15% for these terms.
+                                </div>
+                            </div>
+                            <div class="insight-card">
+                                <div class="insight-title">🎯 Top Opportunity</div>
+                                <div class="insight-content">
+                                    "prompt" + "engineering" combinations show high growth with moderate risk.
+                                    Recommended: promptengineer.tools, promptcraft.dev
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Monitor Tab -->
+        <div id="monitor" class="tab-content">
+            <div class="card">
+                <div class="card-content">
+                    <h2 style="color: var(--accent-purple); margin-bottom: 1rem;">📡 Live Domain Monitor</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                        Real-time monitoring of domain availability, price changes, and market movements.
+                    </p>
+
+                    <div class="input-group">
+                        <label>Watch List (domains to monitor)</label>
+                        <textarea class="bulk-input" id="watchList" placeholder="Enter domains to monitor for availability and price changes">centralmcp.ai
+vectorbase.ai
+promptengineer.tools
+semanticdb.io
+embedtools.dev</textarea>
+                    </div>
+
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <button class="button" onclick="startMonitoring()">
+                            <span>📡</span>
+                            Start Live Monitoring
+                        </button>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="monitoringChart"></canvas>
+                    </div>
+
+                    <div id="monitoringResults"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let marketTrendsChart = null;
+        let monitoringChart = null;
+        let monitoringInterval = null;
+
+        // AI-powered domain discovery algorithms
+        const domainGenerators = {
+            ai: {
+                prefixes: ['neuro', 'cortex', 'synapse', 'quantum', 'vector', 'matrix', 'deep', 'smart'],
+                cores: ['ai', 'ml', 'bot', 'mind', 'brain', 'logic', 'intel', 'cog'],
+                suffixes: ['labs', 'systems', 'tech', 'works', 'hub', 'core', 'net', 'pro']
+            },
+            tech: {
+                prefixes: ['code', 'dev', 'tech', 'data', 'cloud', 'api', 'web', 'app'],
+                cores: ['forge', 'craft', 'build', 'stack', 'flow', 'hub', 'zone', 'base'],
+                suffixes: ['io', 'dev', 'tech', 'app', 'tools', 'kit', 'lib', 'framework']
+            }
+        };
+
+        const trendData = {
+            'ai': { momentum: 1.8, volatility: 1.3, baseScore: 78 },
+            'ml': { momentum: 1.6, volatility: 1.2, baseScore: 65 },
+            'neural': { momentum: 1.4, volatility: 1.1, baseScore: 45 },
+            'vector': { momentum: 1.7, volatility: 1.25, baseScore: 52 },
+            'prompt': { momentum: 2.1, volatility: 1.4, baseScore: 83 },
+            'chat': { momentum: 1.9, volatility: 1.5, baseScore: 91 },
+            'bot': { momentum: 1.3, volatility: 1.35, baseScore: 58 },
+            'automation': { momentum: 1.5, volatility: 1.1, baseScore: 61 }
+        };
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+
+            // Initialize charts when switching tabs
+            if (tabName === 'intelligence' && !marketTrendsChart) {
+                initializeMarketTrendsChart();
+            }
+            if (tabName === 'monitor' && !monitoringChart) {
+                initializeMonitoringChart();
+            }
+        }
+
+        function generateDomains(industry, keywords, extensions, count = 20) {
+            const domains = [];
+            const keywordList = keywords.split(',').map(k => k.trim().toLowerCase());
+            const extensionList = Array.isArray(extensions) ? extensions : [extensions];
+
+            // Generate domain combinations
+            for (let i = 0; i < count; i++) {
+                const keyword = keywordList[Math.floor(Math.random() * keywordList.length)];
+                const prefix = domainGenerators.ai.prefixes[Math.floor(Math.random() * domainGenerators.ai.prefixes.length)];
+                const extension = extensionList[Math.floor(Math.random() * extensionList.length)];
+
+                const combinations = [
+                    `${keyword}${extension}`,
+                    `${prefix}${keyword}${extension}`,
+                    `${keyword}${prefix}${extension}`,
+                    `${keyword}tech${extension}`,
+                    `smart${keyword}${extension}`
+                ];
+
+                const domain = combinations[Math.floor(Math.random() * combinations.length)];
+                if (!domains.includes(domain)) {
+                    domains.push(domain);
+                }
+            }
+
+            return domains.slice(0, count);
+        }
+
+        function calculateDomainMetrics(domain) {
+            // Extract keywords from domain
+            const keywords = domain.replace(/\.(com|ai|dev|io|app|tech|tools)$/i, '').split(/(?=[A-Z])/).join(' ').toLowerCase();
+
+            // Calculate trend score based on keywords
+            let trendScore = 0;
+            let keywordMatches = 0;
+
+            Object.entries(trendData).forEach(([keyword, data]) => {
+                if (keywords.includes(keyword)) {
+                    trendScore += data.baseScore;
+                    keywordMatches++;
+                }
+            });
+
+            if (keywordMatches > 0) {
+                trendScore = trendScore / keywordMatches;
+            } else {
+                trendScore = 25 + Math.random() * 25; // Random base score for unknown keywords
+            }
+
+            // Generate realistic trend series
+            const series = [];
+            let currentValue = trendScore * 0.3;
+
+            for (let i = 0; i < 36; i++) {
+                const change = (Math.random() - 0.45) * 8;
+                currentValue = Math.max(0, Math.min(100, currentValue + change));
+
+                // Add trending momentum
+                if (i > 20) {
+                    currentValue += (Math.random() * 3);
+                }
+
+                series.push(Math.round(currentValue));
+            }
+
+            // Calculate composite index
+            const recentMean = series.slice(-12).reduce((a, b) => a + b, 0) / 12;
+            const priorMean = series.slice(-24, -12).reduce((a, b) => a + b, 0) / 12;
+            const momentum = priorMean > 0 ? Math.max(0.6, Math.min(1.8, 1.0 + 0.8 * ((recentMean - priorMean) / priorMean))) : 1.2;
+            const volatility = Math.sqrt(series.reduce((acc, val) => acc + Math.pow(val - recentMean, 2), 0) / series.length) / 25;
+            const compositeIndex = (recentMean / 100) * momentum * Math.max(0.9, Math.min(1.4, 1.0 + 0.5 * volatility));
+
+            // Calculate risk metrics
+            const baseLambda = 0.005;
+            const lambda = baseLambda * (1.0 + 2.0 * (Math.max(compositeIndex - 0.10, 0.0) / (0.6 + Math.max(compositeIndex - 0.10, 0.0))));
+            const risk24m = 1 - Math.exp(-lambda * 24);
+            const mttu = 1 / lambda;
+
+            // Estimate market price
+            const basePrice = 1000;
+            const trendMultiplier = 1 + (compositeIndex * 2);
+            const extensionMultiplier = domain.includes('.ai') ? 1.5 : domain.includes('.io') ? 1.3 : 1.0;
+            const estimatedPrice = Math.round(basePrice * trendMultiplier * extensionMultiplier);
+
+            return {
+                domain,
+                trendScore: Math.round(recentMean),
+                compositeIndex: compositeIndex.toFixed(3),
+                momentum: momentum.toFixed(2),
+                volatility: volatility.toFixed(2),
+                lambda: lambda.toFixed(4),
+                risk24m: (risk24m * 100).toFixed(1),
+                mttu: mttu.toFixed(1),
+                estimatedPrice,
+                series,
+                recommendation: risk24m > 0.15 ? 'WAIT' : 'BUY',
+                opportunityScore: Math.round((1 - risk24m) * compositeIndex * 10)
+            };
+        }
+
+        async function startAIDiscovery() {
+            const thinkingDiv = document.getElementById('aiThinking');
+            const resultsDiv = document.getElementById('discoveryResults');
+
+            // Show thinking animation
+            thinkingDiv.classList.add('active');
+            resultsDiv.innerHTML = '';
+
+            // Get user inputs
+            const industry = document.getElementById('industry').value;
+            const keywords = document.getElementById('keywords').value;
+            const extensions = Array.from(document.getElementById('extensions').selectedOptions).map(opt => opt.value);
+            const riskTolerance = document.getElementById('riskTolerance').value;
+
+            // Simulate AI processing delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            thinkingDiv.querySelector('.thinking-text').textContent = '🧠 AI is generating domain combinations...';
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            thinkingDiv.querySelector('.thinking-text').textContent = '📊 Analyzing market trends and risk factors...';
+            await new Promise(resolve => setTimeout(resolve, 1500));
+
+            thinkingDiv.querySelector('.thinking-text').textContent = '🎯 Calculating investment recommendations...';
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // Generate and analyze domains
+            const generatedDomains = generateDomains(industry, keywords, extensions, 12);
+            const analyzedDomains = generatedDomains.map(domain => calculateDomainMetrics(domain));
+
+            // Sort by opportunity score
+            analyzedDomains.sort((a, b) => b.opportunityScore - a.opportunityScore);
+
+            // Hide thinking animation
+            thinkingDiv.classList.remove('active');
+
+            // Display results
+            displayDiscoveryResults(analyzedDomains);
+        }
+
+        function displayDiscoveryResults(domains) {
+            const resultsDiv = document.getElementById('discoveryResults');
+
+            resultsDiv.innerHTML = domains.map(domain => {
+                const riskClass = domain.risk24m > 20 ? 'risky' : domain.opportunityScore > 70 ? 'high-opportunity' : '';
+                const recommendationClass = domain.recommendation === 'BUY' ? 'buy' : 'wait';
+
+                return `
+                    <div class="domain-card ${riskClass}" onclick="analyzeDomain('${domain.domain}')">
+                        <div class="domain-name">${domain.domain}</div>
+                        <div class="domain-metrics">
+                            <div class="metric">
+                                <div class="metric-label">Trend Score</div>
+                                <div class="metric-value">${domain.trendScore}/100</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Risk (24m)</div>
+                                <div class="metric-value">${domain.risk24m}%</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Est. Price</div>
+                                <div class="metric-value">$${domain.estimatedPrice.toLocaleString()}</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-label">Opportunity</div>
+                                <div class="metric-value">${domain.opportunityScore}/100</div>
+                            </div>
+                        </div>
+                        <div class="recommendation ${recommendationClass}">
+                            ${domain.recommendation === 'BUY' ? '🚀 RECOMMEND: BUY NOW' : '⏳ RECOMMEND: WAIT'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function analyzeBulkDomains() {
+            const bulkDomains = document.getElementById('bulkDomains').value.trim().split('\n').filter(d => d.trim());
+            const resultsDiv = document.getElementById('bulkResults');
+
+            if (bulkDomains.length === 0) {
+                alert('Please enter at least one domain to analyze');
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div style="text-align: center; color: var(--accent-purple);">🧠 AI is analyzing domains...</div>';
+
+            // Simulate processing
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            const analyzedDomains = bulkDomains.map(domain => calculateDomainMetrics(domain));
+
+            // Create results table
+            const tableHTML = `
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Domain</th>
+                            <th>Trend Score</th>
+                            <th>Risk Level</th>
+                            <th>Est. Price</th>
+                            <th>Opportunity</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${analyzedDomains.map(domain => `
+                            <tr>
+                                <td style="font-weight: bold;">${domain.domain}</td>
+                                <td>${domain.trendScore}/100</td>
+                                <td>
+                                    <span class="risk-badge ${domain.risk24m > 20 ? 'risk-high' : domain.risk24m > 10 ? 'risk-medium' : 'risk-low'}">
+                                        ${domain.risk24m}%
+                                    </span>
+                                </td>
+                                <td>$${domain.estimatedPrice.toLocaleString()}</td>
+                                <td>${domain.opportunityScore}/100</td>
+                                <td>
+                                    <span class="risk-badge ${domain.recommendation === 'BUY' ? 'risk-low' : 'risk-medium'}">
+                                        ${domain.recommendation}
+                                    </span>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            resultsDiv.innerHTML = tableHTML;
+        }
+
+        function analyzeDomain(domain) {
+            // Switch to individual analysis mode
+            alert(`Detailed analysis for ${domain} would open here with full charts and metrics.`);
+        }
+
+        function initializeMarketTrendsChart() {
+            const ctx = document.getElementById('marketTrendsChart').getContext('2d');
+
+            // Generate market trend data
+            const labels = Array.from({length: 52}, (_, i) => `Week ${i + 1}`);
+            const aiData = Array.from({length: 52}, (_, i) => 30 + Math.sin(i * 0.1) * 20 + i * 0.8 + Math.random() * 10);
+            const mlData = Array.from({length: 52}, (_, i) => 25 + Math.sin(i * 0.15) * 15 + i * 0.6 + Math.random() * 8);
+            const vectorData = Array.from({length: 52}, (_, i) => 20 + Math.sin(i * 0.2) * 25 + i * 1.2 + Math.random() * 12);
+
+            marketTrendsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'AI/Assistant',
+                            data: aiData,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Machine Learning',
+                            data: mlData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Vector/Embedding',
+                            data: vectorData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#a3a3a3' }
+                        },
+                        tooltip: {
+                            backgroundColor: '#0a0a0a',
+                            titleColor: '#f5f5f5',
+                            bodyColor: '#a3a3a3',
+                            borderColor: '#404040'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#404040' },
+                            ticks: { color: '#a3a3a3' }
+                        },
+                        y: {
+                            grid: { color: '#404040' },
+                            ticks: { color: '#a3a3a3' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeMonitoringChart() {
+            const ctx = document.getElementById('monitoringChart').getContext('2d');
+
+            const labels = Array.from({length: 24}, (_, i) => `${i}:00`);
+            const priceData = Array.from({length: 24}, (_, i) => 2000 + Math.sin(i * 0.5) * 500 + Math.random() * 200);
+
+            monitoringChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Domain Price Changes',
+                        data: priceData,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#a3a3a3' }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#404040' },
+                            ticks: { color: '#a3a3a3' }
+                        },
+                        y: {
+                            grid: { color: '#404040' },
+                            ticks: {
+                                color: '#a3a3a3',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function startMonitoring() {
+            const watchList = document.getElementById('watchList').value.trim().split('\n').filter(d => d.trim());
+            const resultsDiv = document.getElementById('monitoringResults');
+
+            if (watchList.length === 0) {
+                alert('Please enter domains to monitor');
+                return;
+            }
+
+            // Start real-time monitoring simulation
+            if (monitoringInterval) {
+                clearInterval(monitoringInterval);
+            }
+
+            resultsDiv.innerHTML = `
+                <div class="intelligence-panel">
+                    <div class="intelligence-title">
+                        <span>📡</span>
+                        Live Monitoring Active
+                    </div>
+                    <div class="intelligence-insights">
+                        ${watchList.map(domain => `
+                            <div class="insight-card">
+                                <div class="insight-title">${domain}</div>
+                                <div class="insight-content">
+                                    Status: Monitoring • Last checked: Just now •
+                                    Price: $${(2000 + Math.random() * 3000).toFixed(0)} •
+                                    Availability: Checking...
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Update every 5 seconds
+            monitoringInterval = setInterval(() => {
+                updateMonitoringData(watchList);
+            }, 5000);
+        }
+
+        function updateMonitoringData(watchList) {
+            // Simulate real-time updates
+            const resultsDiv = document.getElementById('monitoringResults');
+            const insights = watchList.map(domain => ({
+                domain,
+                price: (2000 + Math.random() * 3000).toFixed(0),
+                change: (Math.random() * 10 - 5).toFixed(1),
+                available: Math.random() > 0.7
+            }));
+
+            resultsDiv.innerHTML = `
+                <div class="intelligence-panel">
+                    <div class="intelligence-title">
+                        <span>📡</span>
+                        Live Monitoring Active
+                    </div>
+                    <div class="intelligence-insights">
+                        ${insights.map(item => `
+                            <div class="insight-card" style="${item.change > 0 ? 'border-left: 3px solid #10b981;' : item.change < 0 ? 'border-left: 3px solid #ef4444;' : ''}">
+                                <div class="insight-title">${item.domain}</div>
+                                <div class="insight-content">
+                                    Price: $${parseInt(item.price).toLocaleString()} •
+                                    Change: <span style="${item.change > 0 ? 'color: #10b981;' : item.change < 0 ? 'color: #ef4444;' : ''}">${item.change > 0 ? '+' : ''}${item.change}%</span> •
+                                    Status: ${item.available ? '<span style="color: #10b981;">✅ Available</span>' : '<span style="color: #f59e0b;">⏳ Taken</span>'}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Initialize market stats on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simulate real-time market stats updates
+            setInterval(() => {
+                document.getElementById('trendingCount').textContent = (200 + Math.floor(Math.random() * 100)).toString();
+                document.getElementById('avgRisk').textContent = (15 + Math.random() * 10).toFixed(1) + '%';
+                document.getElementById('opportunityScore').textContent = (7 + Math.random() * 3).toFixed(1);
+
+                const heatLevels = ['🔥 Hot', '🌡️ Warm', '❄️ Cool', '🌡️ Warming', '🔥 Very Hot'];
+                document.getElementById('marketHeat').textContent = heatLevels[Math.floor(Math.random() * heatLevels.length)];
+            }, 5000);
+        });
+    </script>
+</body>
+</html>

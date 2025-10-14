@@ -1,244 +1,257 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import { join } from 'path';
-import { glob } from 'glob';
+import sqlite3 from 'sqlite3';
+import { open, Database } from 'sqlite';
+import path from 'path';
+import fs from 'fs/promises';
+import AdmZip from 'adm-zip';
 
-// API endpoint to fetch knowledge data from SKP directory
+// Open database connection
+async function openDb(): Promise<Database> {
+  return open({
+    filename: path.join(process.cwd(), '../data/registry.db'),
+    driver: sqlite3.Database,
+  });
+}
+
+// GET /api/knowledge/skp - List all SKPs
+// GET /api/knowledge/skp?skp_id=XXX - Get specific SKP info
+// GET /api/knowledge/skp?skp_id=XXX&action=contents - List SKP contents
+// GET /api/knowledge/skp?skp_id=XXX&file=YYY - Get specific file from SKP
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const category = searchParams.get('category');
-    const type = searchParams.get('type');
+    const searchParams = request.nextUrl.searchParams;
+    const skp_id = searchParams.get('skp_id');
+    const action = searchParams.get('action');
+    const file = searchParams.get('file');
 
-    // Path to SKP directory
-    const skpPath = join(process.cwd(), '../03_CONTEXT_FILES/SPECIALIZED_KNOWLEDGE_PACKS');
+    const db = await openDb();
 
-    // Check if SKP directory exists
-    try {
-      await fs.access(skpPath);
-    } catch {
-      // Return mock data if directory doesn't exist
+    // List all SKPs
+    if (!skp_id) {
+      const skps = await db.all(`
+        SELECT
+          skp_id,
+          display_name,
+          category,
+          current_version,
+          file_count,
+          total_words,
+          file_path,
+          created_at,
+          updated_at
+        FROM skp_registry
+        ORDER BY created_at DESC
+      `);
+
+      await db.close();
+
       return NextResponse.json({
-        categories: generateMockCategories(),
-        items: generateMockItems(),
-        message: 'SKP directory not found - showing demo data'
+        success: true,
+        skps,
+        total: skps.length,
       });
     }
 
-    // Read SKP directory contents
-    const skpContents = await fs.readdir(skpPath, { withFileTypes: true });
+    // Get specific SKP info
+    const skp = await db.get(
+      `SELECT * FROM skp_registry WHERE skp_id = ?`,
+      [skp_id]
+    );
 
-    // Process directories and files
-    const categories = [];
-    const items = [];
+    if (!skp) {
+      await db.close();
+      return NextResponse.json(
+        { success: false, error: 'SKP not found' },
+        { status: 404 }
+      );
+    }
 
-    for (const entry of skpContents) {
-      if (entry.isDirectory()) {
-        // Process directory as a category
-        const categoryPath = join(skpPath, entry.name);
-        const categoryFiles = await fs.readdir(categoryPath);
+    // List SKP contents
+    if (action === 'contents') {
+      const filePath = path.join(process.cwd(), '..', skp.file_path);
 
-        categories.push({
-          id: entry.name,
-          name: formatCategoryName(entry.name),
-          count: categoryFiles.length,
-          type: entry.name.toLowerCase().replace(/\s+/g, '-'),
-          icon: getCategoryIcon(entry.name)
+      try {
+        const zip = new AdmZip(filePath);
+        const entries = zip.getEntries();
+
+        const contents = entries.map(entry => ({
+          name: entry.entryName,
+          size: entry.header.size,
+          compressedSize: entry.header.compressedSize,
+          date: entry.header.time,
+          isDirectory: entry.isDirectory,
+        }));
+
+        await db.close();
+
+        return NextResponse.json({
+          success: true,
+          skp_id,
+          contents,
+          total_files: contents.length,
         });
-
-        // Process files in category
-        for (const file of categoryFiles) {
-          const filePath = join(categoryPath, file);
-          const stats = await fs.stat(filePath);
-
-          items.push({
-            id: `${entry.name}-${file}`,
-            title: formatItemName(file),
-            description: `Knowledge pack from ${entry.name}`,
-            type: getItemType(file),
-            category: formatCategoryName(entry.name),
-            size: formatFileSize(stats.size),
-            updated: stats.mtime.toISOString().split('T')[0],
-            path: filePath
-          });
-        }
-      } else if (entry.name.endsWith('.zip') || entry.name.endsWith('.md')) {
-        // Process top-level files
-        const filePath = join(skpPath, entry.name);
-        const stats = await fs.stat(filePath);
-
-        items.push({
-          id: `root-${entry.name}`,
-          title: formatItemName(entry.name),
-          description: `Standalone knowledge pack`,
-          type: getItemType(entry.name),
-          category: 'Documentation',
-          size: formatFileSize(stats.size),
-          updated: stats.mtime.toISOString().split('T')[0],
-          path: filePath
-        });
+      } catch (error) {
+        await db.close();
+        return NextResponse.json(
+          { success: false, error: `Failed to read SKP: ${error}` },
+          { status: 500 }
+        );
       }
     }
 
-    // Filter results if requested
-    let filteredItems = items;
-    if (category && category !== 'all') {
-      filteredItems = items.filter(item =>
-        item.category.toLowerCase().includes(category.toLowerCase())
+    // Get specific file from SKP
+    if (file) {
+      const filePath = path.join(process.cwd(), '..', skp.file_path);
+
+      try {
+        const zip = new AdmZip(filePath);
+        const entry = zip.getEntry(file);
+
+        if (!entry) {
+          await db.close();
+          return NextResponse.json(
+            { success: false, error: 'File not found in SKP' },
+            { status: 404 }
+          );
+        }
+
+        const content = zip.readAsText(entry);
+
+        // Log usage
+        await db.run(
+          `INSERT INTO skp_usage (skp_id, usage_type, accessed_by, context) VALUES (?, ?, ?, ?)`,
+          [skp_id, 'file_accessed', 'dashboard', file]
+        );
+
+        await db.close();
+
+        return NextResponse.json({
+          success: true,
+          skp_id,
+          file,
+          content,
+        });
+      } catch (error) {
+        await db.close();
+        return NextResponse.json(
+          { success: false, error: `Failed to read file: ${error}` },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Get SKP info with version history
+    const versions = await db.all(
+      `SELECT version, changelog, files_added, files_updated, created_at, created_by
+       FROM skp_versions WHERE skp_id = ? ORDER BY created_at DESC`,
+      [skp_id]
+    );
+
+    // Log usage
+    await db.run(
+      `INSERT INTO skp_usage (skp_id, usage_type, accessed_by) VALUES (?, ?, ?)`,
+      [skp_id, 'info_accessed', 'dashboard']
+    );
+
+    await db.close();
+
+    return NextResponse.json({
+      success: true,
+      skp,
+      versions,
+    });
+  } catch (error) {
+    console.error('SKP API error:', error);
+    return NextResponse.json(
+      { success: false, error: String(error) },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/knowledge/skp - Search within SKPs
+export async function POST(request: NextRequest) {
+  try {
+    const { skp_id, query } = await request.json();
+
+    if (!skp_id || !query) {
+      return NextResponse.json(
+        { success: false, error: 'skp_id and query required' },
+        { status: 400 }
       );
     }
-    if (type && type !== 'all') {
-      filteredItems = filteredItems.filter(item => item.type === type);
+
+    const db = await openDb();
+
+    const skp = await db.get(
+      `SELECT * FROM skp_registry WHERE skp_id = ?`,
+      [skp_id]
+    );
+
+    if (!skp) {
+      await db.close();
+      return NextResponse.json(
+        { success: false, error: 'SKP not found' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({
-      categories: categories.length > 0 ? categories : generateMockCategories(),
-      items: filteredItems.length > 0 ? filteredItems : generateMockItems(),
-      total: items.length,
-      filtered: filteredItems.length
-    });
+    const filePath = path.join(process.cwd(), '..', skp.file_path);
 
+    try {
+      const zip = new AdmZip(filePath);
+      const entries = zip.getEntries();
+
+      const results: any[] = [];
+
+      for (const entry of entries) {
+        if (entry.isDirectory) continue;
+
+        try {
+          const content = zip.readAsText(entry);
+          const lines = content.split('\n');
+
+          lines.forEach((line, lineNumber) => {
+            if (line.toLowerCase().includes(query.toLowerCase())) {
+              results.push({
+                file: entry.entryName,
+                line: lineNumber + 1,
+                content: line.trim(),
+              });
+            }
+          });
+        } catch (e) {
+          // Skip binary files
+        }
+      }
+
+      // Log usage
+      await db.run(
+        `INSERT INTO skp_usage (skp_id, usage_type, accessed_by, context) VALUES (?, ?, ?, ?)`,
+        [skp_id, 'searched', 'dashboard', query]
+      );
+
+      await db.close();
+
+      return NextResponse.json({
+        success: true,
+        skp_id,
+        query,
+        results,
+        total_matches: results.length,
+      });
+    } catch (error) {
+      await db.close();
+      return NextResponse.json(
+        { success: false, error: `Search failed: ${error}` },
+        { status: 500 }
+      );
+    }
   } catch (error) {
-    console.error('Error fetching SKP data:', error);
-
-    // Return mock data on error
-    return NextResponse.json({
-      categories: generateMockCategories(),
-      items: generateMockItems(),
-      error: error instanceof Error ? error.message : 'Unknown error',
-      message: 'Error fetching SKP data - showing demo data'
-    });
+    console.error('SKP search error:', error);
+    return NextResponse.json(
+      { success: false, error: String(error) },
+      { status: 500 }
+    );
   }
-}
-
-// Helper functions
-function formatCategoryName(name: string): string {
-  return name
-    .split(/[-_]/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function formatItemName(name: string): string {
-  return name
-    .replace(/\.(zip|md|html|json)$/i, '')
-    .split(/[-_]/)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
-function getCategoryIcon(name: string): string {
-  const icons: Record<string, string> = {
-    'UI': '🎨',
-    'UX': '🎨',
-    'FRONTEND': '⚛️',
-    'BACKEND': '⚙️',
-    'API': '🔌',
-    'AI': '🤖',
-    'ML': '🧠',
-    'DATA': '📊',
-    'DATABASE': '🗄️',
-    'SECURITY': '🔒',
-    'DEVOPS': '🚀',
-    'INFRASTRUCTURE': '☁️',
-    'DOCUMENTATION': '📖',
-    'TESTING': '🧪',
-    'ULTRATHINK': '🧠',
-    'VOICE': '🎤',
-    'REALTIME': '⚡'
-  };
-
-  const upper = name.toUpperCase();
-  for (const [key, icon] of Object.entries(icons)) {
-    if (upper.includes(key)) {
-      return icon;
-    }
-  }
-
-  return '📁';
-}
-
-function getItemType(filename: string): 'interactive' | 'components' | 'documentation' {
-  const ext = filename.split('.').pop()?.toLowerCase();
-
-  if (ext === 'html') return 'interactive';
-  if (filename.includes('component')) return 'components';
-  return 'documentation';
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-// Mock data generators
-function generateMockCategories() {
-  return [
-    { id: 'ui-systems', name: 'UI Systems', count: 15, type: 'ui', icon: '🎨' },
-    { id: 'backend-apis', name: 'Backend APIs', count: 23, type: 'backend', icon: '⚙️' },
-    { id: 'ai-integration', name: 'AI Integration', count: 8, type: 'ai', icon: '🤖' },
-    { id: 'data-models', name: 'Data Models', count: 12, type: 'data', icon: '📊' },
-    { id: 'security', name: 'Security', count: 6, type: 'security', icon: '🔒' },
-    { id: 'devops', name: 'DevOps', count: 10, type: 'devops', icon: '🚀' }
-  ];
-}
-
-function generateMockItems() {
-  return [
-    {
-      id: '1',
-      title: 'OKLCH Color System',
-      description: 'Complete guide to modern color management with OKLCH perceptual color space',
-      type: 'interactive',
-      category: 'UI Systems',
-      size: '2.3 MB',
-      updated: '2025-10-12'
-    },
-    {
-      id: '2',
-      title: 'React Component Library',
-      description: 'Reusable UI components with accessibility built-in',
-      type: 'components',
-      category: 'UI Systems',
-      size: '1.8 MB',
-      updated: '2025-10-11'
-    },
-    {
-      id: '3',
-      title: 'API Authentication Patterns',
-      description: 'JWT, OAuth2, and API key best practices',
-      type: 'documentation',
-      category: 'Backend APIs',
-      size: '856 KB',
-      updated: '2025-10-10'
-    },
-    {
-      id: '4',
-      title: 'Auto-Proactive Engine',
-      description: 'Self-optimizing loops for autonomous project management',
-      type: 'interactive',
-      category: 'AI Integration',
-      size: '3.1 MB',
-      updated: '2025-10-13'
-    },
-    {
-      id: '5',
-      title: 'Database Schema Design',
-      description: 'Optimized SQLite schemas for multi-registry systems',
-      type: 'documentation',
-      category: 'Data Models',
-      size: '1.2 MB',
-      updated: '2025-10-09'
-    },
-    {
-      id: '6',
-      title: 'Security Audit Checklist',
-      description: 'Comprehensive security validation for MCP systems',
-      type: 'documentation',
-      category: 'Security',
-      size: '645 KB',
-      updated: '2025-10-08'
-    }
-  ];
 }

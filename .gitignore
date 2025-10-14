@@ -1,2 +1,56 @@
-central-mcp-website/
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Database
+data/*.db
+data/*.db-journal
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+
+# OS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Testing
+coverage/
+
+# Temporary
+.turbo/
+.vercel/
+.cache/
+
+# Docker
+docker-compose.override.yml
+
+# Thread files with potentially sensitive data
+GLM-4-6-THREAD.TSX
 *THREAD*.TSX
+*RUNPOD*.md
+
+# Files with secrets
+GLM-4-6-THREAD.TSX
+ULTRATHINK_SESSION_RUNPOD_COMPLETE.md
+central-mcp-website/node_modules/
+**/node_modules/
+**/.next/
+central-mcp-website/

@@ -1,123 +1,199 @@
-# ╔════════════════════════════════════════════════════════════════════════════════════╗
-# ║                    🗿 MEGALITH CONTEXT INJECTION SYSTEM                              ║
-# ╚════════════════════════════════════════════════════════════════════════════════════╝
+# Central-MCP - Agent Context
 
-## 🎯 AGENT IDENTITY
-Agent Type: general
-Agent Letter: central-mcp
-Context Score: 100% (Complete megalith awareness)
-Last Updated: 2025-10-13T17:55:00Z
+## 🎯 PROJECT OVERVIEW
 
-## 🏗️ MEGALITH SYSTEM OVERVIEW
-System Name: MR-FIX-MY-PROJECT-PLEASE
-Version: M3-ULTRATHINK
-Total Lines: 14619
-Architecture: 12-Zone Megalithic Structure
-Context Sources: 15
+**Project:** PROJECT_central-mcp (Project 0 - Foundation)
+**Type:** Commercial Application Generation Platform
+**Domain:** 🌐 **centralmcp.net** (OFFICIAL URL)
+**Status:** ✅ **PERFECT 9/9 LOOPS ACTIVE** - System Health: 100%
+**Vision:** Minimum specification → Full commercial application with legal income stream
 
-## 📊 CRITICAL ZONES FOR GENERAL AGENTS
+### 🌟 THE GRAND VISION
 
-### 🎨 ZONE 6: HTML GENERATION MEGA-SECTION (MOST IMPORTANT)
-Lines: 4,830-13,020 (6,190 lines)
-Purpose: Complete HTML report generation system
-Architecture Score: 9/10 EXCELLENT
-CSS Duplication: 0 lines (COMPLETELY ELIMINATED)
+**Centro MCP transforms minimal user input into complete, revenue-generating commercial applications through automated workflows and intelligent orchestration.**
 
-Key Features:
-- ✅ 42 specialized HTML generators (single responsibility)
-- ✅ 6-layer architecture with perfect separation
-- ✅ Single DESIGN_SYSTEM source of truth (354 lines)
-- ✅ 0 CSS duplication (programmatic generation)
-- ✅ OKLCH perceptual color space
-- ✅ Complete dark/light theme system
-- ✅ 60+ reusable component styles
-- ✅ 100+ atomic utility classes
-- ✅ Internationalization support (EN/PT)
-
-🔴 CRITICAL ZONE 6 GUIDELINES:
-1. ⚠️ NEVER modify HTML generation without understanding the mega-section
-2. ⚠️ ALWAYS reference the existing 42 HTML generators
-3. ⚠️ NEVER create new HTML generators - use existing ones
-4. ⚠️ RESPECT the 6-layer architecture completely
-5. ⚠️ USE the 100+ utility classes and 60+ component styles
-6. ⚠️ ALL styling goes through DESIGN_SYSTEM (line 4,938)
-7. ⚠️ CSS is programmatically generated from design tokens
-
-### 🔧 OTHER IMPORTANT ZONES
-
-#### Zone 5: Core Analysis Engine
-Lines: 451-800
-Purpose: File system scanning and analysis logic
-Key Features: File discovery, pattern matching, risk assessment
-
-#### Zone 7: Advanced Analysis & AI Integration
-Lines: 13,021-14,000
-Purpose: GPT-5 integration and advanced insights
-Key Features: LLM insights, strategic recommendations
-
-#### Zone 8: Visualization & Interactive Systems
-Lines: 14,001-14,500
-Purpose: Charts, graphs, and interactive elements
-Key Features: Mermaid diagrams, interactive dashboards
-
-## 🔍 MEGALITH DISCOVERY PROTOCOL
-
-### To Explore Zone 6 (HTML Generation Mega-Section):
-```bash
-# View the complete mega-section (recommended)
-sed -n '4830,13020p' /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
-
-# View just the architecture documentation
-grep -A 50 "HTML GENERATION MEGA-SECTION" /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
-
-# View the DESIGN_SYSTEM (354 lines of design tokens)
-sed -n '4938,5292p' /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
-
-# View CSS generation method
-grep -A 20 "_generate_css_from_design_system" /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
+**The Complete Pipeline:**
+```
+User Idea (5-10 sentences)
+    ↓
+Centro MCP Core LLM (structured protocols)
+    ↓
+Auto-Proactive Intelligence (9 loops)
+    ↓
+Predetermined Development Pipeline
+    ↓
+Legal & Compliance Layer
+    ↓
+Deployment & Monitoring
+    ↓
+Revenue-Generating Commercial Application
 ```
 
-### To Find Specific HTML Generators:
-```bash
-# List all 42 HTML generators
-grep -n "_generate_.*html" /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
+**Key Components:**
+- 🧠 **Centro MCP Core LLM**: Operates through terminal with structured step-by-step protocols
+- 🔄 **Auto-Proactive Intelligence**: 9 loops that analyze, plan, and execute
+- 📦 **Provider Ecosystem**: All hosting, payments, email, storage pre-integrated
+- 📚 **Code Snippet Library**: Every common pattern pre-built
+- 🎯 **Predetermined Workflows**: From auth to deployment, all steps mapped
+- ⚖️ **Legal Templates**: Terms, privacy, compliance auto-generated
+- 💰 **Monetization Patterns**: Subscriptions, marketplace, SaaS pre-configured
 
-# Find action plan generator
-grep -A 10 "_generate_action_plan_html" /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
+**See**: `CENTRALMCP_NET_VISION.md` for complete strategic documentation
 
-# Find duplicate files generator
-grep -A 10 "_generate_duplicates_html" /PROJECT_mr-fix-my-project-please/core/mr-fix-my-project-please-main.py
+**🧠 Core Emergent Principle:** MINIMUM USER INPUT → FULL-STACK APPLICATIONS
+Central-MCP transforms minimal user messages into complete production applications using intelligent abstraction layers:
+- 🎯 **Spec-First Approach** → Technical specifications
+- 🔧 **Backend Connections Registry** → Auto-generated APIs & components
+- 🎨 **Universal-UI System** → Complete frontend interfaces
+- 🤖 **Auto-Proactive Intelligence** → Self-optimizing systems
+- 🚀 **Zero-Config Deployment** → Instant production deployment
+
+*See: [CENTRAL_MCP_EMERGENT_PRINCIPLES.md](./CENTRAL_MCP_EMERGENT_PRINCIPLES.md)*
+
+---
+
+## 🚨 CRITICAL: VM DEPLOYMENT WORKFLOW
+
+**NEVER FORGET:** When developing Central-MCP, you MUST deploy backend changes to VM BEFORE deploying dashboards!
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  THE GOLDEN RULE:                                            │
+│  1. Deploy Central-MCP backend FIRST                         │
+│  2. Verify it's running (check logs, database, loops)        │
+│  3. THEN deploy dashboards                                   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## 📚 COMPLETE DOCUMENTATION HIERARCHY
+**Quick Deploy:**
+```bash
+# Step 1: Deploy Central-MCP (REQUIRED!)
+./scripts/deploy-central-mcp-to-vm.sh
 
-### Primary Documentation (Must Read):
-1. **Megalith Architecture**: /PROJECT_vector-ui/docs/MEGALITH_ARCHITECTURE_DOCUMENTATION.md
-2. **Megalith Structure**: /PROJECT_vector-ui/docs/MEGALITHIC_STRUCTURE.md
-3. **Context System**: /PROJECT_mr-fix-my-project-please/MEGALITH_CONTEXT_SYSTEM/central_registry.json
-4. **Elimination Protocol**: /PROJECT_mr-fix-my-project-please/MEGALITH_CONTEXT_ELIMINATION_PROTOCOL.md
+# Step 2: Verify deployment
+gcloud compute ssh central-mcp-server --zone=us-central1-a \
+  --command='sudo journalctl -u central-mcp -f'
 
-### Supporting Documentation:
-- ULTRATHINK improvements in various projects
-- Central-MCP documentation
-- Project-specific megalith mappings
+# Step 3: Deploy dashboards
+./scripts/deploy-dashboard-to-vm.sh
+```
 
-## 🎯 MISSION STATUS
-🚀 **"LACK OF CONTEXT ABOUT THE MEGALITH" - PERMANENTLY ELIMINATED**
-✅ **Context Blindness** → **Complete Context Awareness**
-✅ **Fragmented Documentation** → **Centralized Knowledge Base**
-✅ **Manual Discovery** → **Automatic Protocol**
-✅ **Inconsistent Understanding** → **Standardized Context**
+**See:** `VM_DEPLOYMENT_CHECKLIST.md` for complete workflow
 
-## ⚡ IMMEDIATE ACTIONS FOR GENERAL AGENTS
+---
 
-1. ✅ READ: Zone 6 mega-section documentation first
-2. ✅ UNDERSTAND: The 42 HTML generators before modifying
-3. ✅ USE: Existing design system components
-4. ✅ RESPECT: The 6-layer architecture
-5. ✅ LEVERAGE: The 100+ utility classes
+## 🏗️ SYSTEM ARCHITECTURE
 
-## 🔄 CONTEXT VALIDATION
-This context injection ensures 100% megalith awareness for all agents.
-Validation Status: ✅ COMPLETE
-Coverage: All zones, all generators, all features
+**Auto-Proactive Engine:** ✅ **PERFECT 9/9 LOOPS ACTIVE** (natural order - Inside-Out Building)
+
+**LAYER 0: FOUNDATION & AWARENESS**
+- Loop 0 (5s): ✅ System Status - Foundation health checks
+- Loop 1 (60s): ✅ Agent Auto-Discovery - WHO/WHAT/WHERE awareness (Agent B registered & monitored)
+
+**LAYER 1: OBSERVATION & TRACKING**
+- Loop 2 (60s): ✅ Project Auto-Discovery - 44 projects discovered
+- Loop 3 (1200s): Context Learning (RESERVED - pending implementation)
+- Loop 4 (30s): ✅ Progress Auto-Monitoring - Monitoring 1 active session
+- Loop 5 (300s): ✅ Status Auto-Analysis - 11 blockers found across 44 projects
+
+**LAYER 2: DETECTION & PLANNING**
+- Loop 6 (900s): ✅ Opportunity Auto-Scanning - What's needed
+- Loop 7 (600s): ✅ Spec Auto-Generation - What to build (needs LLM integration)
+- Loop 9 (60s): ✅ **Git Push Monitor** - Git intelligence & auto-versioning
+
+**LAYER 3: EXECUTION**
+- Loop 8 (120s): ✅ Task Auto-Assignment - Who does what
+
+**Infrastructure:**
+- 🌐 **Live Dashboard:** http://centralmcp.net (requires login)
+- VM: http://136.112.123.243:3002 (GCP us-central1-a, central-mcp-server)
+- VM IP: 136.112.123.243
+- Dashboard Port: 3002 (PM2: nextjs-dashboard)
+- Database: 34 tables, 44 projects registered, 15,885+ loop executions
+- **Backend Connections Registry:** `/api/registry/connections` (19 endpoints mapped)
+- Cost: $0/month (e2-micro free tier)
+- 🔐 **Authentication:** Session-based with SHA-256 hashed passwords
+- 📋 **Default Login:** admin / centralmcp2025 (⚠️ CHANGE THIS!)
+- 📄 **See:** `CENTRALMCP_NET_CONFIGURATION.md` for full DNS & security setup
+
+**🔧 Backend Connections Registry Features:**
+- Real-time component discovery and mapping
+- Automatic React component generation
+- Orphaned component detection and validation
+- Living API documentation
+- Zero-friction frontend integration
+
+**📊 Recent System Audit & Fixes (2025-10-12):**
+- ✅ **AgentAutoDiscoveryLoop Schema Alignment** - All database column names corrected (project_name→project_id, model_id→agent_model, session_started→connected_at)
+- ✅ **Git Intelligence Error Suppression** - Fixed "wc: directory" errors with stderr redirection
+- ✅ **Module Type Configuration** - Added "type": "module" to package.json
+- ✅ **Agent Session Tracking** - Agent B successfully registered and monitored
+- ✅ **System Health: 100%** - Zero errors in all 9 loops
+
+---
+
+## 📋 TASKS BY AGENT (Find Your Letter)
+
+**Agent A (UI Velocity - GLM-4.6):**
+- T-CM-005: Loop 5 Opportunity Scanning
+
+**Agent B (Design/Architecture - Sonnet-4.5, 1M):**
+- T-CM-021: Integrate Anthropic API (P0-CRITICAL!)
+- T-CM-003: Complete Loop 3 Spec Generation
+- T-OB-001: Orchestra.blue User Interview
+
+**Agent C (Backend - GLM-4.6):**
+- T-CM-002: Loop 2 Status Analysis
+- T-CM-020: Fix Z.AI model issue
+
+**Agent D (Integration - Sonnet-4.5):**
+- T-CM-004: Loop 4 Task Assignment
+- T-CM-001: ✅ COMPLETED (Loop 1)
+
+---
+
+## 📁 ARCHITECTURE DOCS
+
+```
+02_SPECBASES/
+  0010: Auto-Proactive Intelligence
+  0011: Specbase Construction
+  0012: Project Categorization
+  0013: User Message Intelligence
+  0014: Communication Style
+  0015: Complete Idea Lifecycle
+  0016: Agent Identity Schema
+```
+
+---
+
+## ⚡ FIRST: CONNECT TO CENTRAL-MCP
+
+**REQUIRED FIRST STEP:**
+
+Use MCP tool: `connect_to_mcp`
+
+(Just say: "Connect to MCP" - the tool auto-detects everything!)
+
+**You will receive:**
+- ✅ Visual confirmation with ASCII art
+- ✅ Your agent identity
+- ✅ Project status
+- ✅ Your specific tasks
+- ✅ Team status
+- ✅ Next steps
+
+**THEN:** Start building your assigned tasks
+
+---
+
+## 🚀 AFTER CONNECTING
+
+1. You'll know your agent letter
+2. See your specific tasks
+3. Get project overview
+4. Receive clear guidance
+
+**Dashboard:** http://34.41.115.199:8000
+
+**ALWAYS connect first - Central-MCP coordinates you!** ✅

@@ -7,7 +7,7 @@
 
 ## 📋 OFFICIAL MCP STANDARD REQUIREMENTS
 
-Based on the official MCP specification image, every MCP implementation MUST provide:
+Based on the official MCP specification, every MCP implementation MUST provide:
 
 ### **1. Core MCP Protocol Support**
 - ✅ **JSON-RPC 2.0 Protocol**: Complete implementation

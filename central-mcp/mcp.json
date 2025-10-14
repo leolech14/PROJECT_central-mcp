@@ -11,6 +11,28 @@
         "AGENT_MODEL": "claude-sonnet-4-5",
         "CONTEXT_WINDOW": "200000"
       }
+    },
+    "property-search": {
+      "command": "python",
+      "args": [
+        "/Users/lech/PROJECTS_all/PROJECT_airbnsearch/mcp-server/mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/lech/PROJECTS_all/PROJECT_airbnsearch",
+        "API_BASE_URL": "http://localhost:8000"
+      }
+    },
+    "999x-ray-analyzer": {
+      "command": "python",
+      "args": [
+        "/Users/lech/PROJECTS_all/PROJECT_central-mcp/central-mcp/src/tools/xray-tool/tools/ultrathink_mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/lech/PROJECTS_all/PROJECT_999-x-ray-tool/src/tools",
+        "OLLAMA_URL": "http://localhost:11434",
+        "MAX_FILES": "999",
+        "TOOL_NAME": "999X-RAY Enhanced File Analyzer"
+      }
     }
   }
 }

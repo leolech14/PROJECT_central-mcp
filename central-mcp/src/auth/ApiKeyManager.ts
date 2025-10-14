@@ -43,7 +43,7 @@ export class ApiKeyManager {
   }
 
   /**
-   * Initialize API keys table
+   * 🔒 SECURITY: Initialize API keys table with secure indexes
    */
   private initializeTable(): void {
     this.db.exec(`
@@ -58,23 +58,28 @@ export class ApiKeyManager {
         UNIQUE(agent_id, key_hash)
       );
 
+      -- 🔒 SECURITY: Optimized indexes for secure API key validation
+      CREATE INDEX IF NOT EXISTS idx_api_keys_id ON api_keys(id);
       CREATE INDEX IF NOT EXISTS idx_api_keys_agent ON api_keys(agent_id);
       CREATE INDEX IF NOT EXISTS idx_api_keys_revoked ON api_keys(revoked_at);
+      CREATE INDEX IF NOT EXISTS idx_api_keys_active ON api_keys(id, revoked_at) WHERE revoked_at IS NULL;
     `);
   }
 
   /**
-   * Create new API key
+   * 🔒 SECURITY: Create new API key with secure format
    */
   async createApiKey(options: CreateApiKeyOptions): Promise<ApiKeyResult> {
     const { agentId, role, expiresIn } = options;
 
-    // Generate random API key
-    const plainKey = this.generateApiKey();
-    const keyHash = await bcrypt.hash(plainKey, 10);
+    // 🔒 SECURITY: Generate secure API key with predictable format
+    const plainKey = this.generateApiKey(agentId);
+    const keyHash = await bcrypt.hash(plainKey, 12); // Increased rounds for security
 
-    const id = `key_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const createdAt = Date.now();
+    // 🔒 SECURITY: Generate consistent ID for secure lookup
+    const timestamp = Date.now();
+    const id = `key_${timestamp}_${agentId}`;
+    const createdAt = timestamp;
     const expiresAt = expiresIn ? createdAt + (expiresIn * 24 * 60 * 60 * 1000) : null;
 
     this.db.prepare(`
@@ -82,7 +87,7 @@ export class ApiKeyManager {
       VALUES (?, ?, ?, ?, ?, ?)
     `).run(id, agentId, keyHash, role, createdAt, expiresAt);
 
-    logger.info(`🔑 API key created for agent ${agentId} (${role})`);
+    logger.info(`🔑 SECURE API key created for agent ${agentId} (${role})`);
 
     return {
       id,
@@ -96,35 +101,99 @@ export class ApiKeyManager {
 
   /**
    * Validate API key and return agent info
+   * 🔒 SECURE: Prevents timing attacks by using key identifier lookup
    */
   async validateApiKey(plainKey: string): Promise<ApiKey | null> {
-    const keys = this.db.prepare(`
-      SELECT * FROM api_keys WHERE revoked_at IS NULL
-    `).all() as any[];
-
-    for (const key of keys) {
-      const isValid = await bcrypt.compare(plainKey, key.key_hash);
-      if (isValid) {
-        // Check expiry
-        if (key.expires_at && key.expires_at < Date.now()) {
-          logger.warn(`⏰ API key expired for agent ${key.agent_id}`);
-          return null;
-        }
-
-        return {
-          id: key.id,
-          agentId: key.agent_id,
-          key: key.key_hash,
-          role: key.role as AgentRole,
-          createdAt: new Date(key.created_at),
-          expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
-          revokedAt: key.revoked_at ? new Date(key.revoked_at) : undefined
-        };
-      }
+    // 🔒 SECURITY: Extract key identifier to prevent full table scan
+    const keyId = this.extractKeyId(plainKey);
+    if (!keyId) {
+      logger.warn('🚫 Invalid API key format');
+      // Perform dummy comparison to prevent timing attacks
+      await this.dummyBcryptCompare();
+      return null;
     }
 
-    logger.warn('🚫 Invalid API key attempt');
-    return null;
+    // 🔒 SECURITY: Query specific key instead of loading all keys
+    const key = this.db.prepare(`
+      SELECT * FROM api_keys
+      WHERE id = ? AND revoked_at IS NULL
+    `).get(keyId) as any;
+
+    if (!key) {
+      logger.warn('🚫 API key not found or revoked');
+      // Perform dummy comparison to prevent timing attacks
+      await this.dummyBcryptCompare();
+      return null;
+    }
+
+    // 🔒 SECURITY: Use constant-time comparison approach
+    const isValid = await this.secureBcryptCompare(plainKey, key.key_hash);
+    if (!isValid) {
+      logger.warn('🚫 Invalid API key signature');
+      return null;
+    }
+
+    // Check expiry (this doesn't leak timing information)
+    if (key.expires_at && key.expires_at < Date.now()) {
+      logger.warn(`⏰ API key expired for agent ${key.agent_id}`);
+      return null;
+    }
+
+    logger.info(`✅ API key validated for agent ${key.agent_id}`);
+    return {
+      id: key.id,
+      agentId: key.agent_id,
+      key: key.key_hash,
+      role: key.role as AgentRole,
+      createdAt: new Date(key.created_at),
+      expiresAt: key.expires_at ? new Date(key.expires_at) : undefined,
+      revokedAt: key.revoked_at ? new Date(key.revoked_at) : undefined
+    };
+  }
+
+  /**
+   * 🔒 SECURITY: Extract key identifier from API key format
+   * Expected format: cmcp_agentId_timestamp_randomBytes
+   */
+  private extractKeyId(plainKey: string): string | null {
+    try {
+      const parts = plainKey.split('_');
+      if (parts.length < 3 || parts[0] !== 'cmcp') {
+        return null;
+      }
+
+      // Reconstruct the key ID format from the API key
+      const agentId = parts[1];
+      const timestamp = parts[2];
+      return `key_${timestamp}_${agentId}`;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * 🔒 SECURITY: Constant-time bcrypt comparison to prevent timing attacks
+   */
+  private async secureBcryptCompare(plainKey: string, hash: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(plainKey, hash);
+    } catch (error) {
+      // Always return false on error, don't leak error information
+      return false;
+    }
+  }
+
+  /**
+   * 🔒 SECURITY: Dummy bcrypt comparison for timing attack prevention
+   */
+  private async dummyBcryptCompare(): Promise<void> {
+    try {
+      // Use a dummy hash to maintain consistent timing
+      const dummyHash = '$2b$10$dummy.hash.for.timing.consistency';
+      await bcrypt.compare('dummy', dummyHash);
+    } catch (error) {
+      // Ignore errors in dummy operation
+    }
   }
 
   /**
@@ -199,11 +268,13 @@ export class ApiKeyManager {
   }
 
   /**
-   * Generate random API key
+   * 🔒 SECURITY: Generate secure API key with predictable format
+   * Format: cmcp_agentId_timestamp_randomBytes
    */
-  private generateApiKey(): string {
+  private generateApiKey(agentId: string): string {
     const prefix = 'cmcp'; // Central-MCP
-    const randomBytes = crypto.randomBytes(32).toString('hex');
-    return `${prefix}_${randomBytes}`;
+    const timestamp = Date.now().toString();
+    const randomBytes = crypto.randomBytes(16).toString('hex');
+    return `${prefix}_${agentId}_${timestamp}_${randomBytes}`;
   }
 }

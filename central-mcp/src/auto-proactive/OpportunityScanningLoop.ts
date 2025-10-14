@@ -20,6 +20,7 @@ import { join, extname } from 'path';
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 
 export interface OpportunityScanningConfig {
   intervalSeconds: number;        // How often to run (default: 900 = 15min)
@@ -142,14 +143,26 @@ export class OpportunityScanningLoop {
       }
 
       const duration = Date.now() - startTime;
-      logger.info(`✅ Loop 5 Complete: Found ${allOpportunities.length} opportunities in ${duration}ms`);
+      logger.info(`✅ Loop 6 Complete: Found ${allOpportunities.length} opportunities in ${duration}ms`);
 
-      // Log execution
-      this.logLoopExecution({
-        projectsScanned: projects.length,
-        opportunitiesFound: allOpportunities.length,
-        tasksGenerated: this.config.autoGenerateTasks ? criticalOpps.length : 0,
-        durationMs: duration
+      // Write event to Universal Write System
+      writeSystemEvent({
+        eventType: 'loop_execution',
+        eventCategory: 'system',
+        eventActor: 'Loop-6',
+        eventAction: `Opportunity scanning: Found ${allOpportunities.length} opportunities (${criticalOpps.length} tasks generated)`,
+        eventDescription: `Loop #${this.loopCount}`,
+        systemHealth: allOpportunities.length > 10 ? 'warning' : 'healthy',
+        activeLoops: 9,
+        avgResponseTimeMs: duration,
+        successRate: 1.0,
+        tags: ['loop-6', 'opportunity-scanning', 'auto-proactive'],
+        metadata: {
+          loopCount: this.loopCount,
+          projectsScanned: projects.length,
+          opportunitiesFound: allOpportunities.length,
+          tasksGenerated: this.config.autoGenerateTasks ? criticalOpps.length : 0
+        }
       });
 
     } catch (err: any) {

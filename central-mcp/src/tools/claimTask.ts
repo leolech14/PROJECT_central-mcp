@@ -7,7 +7,7 @@
 
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { TaskRegistry } from '../registry/TaskRegistry.js';
+import IntegratedTaskStore from '../registry/JsonTaskStore.js';
 import { AgentIdSchema } from '../types/Task.js';
 import { eventBroadcaster } from '../events/EventBroadcaster.js';
 import { AutoProactiveEventBus, LoopEvent } from '../auto-proactive/EventBus.js';
@@ -17,7 +17,7 @@ const ClaimTaskSchema = z.object({
   agent: AgentIdSchema
 });
 
-export function createClaimTaskTool(registry: TaskRegistry): Tool {
+export function createClaimTaskTool(taskStore: IntegratedTaskStore): Tool {
   return {
     name: 'claim_task',
     description: 'Atomically claim a task to prevent conflicts. Task must be AVAILABLE and assigned to the claiming agent.',
@@ -40,11 +40,11 @@ export function createClaimTaskTool(registry: TaskRegistry): Tool {
     handler: async (args: any) => {
       const { taskId, agent } = ClaimTaskSchema.parse(args);
 
-      const result = await registry.claimTask(taskId, agent);
+      const result = await taskStore.claimTask(taskId, agent);
 
       if (result.success) {
         // Get task details for broadcasting
-        const task = registry.getTask(taskId);
+        const task = await taskStore.getTask(taskId);
 
         // Broadcast task claimed event (legacy)
         if (task) {
@@ -74,13 +74,13 @@ export function createClaimTaskTool(registry: TaskRegistry): Tool {
 
         // SECONDARY EVENT: Agent workload changed
         // (Triggers Loop 1 to update agent capacity)
-        const workload = (registry as any).getAgentWorkload?.(agent) || 1;
+        const workload = await taskStore.getAgentWorkload(agent);
         eventBus.emitLoopEvent(
           LoopEvent.AGENT_WORKLOAD_CHANGED,
           {
             agent,
-            workload: typeof workload === 'number' ? workload : 1,
-            capacity: typeof workload === 'number' ? (5 - workload) : 4,
+            workload: workload.totalTasks,
+            capacity: workload.capacity || (5 - workload.totalTasks),
             action: 'claimed'
           },
           {

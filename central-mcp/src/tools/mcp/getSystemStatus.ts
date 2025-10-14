@@ -1,6 +1,6 @@
 
 import { AutoProactiveEngine, AutoProactiveConfig } from '../../auto-proactive/AutoProactiveEngine.js';
-import { TaskRegistry } from '../../registry/TaskRegistry.js';
+import IntegratedTaskStore from '../../registry/JsonTaskStore.js';
 import Database from 'better-sqlite3';
 
 // Mock config for status reporting
@@ -34,13 +34,20 @@ export async function getSystemStatus(db: Database.Database): Promise<any> {
   const engine = new AutoProactiveEngine(db, config);
   const engineStatus = engine.getStatus();
 
-  // TaskRegistry expects a dbPath string, not a Database instance
-  // We'll create a new instance and access its store
-  const taskRegistry = new TaskRegistry(config.dbPath);
-  const taskStore = (taskRegistry as any).store; // Access private store
-  const tasks = taskStore.getAllTasks();
+  // Use integrated task store for enhanced status reporting
+  const taskStore = new IntegratedTaskStore(config.dbPath);
+  await taskStore.initialize();
+
+  // Get comprehensive task information
+  const tasks = await taskStore.getAllTasks();
+  const taskStats = await taskStore.getTaskStats();
 
   const agentPresence = db.prepare('SELECT * FROM agent_presence').all();
+
+  // Get enhanced registry metrics
+  const registryMetrics = await taskStore.getRegistryMetrics();
+
+  await taskStore.close();
 
   return {
     engineStatus,
@@ -49,7 +56,11 @@ export async function getSystemStatus(db: Database.Database): Promise<any> {
       pending: tasks.filter((t: any) => t.status === 'PENDING').length,
       in_progress: tasks.filter((t: any) => t.status === 'IN_PROGRESS').length,
       completed: tasks.filter((t: any) => t.status === 'COMPLETE').length,
+      available: tasks.filter((t: any) => t.status === 'AVAILABLE').length,
+      blocked: tasks.filter((t: any) => t.status === 'BLOCKED').length,
     },
     agents: agentPresence,
+    registryMetrics,
+    taskStats,
   };
 }

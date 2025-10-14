@@ -8,7 +8,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import Database from 'better-sqlite3';
-import { TaskRegistry } from '../registry/TaskRegistry.js';
+import IntegratedTaskStore from '../registry/JsonTaskStore.js';
 import { AgentIdSchema } from '../types/Task.js';
 import { AgentContextBuilder } from '../core/AgentContextBuilder.js';
 
@@ -17,7 +17,7 @@ const GetAvailableTasksSchema = z.object({
   includeDetails: z.boolean().optional().default(true)
 });
 
-export function createGetAvailableTasksTool(registry: TaskRegistry, db: Database.Database): Tool {
+export function createGetAvailableTasksTool(taskStore: IntegratedTaskStore, db: Database.Database): Tool {
   return {
     name: 'get_available_tasks',
     description: 'Get all tasks available for a specific agent (dependencies satisfied, ready to claim)',
@@ -75,7 +75,11 @@ export function createGetAvailableTasksTool(registry: TaskRegistry, db: Database
         };
       }
 
-      const tasks = registry.getAvailableTasks(agent);
+      const tasks = await taskStore.getAvailableTasks(agent, {
+        includePriority: true,
+        dependencyAnalysis: true,
+        includeDependencies: includeDetails
+      });
 
       if (tasks.length === 0) {
         return {

@@ -66,7 +66,7 @@ private async callOpenAI(request: LLMRequest, selection: ModelSelection): Promis
 **Configuration:**
 ```bash
 # LLM Configuration - OpenAI Integration
-OPENAI_API_KEY=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
+OPENAI_API_KEY=[REDACTED - SECURITY KEY REMOVED]
 LLM_AUTO_GENERATE=true
 LLM_PROVIDER=openai
 LLM_MODEL=gpt-4-turbo-preview
@@ -320,7 +320,7 @@ INSERT INTO ai_subscriptions (
 ls -la .env
 
 # Export manually (testing)
-export OPENAI_API_KEY="sk-proj-biWy6h_E1fzGks8K..."
+export OPENAI_API_KEY="[REDACTED - SECURITY KEY REMOVED]"
 
 # OR use dotenv-cli
 npm install -g dotenv-cli

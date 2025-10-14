@@ -23,6 +23,7 @@ import { randomUUID } from 'crypto';
 import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 import { BaseLoop, LoopTriggerConfig, LoopExecutionContext } from './BaseLoop.js';
 import { LoopEvent } from './EventBus.js';
 
@@ -290,11 +291,23 @@ export class SpecGenerationLoop extends BaseLoop {
     const duration = Date.now() - startTime;
     logger.info(`✅ Loop 7 Complete: Generated ${generated} specs in ${duration}ms`);
 
-    // Log execution
-    this.logLoopExecution({
-      requestsFound: requests.length,
-      specsGenerated: generated,
-      durationMs: duration
+    // Write event to Universal Write System
+    writeSystemEvent({
+      eventType: 'loop_execution',
+      eventCategory: 'system',
+      eventActor: 'Loop-7',
+      eventAction: `Spec generation: Found ${requests.length} requests, generated ${generated} specs`,
+      eventDescription: `Loop #${this.executionCount}`,
+      systemHealth: generated > 0 ? 'healthy' : 'warning',
+      activeLoops: 9,
+      avgResponseTimeMs: duration,
+      successRate: requests.length > 0 ? (generated / requests.length) : 1.0,
+      tags: ['loop-7', 'spec-generation', 'auto-proactive'],
+      metadata: {
+        executionCount: this.executionCount,
+        requestsFound: requests.length,
+        specsGenerated: generated
+      }
     });
   }
 

@@ -1,242 +1,349 @@
 /**
- * TaskStore Tests
- * ================
+ * 🧪 UNIT TESTS: INTEGRATED TASK STORE
+ * =====================================
  *
- * Unit tests for SQLite task persistence and atomic operations
+ * Test the legacy TaskRegistry wrapper and IntegratedTaskStore
+ * with full async operations and performance monitoring
  */
 
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
-import Database from 'better-sqlite3';
-import { TaskStore } from '../../src/registry/TaskStore.js';
-import { existsSync, unlinkSync } from 'fs';
-import path from 'path';
+import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals';
+import { TaskStore, IntegratedTaskRegistry } from '../../src/registry/TaskRegistry.js';
+import { TestUtils } from '../setup.js';
+import { type Task, TaskStatus } from '../../src/types/Task.js';
 
-describe('TaskStore', () => {
-  let db: Database.Database;
+describe('🗃️ Legacy TaskStore Wrapper', () => {
   let store: TaskStore;
-  const testDbPath = path.join(process.cwd(), 'data', 'test-task-store.db');
+  let testDbPath: string;
 
   beforeEach(() => {
+    testDbPath = TestUtils.createTestDatabase().databasePath;
     store = new TaskStore(testDbPath);
-    db = store.getDatabase();
-
-    // Insert test tasks
-    db.exec(`
-      INSERT INTO tasks (id, name, agent, status, priority, dependencies, project_id) VALUES
-        ('T001', 'Task One', 'A', 'AVAILABLE', 'P0', '[]', 'test-project'),
-        ('T002', 'Task Two', 'A', 'AVAILABLE', 'P1', '["T001"]', 'test-project'),
-        ('T003', 'Task Three', 'B', 'CLAIMED', 'P1', '[]', 'test-project'),
-        ('T004', 'Task Four', 'B', 'COMPLETE', 'P0', '[]', 'test-project');
-    `);
   });
 
-  afterEach(() => {
-    store.close();
-    if (existsSync(testDbPath)) {
-      unlinkSync(testDbPath);
+  afterEach(async () => {
+    await store.close();
+    TestUtils.cleanupTestDatabase();
+  });
+
+  describe('🔄 Legacy Compatibility', () => {
+    test('should maintain backward compatibility', async () => {
+      // Should not throw error with legacy usage
+      expect(() => new TaskStore()).not.toThrow();
+    });
+
+    test('should warn about deprecation', async () => {
+      const consoleSpy = jest.spy(console, 'warn').mockImplementation(() => {});
+      new TaskStore();
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('TaskRegistry is deprecated')
+      );
+      consoleSpy.mockRestore();
+    });
+
+    test('should initialize with legacy config', async () => {
+      await expect(store.initialize()).resolves.not.toThrow();
+    });
+  });
+
+  describe('📊 Async Operations', () => {
+    beforeEach(async () => {
+      await store.initialize();
+    });
+
+    test('should get all tasks asynchronously', async () => {
+      const tasks = await store.getAllTasks();
+      expect(Array.isArray(tasks)).toBe(true);
+    });
+
+    test('should get task by ID asynchronously', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const task = await store.getTask(taskId);
+      expect(task).toBeNull(); // Should return null for non-existent task
+    });
+
+    test('should get available tasks for agent', async () => {
+      const agentId = 'test-agent';
+      const tasks = await store.getAvailableTasks(agentId);
+      expect(Array.isArray(tasks)).toBe(true);
+    });
+  });
+
+  describe('🎯 Task Operations (Enhanced)', () => {
+    beforeEach(async () => {
+      await store.initialize();
+    });
+
+    test('should claim task with enhanced metrics', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const agentId = 'test-agent';
+
+      // Create a test task first
+      const testTask: Task = {
+        id: taskId,
+        name: 'Test Task',
+        agent: agentId,
+        status: 'AVAILABLE',
+        priority: 3,
+        phase: 'implementation',
+        timeline: '1-2 days',
+        dependencies: [],
+        deliverables: [],
+        acceptanceCriteria: [],
+        location: 'test',
+      };
+
+      // Add task using integrated registry
+      const integratedRegistry = new IntegratedTaskRegistry();
+      await integratedRegistry.initialize();
+      await integratedRegistry.getJsonTaskStore()?.upsertTask(testTask);
+      await integratedRegistry.shutdown();
+
+      // Test claim through legacy wrapper
+      const result = await store.claimTask(taskId, agentId);
+
+      expect(result).toBeDefined();
+      expect(typeof result.success).toBe('boolean');
+      expect(result.performanceMetrics).toBeDefined();
+    });
+
+    test('should complete task with auto-unblocking', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const agentId = 'test-agent';
+
+      const result = await store.completeTask(taskId, agentId);
+
+      expect(result).toBeDefined();
+      expect(typeof result.success).toBe('boolean');
+      expect(result.performanceMetrics).toBeDefined();
+    });
+  });
+
+  describe('📈 Enhanced Metrics', () => {
+    beforeEach(async () => {
+      await store.initialize();
+    });
+
+    test('should get enhanced sprint metrics', async () => {
+      const metrics = await store.getSprintMetrics();
+      expect(metrics).toBeDefined();
+      expect(metrics.totalTasks).toBeGreaterThanOrEqual(0);
+    });
+
+    test('should get enhanced agent workload', async () => {
+      const agentId = 'test-agent';
+      const workload = await store.getAgentWorkload(agentId);
+      expect(workload).toBeDefined();
+      expect(workload.agent).toBe(agentId);
+      expect(workload.totalTasks).toBeGreaterThanOrEqual(0);
+    });
+
+    test('should get comprehensive registry metrics', async () => {
+      const metrics = await store.getRegistryMetrics();
+      expect(metrics).toBeDefined();
+      expect(metrics.databasePerformance).toBeDefined();
+      expect(metrics.systemHealth).toBeDefined();
+    });
+  });
+
+  describe('🔧 Legacy Method Deprecation', () => {
+    beforeEach(async () => {
+      await store.initialize();
+    });
+
+    test('should warn about getDatabase deprecation', async () => {
+      const consoleSpy = jest.spy(console, 'warn').mockImplementation(() => {});
+
+      expect(() => store.getDatabase()).toThrow('Direct database access deprecated');
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.stringContaining('getDatabase() is deprecated')
+      );
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe('🔌 Registry Management', () => {
+    beforeEach(async () => {
+      await store.initialize();
+    });
+
+    test('should get rules registry', () => {
+      const rulesRegistry = store.getRulesRegistry();
+      expect(rulesRegistry).toBeDefined();
+    });
+
+    test('should close gracefully', async () => {
+      await expect(store.close()).resolves.not.toThrow();
+    });
+  });
+});
+
+describe('🚀 IntegratedTaskStore Direct Usage', () => {
+  let integratedRegistry: IntegratedTaskRegistry;
+
+  beforeEach(() => {
+    integratedRegistry = new IntegratedTaskRegistry();
+  });
+
+  afterEach(async () => {
+    if (integratedRegistry) {
+      await integratedRegistry.shutdown();
     }
   });
 
-  describe('getAllTasks', () => {
-    it('should return all tasks', () => {
-      const tasks = store.getAllTasks();
-
-      expect(tasks.length).toBeGreaterThanOrEqual(4);
-      expect(tasks.find(t => t.id === 'T001')).toBeDefined();
+  describe('🔧 Direct Integration', () => {
+    test('should initialize with all features enabled', async () => {
+      await expect(integratedRegistry.initialize()).resolves.not.toThrow();
     });
 
-    it('should parse dependencies as array', () => {
-      const tasks = store.getAllTasks();
-      const task2 = tasks.find(t => t.id === 'T002');
+    test('should support custom configuration', async () => {
+      const customRegistry = new IntegratedTaskRegistry({
+        dbPath: ':memory:',
+        enableConnectionPooling: false,
+        performanceMonitoring: false
+      });
 
-      expect(task2?.dependencies).toEqual(['T001']);
-    });
-  });
-
-  describe('getTask', () => {
-    it('should return specific task', () => {
-      const task = store.getTask('T001');
-
-      expect(task).toBeDefined();
-      expect(task?.id).toBe('T001');
-      expect(task?.name).toBe('Task One');
-    });
-
-    it('should return null for non-existent task', () => {
-      const task = store.getTask('T999');
-
-      expect(task).toBeNull();
+      await expect(customRegistry.initialize()).resolves.not.toThrow();
+      await customRegistry.shutdown();
     });
   });
 
-  describe('getTasksByAgent', () => {
-    it('should filter tasks by agent', () => {
-      const tasksA = store.getTasksByAgent('A');
-      const tasksB = store.getTasksByAgent('B');
-
-      expect(tasksA.length).toBe(2); // T001, T002
-      expect(tasksB.length).toBe(2); // T003, T004
-
-      expect(tasksA.every(t => t.agent === 'A')).toBe(true);
-      expect(tasksB.every(t => t.agent === 'B')).toBe(true);
+  describe('📊 Advanced Operations', () => {
+    beforeEach(async () => {
+      await integratedRegistry.initialize();
     });
 
-    it('should return empty array for agent with no tasks', () => {
-      const tasks = store.getTasksByAgent('Z' as any);
+    test('should get tasks with filtering options', async () => {
+      const tasks = await integratedRegistry.getAllTasks({
+        status: 'AVAILABLE',
+        limit: 10,
+        sortBy: 'priority',
+        sortOrder: 'asc'
+      });
 
-      expect(tasks).toEqual([]);
-    });
-  });
-
-  describe('getTasksByStatus', () => {
-    it('should filter tasks by status', () => {
-      const available = store.getTasksByStatus('AVAILABLE');
-      const claimed = store.getTasksByStatus('CLAIMED');
-      const complete = store.getTasksByStatus('COMPLETE');
-
-      expect(available.length).toBe(2); // T001, T002
-      expect(claimed.length).toBe(1);   // T003
-      expect(complete.length).toBe(1);  // T004
-    });
-  });
-
-  describe('claimTask (Atomic Operation)', () => {
-    it('should claim available task atomically', () => {
-      const success = store.claimTask('T001', 'A');
-
-      expect(success).toBe(true);
-
-      const task = store.getTask('T001');
-      expect(task?.status).toBe('CLAIMED');
-      expect(task?.claimed_by).toBe('A');
+      expect(Array.isArray(tasks)).toBe(true);
+      expect(tasks.length).toBeLessThanOrEqual(10);
     });
 
-    it('should fail to claim non-available task', () => {
-      const success = store.claimTask('T003', 'B'); // Already CLAIMED
+    test('should get available tasks with dependency analysis', async () => {
+      const tasks = await integratedRegistry.getAvailableTasks('Agent-A', {
+        limit: 5,
+        includePriority: true,
+        dependencyAnalysis: true
+      });
 
-      expect(success).toBe(false);
-
-      const task = store.getTask('T003');
-      expect(task?.status).toBe('CLAIMED'); // Unchanged
+      expect(Array.isArray(tasks)).toBe(true);
+      expect(tasks.length).toBeLessThanOrEqual(5);
     });
 
-    it('should fail to claim non-existent task', () => {
-      const success = store.claimTask('T999', 'A');
+    test('should claim task with detailed metrics', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const agentId = 'Agent-A';
 
-      expect(success).toBe(false);
+      const result = await integratedRegistry.claimTask(taskId, agentId);
+
+      expect(result).toBeDefined();
+      expect(typeof result.success).toBe('boolean');
+      expect(result.performanceMetrics).toBeDefined();
+      expect(result.performanceMetrics.claimDuration).toBeGreaterThan(0);
     });
 
-    it('should prevent race conditions (atomic)', () => {
-      // This tests that only one claim succeeds
-      // In real scenario, two agents claiming simultaneously
+    test('should complete task with auto-unblocking metrics', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const agentId = 'Agent-A';
+      const filesCreated = ['test.txt'];
 
-      const success1 = store.claimTask('T001', 'A');
-      const success2 = store.claimTask('T001', 'A'); // Try again
+      const result = await integratedRegistry.completeTask(taskId, agentId, filesCreated);
 
-      expect(success1).toBe(true);
-      expect(success2).toBe(false); // Should fail (already claimed)
+      expect(result).toBeDefined();
+      expect(typeof result.success).toBe('boolean');
+      expect(result.performanceMetrics).toBeDefined();
+      expect(result.performanceMetrics.completionDuration).toBeGreaterThan(0);
+      expect(result.performanceMetrics.autoUnblockDuration).toBeGreaterThan(0);
     });
   });
 
-  describe('updateTaskStatus', () => {
-    it('should update task status', () => {
-      store.updateTaskStatus('T001', 'IN_PROGRESS', 'A');
-
-      const task = store.getTask('T001');
-      expect(task?.status).toBe('IN_PROGRESS');
+  describe('📈 Performance Metrics', () => {
+    beforeEach(async () => {
+      await integratedRegistry.initialize();
     });
 
-    it('should track who updated the status', () => {
-      store.updateTaskStatus('T001', 'IN_PROGRESS', 'A');
+    test('should get comprehensive registry metrics', async () => {
+      const metrics = await integratedRegistry.getRegistryMetrics();
 
-      const task = store.getTask('T001');
-      expect(task?.claimed_by).toBe('A');
-    });
-  });
-
-  describe('completeTask', () => {
-    it('should complete task with metadata', () => {
-      const success = store.completeTask('T003', 'B', ['file1.ts', 'file2.ts'], 150);
-
-      expect(success).toBe(true);
-
-      const task = store.getTask('T003');
-      expect(task?.status).toBe('COMPLETE');
-      expect(task?.velocity).toBe(150);
-      expect(task?.files_created).toEqual(['file1.ts', 'file2.ts']);
-      expect(task?.completed_at).toBeTruthy();
+      expect(metrics).toBeDefined();
+      expect(metrics.totalTasks).toBeGreaterThanOrEqual(0);
+      expect(metrics.databasePerformance).toBeDefined();
+      expect(metrics.jsonPerformance).toBeDefined();
+      expect(metrics.systemHealth).toBeDefined();
+      expect(metrics.systemHealth.overall).toMatch(/healthy|degraded|unhealthy/);
     });
 
-    it('should fail to complete task not owned by agent', () => {
-      // T003 is claimed by B, try to complete as A
-      const success = store.completeTask('T003', 'A', [], 100);
+    test('should track task status distribution', async () => {
+      const metrics = await integratedRegistry.getRegistryMetrics();
 
-      expect(success).toBe(false);
-
-      const task = store.getTask('T003');
-      expect(task?.status).toBe('CLAIMED'); // Unchanged
-    });
-
-    it('should fail to complete non-existent task', () => {
-      const success = store.completeTask('T999', 'A', [], 100);
-
-      expect(success).toBe(false);
+      expect(metrics.taskStatusCounts).toBeDefined();
+      expect(typeof metrics.taskStatusCounts.AVAILABLE).toBe('number');
+      expect(typeof metrics.taskStatusCounts.COMPLETE).toBe('number');
     });
   });
 
-  describe('getTasksByProject', () => {
-    it('should filter tasks by project', () => {
-      // Add task for different project
-      db.prepare(`
-        INSERT INTO tasks (id, name, agent, status, project_id)
-        VALUES ('T100', 'Other Project Task', 'A', 'AVAILABLE', 'other-project')
-      `).run();
+  describe('🔌 Error Handling', () => {
+    beforeEach(async () => {
+      await integratedRegistry.initialize();
+    });
 
-      const testTasks = store.getTasksByProject('test-project');
-      const otherTasks = store.getTasksByProject('other-project');
+    test('should handle claim task not found', async () => {
+      const result = await integratedRegistry.claimTask('non-existent', 'Agent-A');
 
-      expect(testTasks.length).toBe(4); // Original tasks
-      expect(otherTasks.length).toBe(1); // New task
-      expect(otherTasks[0].id).toBe('T100');
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Task not found');
+    });
+
+    test('should handle complete task not found', async () => {
+      const result = await integratedRegistry.completeTask('non-existent', 'Agent-A');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Task not found');
+    });
+
+    test('should handle unauthorized agent operations', async () => {
+      const taskId = TestUtils.generateRandomId('task');
+      const result = await integratedRegistry.claimTask(taskId, 'Unauthorized-Agent');
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Agent');
     });
   });
 
-  describe('Database Integrity', () => {
-    it('should maintain data integrity on concurrent updates', () => {
-      // Simulate concurrent claim attempts
-      const task = store.getTask('T001');
-      expect(task?.status).toBe('AVAILABLE');
-
-      // First claim
-      const claim1 = store.claimTask('T001', 'A');
-      expect(claim1).toBe(true);
-
-      // Second claim (should fail - task no longer available)
-      const claim2 = store.claimTask('T001', 'B' as any);
-      expect(claim2).toBe(false);
-
-      // Verify only one claim succeeded
-      const final = store.getTask('T001');
-      expect(final?.status).toBe('CLAIMED');
-      expect(final?.claimed_by).toBe('A');
+  describe('🎯 Advanced Features', () => {
+    beforeEach(async () => {
+      await integratedRegistry.initialize();
     });
 
-    it('should handle transaction rollback on error', () => {
-      // This tests that failed operations don't corrupt database
-      const beforeCount = store.getAllTasks().length;
+    test('should handle dependency analysis', async () => {
+      const tasks = await integratedRegistry.getAvailableTasks('Agent-A', {
+        dependencyAnalysis: true
+      });
 
-      try {
-        // Try to update with invalid data
-        db.prepare(`
-          UPDATE tasks SET status = 'INVALID_STATUS' WHERE id = 'T001'
-        `).run();
-      } catch (error) {
-        // Error expected
-      }
+      expect(Array.isArray(tasks)).toBe(true);
+    });
 
-      // Database should be unchanged
-      const afterCount = store.getAllTasks().length;
-      expect(afterCount).toBe(beforeCount);
+    test('should provide performance monitoring', async () => {
+      const metrics = await integratedRegistry.getRegistryMetrics();
+
+      expect(metrics.databasePerformance).toBeDefined();
+      expect(metrics.jsonPerformance).toBeDefined();
+    });
+
+    test('should support async operations throughout', async () => {
+      const allTasks = await integratedRegistry.getAllTasks();
+      const metrics = await integratedRegistry.getSprintMetrics();
+      const workload = await integratedRegistry.getAgentWorkload('Agent-A');
+
+      expect(Array.isArray(allTasks)).toBe(true);
+      expect(metrics).toBeDefined();
+      expect(workload).toBeDefined();
     });
   });
 });

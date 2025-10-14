@@ -47,12 +47,14 @@
     "bcryptjs": "^2.4.3",
     "better-sqlite3": "^12.4.1",
     "compression": "^1.7.4",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.21.2",
     "express-rate-limit": "^7.1.5",
     "gray-matter": "^4.0.3",
     "helmet": "^7.1.0",
+    "isomorphic-dompurify": "^2.6.0",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
@@ -61,7 +63,11 @@
     "uuid": "^9.0.1",
     "winston": "^3.11.0",
     "ws": "^8.14.2",
-    "yaml": "^2.8.1"
+    "yaml": "^2.8.1",
+    "python-shell": "latest",
+    "marked": "^15.0.6",
+    "yauzl": "^3.0.0",
+    "tar": "^7.4.3"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",
@@ -77,6 +83,8 @@
     "@types/node": "^20.10.5",
     "@types/uuid": "^9.0.7",
     "@types/ws": "^8.5.10",
+    "@types/yauzl": "^2.10.3",
+    "@types/tar": "^6.1.11",
     "@typescript-eslint/eslint-plugin": "^6.13.2",
     "@typescript-eslint/parser": "^6.13.2",
     "cross-env": "^7.0.3",
@@ -121,23 +129,6 @@
       "*.log"
     ],
     "exec": "ts-node src/photon/PhotonServer.ts"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/tests"
-    ],
-    "testMatch": [
-      "**/__tests__/**/*.ts",
-      "**/?(*.)+(spec|test).ts"
-    ],
-    "collectCoverageFrom": [
-      "src/**/*.ts",
-      "!src/**/*.d.ts",
-      "!src/**/index.ts"
-    ]
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",

@@ -19,6 +19,7 @@ import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { existsSync } from 'fs';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 
 export interface SystemStatusConfig {
   intervalSeconds: number;        // How often to run (default: 5)
@@ -186,13 +187,30 @@ export class SystemStatusLoop {
 
       this.lastHealthStatus = health;
 
-      // Log to database
+      // Write event to Universal Write System
       if (health.database) {
-        this.logHealthCheck({
-          isHealthy: health.isHealthy,
-          issues: health.issues,
-          durationMs: Date.now() - startTime,
-          memoryMB: memoryMB
+        writeSystemEvent({
+          eventType: 'health_check',
+          eventCategory: 'health',
+          eventActor: 'Loop-0',
+          eventAction: `System health check: ${health.isHealthy ? 'HEALTHY' : 'UNHEALTHY'}`,
+          eventDescription: `Loop #${this.loopCount} - ${health.issues.length} issues detected`,
+          systemHealth: health.isHealthy ? 'healthy' : (this.consecutiveFailures >= 3 ? 'critical' : 'warning'),
+          activeLoops: 9,
+          databaseSizeMb: 0, // Could calculate if needed
+          avgResponseTimeMs: Date.now() - startTime,
+          errorRate: health.isHealthy ? 0.0 : 1.0,
+          successRate: health.isHealthy ? 1.0 : 0.0,
+          tags: ['loop-0', 'health-check', 'auto-proactive'],
+          metadata: {
+            loopCount: this.loopCount,
+            databaseOk: health.database,
+            filesystemOk: health.filesystem,
+            memoryOk: health.memory,
+            memoryMB: memoryMB,
+            consecutiveFailures: this.consecutiveFailures,
+            issues: health.issues
+          }
         });
       }
 

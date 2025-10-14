@@ -21,6 +21,7 @@ import Database from 'better-sqlite3';
 import { ProjectDetector } from '../discovery/ProjectDetector.js';
 import { ContextExtractor } from '../discovery/ContextExtractor.js';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 
 export interface ProjectDiscoveryConfig {
   scanPaths: string[];          // Paths to scan (e.g., /Users/lech/PROJECTS_all/)
@@ -157,13 +158,26 @@ export class ProjectDiscoveryLoop {
 
       const duration = Date.now() - startTime;
 
-      logger.info(`✅ Loop 1 Complete: Found ${projectsFound} projects (${newProjects} new) in ${duration}ms`);
+      logger.info(`✅ Loop 2 Complete: Found ${projectsFound} projects (${newProjects} new) in ${duration}ms`);
 
-      // Log loop execution to database
-      this.logLoopExecution('PROJECT_DISCOVERY', {
-        projectsScanned: projectsFound,
-        projectsRegistered: newProjects,
-        durationMs: duration
+      // Write event to Universal Write System
+      writeSystemEvent({
+        eventType: 'loop_execution',
+        eventCategory: 'system',
+        eventActor: 'Loop-2',
+        eventAction: `Project discovery: Found ${projectsFound} projects (${newProjects} new)`,
+        eventDescription: `Loop execution #${this.loopCount}: Scanned ${this.config.scanPaths.join(', ')}`,
+        systemHealth: 'healthy',
+        activeLoops: 9,
+        avgResponseTimeMs: duration,
+        successRate: newProjects >= 0 ? 1.0 : 0.0,
+        tags: ['loop-2', 'project-discovery', 'auto-proactive'],
+        metadata: {
+          projectsScanned: projectsFound,
+          projectsRegistered: newProjects,
+          loopCount: this.loopCount,
+          scanPaths: this.config.scanPaths
+        }
       });
 
     } catch (err: any) {

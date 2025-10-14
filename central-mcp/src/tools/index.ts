@@ -1,3 +1,11 @@
+
+// 999-X-Ray-Tool imports
+import { analyzeRecentFilesTool, handleAnalyzeRecentFiles } from './xray-tool/analyzeRecentFiles.js';
+import { getFileSummaryTool, handleGetFileSummary } from './xray-tool/getFileSummary.js';
+import { searchFileAnalysisTool, handleSearchFileAnalysis } from './xray-tool/searchFileAnalysis.js';
+import { getAnalysisStatsTool, handleGetAnalysisStats } from './xray-tool/getAnalysisStats.js';
+import { checkOllamaStatusTool, handleCheckOllamaStatus } from './xray-tool/checkOllamaStatus.js';
+
 /**
  * MCP Tools Registry
  * ==================
@@ -36,7 +44,9 @@ import { getRulesTool, handleGetRules, createRuleTool, handleCreateRule, updateR
 import { getKnowledge } from './ui/getKnowledge.js';
 import { uiConfigProTool, handleUIConfigPro } from './ui/uiConfigPro.js';
 import { getSystemStatus } from './mcp/getSystemStatus.js';
+import { centralSystemsTools } from './centralSystems.js';
 import { generateImage, generateImageTool } from './visual/generateImage.js';
+import { mcpTools as multiRegistryTools, CentralMCPMultiRegistryTools } from '../multi-registry-tools.js';
 import { getRunPodStatus, getRunPodStatusTool, controlPod, controlPodTool } from './runpod/runpodIntegration.js';
 import { logger } from '../utils/logger.js';
 
@@ -50,6 +60,9 @@ export function registerTools(
 
   // Get project path for Best Practices validation
   const projectPath = process.cwd();
+
+  // Initialize Multi-Registry Tools
+  const multiRegistryToolsHandler = new CentralMCPMultiRegistryTools(db);
 
   // Task management tools (existing)
   const taskTools = [
@@ -149,6 +162,9 @@ export function registerTools(
     },
   ];
 
+  // 🏛️ Central Systems Registry Tools (NEW - SINGLE SOURCE OF TRUTH)
+  const centralRegistryTools = centralSystemsTools;
+
   // Visual tools (NEW - IMAGE GENERATION VIA COMFYUI) 🎨
   const visualTools = [
     {
@@ -172,7 +188,15 @@ export function registerTools(
     },
   ];
 
-  const allTools = [...taskTools, ...intelligenceTools, ...discoveryTools, ...youtubeTools, ...healthTools, ...keepInTouchTools, ...costTools, ...rulesTools, ...uiTools, ...mcpTools, ...visualTools, ...runpodTools];
+  // 🚀 Multi-Registry Tools (NEW - STANDARDIZED COMPLETION & HONEST ASSESSMENT)
+  const registryTools = Object.entries(multiRegistryTools).map(([toolName, toolConfig]) => ({
+    name: toolName,
+    description: toolConfig.description,
+    inputSchema: toolConfig.inputSchema,
+    handler: (args: unknown) => toolConfig.handler(args, multiRegistryToolsHandler),
+  }));
+
+  const allTools = [...taskTools, ...intelligenceTools, ...discoveryTools, ...youtubeTools, ...healthTools, ...keepInTouchTools, ...costTools, ...rulesTools, ...uiTools, ...mcpTools, ...centralRegistryTools, ...visualTools, ...runpodTools, ...registryTools];
 
   // Register handler for listing tools
   server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -215,6 +239,8 @@ export function registerTools(
   logger.info(`   - Rules Management: ${rulesTools.length} ⭐ COORDINATION RULES ACTIVE`);
   logger.info(`   - UI Tools: ${uiTools.length} ⭐ UI KNOWLEDGE BASE + OKLCH CONFIG PRO ACTIVE`);
   logger.info(`   - MCP: ${mcpTools.length} ⭐ SYSTEM STATUS ACTIVE`);
+    logger.info(`   - 🏛️ Central Systems Registry: ${centralRegistryTools.length} ⭐ SINGLE SOURCE OF TRUTH ACTIVE`);
   logger.info(`   - Visual Generation: ${visualTools.length} 🎨 COMFYUI IMAGE GENERATION ACTIVE`);
   logger.info(`   - RunPod Infrastructure: ${runpodTools.length} 🖥️ RUNPOD MONITORING & CONTROL ACTIVE`);
+  logger.info(`   - 🚀 Multi-Registry: ${registryTools.length} ⭐ STANDARDIZED COMPLETION & HONEST ASSESSMENT ACTIVE`);
 }

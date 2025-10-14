@@ -22,12 +22,13 @@ export default {
 
   // Transform settings
   transform: {
-    '^.+\\.tsx?$': [
-      'ts-jest',
-      {
-        useESM: true,
+    '^.+\\.tsx?$': ['ts-jest', {
+      useESM: true,
+      tsconfig: {
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
       },
-    ],
+    }],
   },
 
   // Test match patterns
@@ -43,7 +44,7 @@ export default {
   coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
 
   // Coverage thresholds
-  coverageThresholds: {
+  coverageThreshold: {
     global: {
       branches: 60,
       functions: 70,
@@ -78,13 +79,7 @@ export default {
     '/scripts/'
   ],
 
-  // Globals
-  globals: {
-    'ts-jest': {
-      useESM: true,
-    },
-  },
-
+  
   // Verbose output
   verbose: true,
 

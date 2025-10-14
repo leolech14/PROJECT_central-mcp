@@ -12,6 +12,8 @@ import path from 'path';
 import { Database } from 'better-sqlite3';
 import { AutoProactiveEngine } from '../auto-proactive/AutoProactiveEngine.js';
 import { MonitoringAPI } from '../api/MonitoringAPI.js';
+import { ModelDetectionAPI } from '../api/model-detection-api.js';
+import { AgentRealityAPI } from '../api/agent-reality-api.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
@@ -57,12 +59,33 @@ export class MonitoringServer {
     const monitoringAPI = new MonitoringAPI(this.db, this.engine);
     monitoringAPI.registerRoutes(this.app);
 
+    // 🚀 INTEGRATION: Register Model Detection API
+    const modelDetectionAPI = new ModelDetectionAPI(this.db);
+    this.app.get('/api/model-detection/current', modelDetectionAPI.detectCurrentModel.bind(modelDetectionAPI));
+    this.app.get('/api/model-detection/verify-context', modelDetectionAPI.verifyContextWindow.bind(modelDetectionAPI));
+    this.app.get('/api/model-detection/agent-mapping', modelDetectionAPI.getAgentMapping.bind(modelDetectionAPI));
+    this.app.get('/api/model-detection/config-analysis', modelDetectionAPI.analyzeConfiguration.bind(modelDetectionAPI));
+    this.app.get('/api/model-detection/history', modelDetectionAPI.getDetectionHistory.bind(modelDetectionAPI));
+    this.app.post('/api/model-detection/force-detection', modelDetectionAPI.forceDetection.bind(modelDetectionAPI));
+
+    // 🛡️ INTEGRATION: Register Agent Reality API
+    const agentRealityAPI = new AgentRealityAPI(this.db);
+    this.app.get('/api/agent-reality/check/:agentLetter', agentRealityAPI.checkAgentReality.bind(agentRealityAPI));
+    this.app.get('/api/agent-reality/exploration-verify', agentRealityAPI.verifyExplorationReality.bind(agentRealityAPI));
+    this.app.get('/api/agent-reality/temporal-disclaimer/:agentLetter', agentRealityAPI.getTemporalDisclaimer.bind(agentRealityAPI));
+    this.app.get('/api/agent-reality/reality-dashboard', agentRealityAPI.getRealityDashboard.bind(agentRealityAPI));
+    this.app.get('/api/agent-reality/educational-warnings', agentRealityAPI.getEducationalWarnings.bind(agentRealityAPI));
+
     // Health check
     this.app.get('/health', (req, res) => {
       res.json({
         status: 'healthy',
         timestamp: new Date().toISOString(),
-        uptime: process.uptime()
+        uptime: process.uptime(),
+        integrations: {
+          modelDetectionAPI: true,
+          agentRealityAPI: true
+        }
       });
     });
 
@@ -75,7 +98,12 @@ export class MonitoringServer {
     this.app.use((req, res) => {
       res.status(404).json({
         error: 'Not Found',
-        path: req.url
+        path: req.url,
+        availableEndpoints: [
+          '/api/model-detection/current',
+          '/api/agent-reality/check/:agentLetter',
+          '/health'
+        ]
       });
     });
 

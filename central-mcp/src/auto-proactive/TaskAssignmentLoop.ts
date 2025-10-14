@@ -21,6 +21,7 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 import { BaseLoop, LoopTriggerConfig, LoopExecutionContext } from './BaseLoop.js';
 import { LoopEvent } from './EventBus.js';
 
@@ -352,12 +353,26 @@ export class TaskAssignmentLoop extends BaseLoop {
     const duration = Date.now() - startTime;
     logger.info(`✅ Loop 8 Complete: Assigned ${assigned} tasks in ${duration}ms`);
 
-    // Log execution
-    this.logLoopExecution({
-      tasksAvailable: availableTasks.length,
-      agentsActive: activeAgents.length,
-      tasksAssigned: assigned,
-      durationMs: duration
+    // Write event to Universal Write System
+    writeSystemEvent({
+      eventType: 'loop_execution',
+      eventCategory: 'system',
+      eventActor: 'Loop-8',
+      eventAction: `Task assignment: ${availableTasks.length} tasks, ${activeAgents.length} agents, ${assigned} assigned`,
+      eventDescription: `Loop #${this.executionCount}`,
+      systemHealth: assigned > 0 ? 'healthy' : 'warning',
+      activeLoops: 9,
+      activeAgents: activeAgents.length,
+      activeTasks: availableTasks.length,
+      avgResponseTimeMs: duration,
+      successRate: availableTasks.length > 0 ? (assigned / availableTasks.length) : 1.0,
+      tags: ['loop-8', 'task-assignment', 'auto-proactive'],
+      metadata: {
+        executionCount: this.executionCount,
+        tasksAvailable: availableTasks.length,
+        agentsActive: activeAgents.length,
+        tasksAssigned: assigned
+      }
     });
   }
 

@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Knowledge Space - Central-MCP</title>
+  <style>
+    /* COMPACT KNOWLEDGE SPACE DESIGN SYSTEM */
+    :root {
+      /* OKLCH Color System - Dark Theme */
+      --bg-primary: oklch(15% 0.01 264);
+      --bg-secondary: oklch(18% 0.012 264);
+      --bg-tertiary: oklch(22% 0.014 264);
+      --bg-card: oklch(20% 0.012 264);
+
+      --text-primary: oklch(95% 0.002 264);
+      --text-secondary: oklch(70% 0.005 264);
+      --text-tertiary: oklch(50% 0.008 264);
+
+      --border: oklch(30% 0.01 264);
+      --border-strong: oklch(40% 0.012 264);
+
+      /* Category Colors */
+      --cat-ui: oklch(65% 0.15 240);
+      --cat-backend: oklch(65% 0.15 145);
+      --cat-ai: oklch(65% 0.15 280);
+      --cat-data: oklch(65% 0.15 160);
+      --cat-security: oklch(65% 0.15 25);
+      --cat-devops: oklch(65% 0.15 60);
+      --cat-default: oklch(65% 0.15 200);
+
+      /* Spacing - Compact */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-6: 24px;
+
+      /* Typography - Compact */
+      --text-xs: 11px;
+      --text-sm: 12px;
+      --text-base: 13px;
+      --text-md: 14px;
+      --text-lg: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.4;
+      font-size: var(--text-sm);
+    }
+
+    /* Compact Header */
+    .header {
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: var(--space-4);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .header-subtitle {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Compact Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    /* Compact Category Grid */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--space-3);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Compact Category Card */
+    .category-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-3);
+      cursor: pointer;
+      transition: all 200ms ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--category-color, var(--cat-default));
+      opacity: 0.8;
+    }
+
+    .category-card:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .category-card.active {
+      background: var(--bg-tertiary);
+      border-color: var(--category-color, var(--cat-default));
+    }
+
+    .category-icon {
+      font-size: 24px;
+      margin-bottom: var(--space-2);
+      display: block;
+    }
+
+    .category-name {
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .category-count {
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    /* Knowledge Items Grid */
+    .knowledge-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Knowledge Item Card */
+    .knowledge-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-4);
+      transition: all 200ms ease;
+      cursor: pointer;
+    }
+
+    .knowledge-item:hover {
+      border-color: var(--border-strong);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .knowledge-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: var(--space-2);
+    }
+
+    .knowledge-title {
+      font-size: var(--text-md);
+      font-weight: 600;
+      color: var(--text-primary);
+      flex: 1;
+      margin-right: var(--space-2);
+    }
+
+    .knowledge-type {
+      font-size: var(--text-xs);
+      padding: 2px 6px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    .knowledge-description {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: 1.4;
+    }
+
+    .knowledge-meta {
+      display: flex;
+      gap: var(--space-3);
+      font-size: var(--text-xs);
+      color: var(--text-tertiary);
+    }
+
+    .knowledge-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: var(--space-2);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: var(--space-2) var(--space-3);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: var(--text-sm);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--border-strong);
+    }
+
+    .filter-chip {
+      padding: var(--space-1) var(--space-3);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease;
+    }
+
+    .filter-chip:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .filter-chip.active {
+      background: var(--primary, var(--cat-ui));
+      color: white;
+      border-color: var(--primary, var(--cat-ui));
+    }
+
+    /* Loading State */
+    .loading {
+      text-align: center;
+      padding: var(--space-6);
+      color: var(--text-secondary);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary, var(--cat-ui));
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: var(--space-8);
+      color: var(--text-secondary);
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-4);
+      opacity: 0.3;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .category-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: var(--space-2);
+      }
+
+      .knowledge-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+      }
+    }
+
+    /* Category Color Classes */
+    .category-ui { --category-color: var(--cat-ui); }
+    .category-backend { --category-color: var(--cat-backend); }
+    .category-ai { --category-color: var(--cat-ai); }
+    .category-data { --category-color: var(--cat-data); }
+    .category-security { --category-color: var(--cat-security); }
+    .category-devops { --category-color: var(--cat-devops); }
+    .category-default { --category-color: var(--cat-default); }
+  </style>
+</head>
+<body>
+
+  <!-- Compact Header -->
+  <div class="header">
+    <div class="header-content">
+      <div>
+        <h1>
+          <span>📚</span>
+          <span>Knowledge Space</span>
+        </h1>
+        <div class="header-subtitle">Specialized Knowledge Packs & Documentation</div>
+      </div>
+      <div style="display: flex; gap: var(--space-2);">
+        <a href="/central-mcp-dashboard.html" style="padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); text-decoration: none; font-size: var(--text-xs); transition: all 150ms ease;">
+          ← Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <input type="text" class="search-input" placeholder="Search knowledge packs..." id="searchInput">
+      <div class="filter-chip active" data-filter="all">All</div>
+      <div class="filter-chip" data-filter="interactive">Interactive</div>
+      <div class="filter-chip" data-filter="components">Components</div>
+      <div class="filter-chip" data-filter="documentation">Documentation</div>
+    </div>
+
+    <!-- Categories Section -->
+    <div class="category-grid" id="categoryGrid">
+      <!-- Categories will be dynamically generated -->
+    </div>
+
+    <!-- Knowledge Items Grid -->
+    <div class="knowledge-grid" id="knowledgeGrid">
+      <!-- Knowledge items will be dynamically loaded -->
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" id="loadingState" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p style="margin-top: var(--space-2);">Loading knowledge packs...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+      <div class="empty-icon">📭</div>
+      <h3>No knowledge packs found</h3>
+      <p style="margin-top: var(--space-2);">Try adjusting your filters or search query</p>
+    </div>
+
+  </div>
+
+  <script>
+    // API Configuration
+    const API_BASE = 'http://34.41.115.199:3000';
+
+    // Knowledge Data State
+    let knowledgeData = {
+      categories: [],
+      items: [],
+      filteredItems: []
+    };
+
+    // Category Mapping
+    const categoryMap = {
+      'UI/UX': { icon: '🎨', class: 'category-ui' },
+      'Frontend': { icon: '⚛️', class: 'category-ui' },
+      'Backend': { icon: '⚙️', class: 'category-backend' },
+      'API': { icon: '🔌', class: 'category-backend' },
+      'AI/ML': { icon: '🤖', class: 'category-ai' },
+      'Machine Learning': { icon: '🧠', class: 'category-ai' },
+      'Data': { icon: '📊', class: 'category-data' },
+      'Database': { icon: '🗄️', class: 'category-data' },
+      'Security': { icon: '🔒', class: 'category-security' },
+      'DevOps': { icon: '🚀', class: 'category-devops' },
+      'Infrastructure': { icon: '☁️', class: 'category-devops' },
+      'Documentation': { icon: '📖', class: 'category-default' },
+      'Testing': { icon: '🧪', class: 'category-default' },
+      'default': { icon: '📁', class: 'category-default' }
+    };
+
+    // Initialize Categories
+    function initializeCategories() {
+      // For now, create default categories based on folder structure
+      const defaultCategories = [
+        { name: 'UI Systems', count: 15, type: 'ui' },
+        { name: 'Backend APIs', count: 23, type: 'backend' },
+        { name: 'AI Integration', count: 8, type: 'ai' },
+        { name: 'Data Models', count: 12, type: 'data' },
+        { name: 'Security', count: 6, type: 'security' },
+        { name: 'DevOps', count: 10, type: 'devops' }
+      ];
+
+      renderCategories(defaultCategories);
+    }
+
+    // Render Categories
+    function renderCategories(categories) {
+      const grid = document.getElementById('categoryGrid');
+      grid.innerHTML = categories.map(cat => {
+        const categoryInfo = categoryMap[cat.name] || categoryMap.default;
+        return `
+          <div class="category-card ${categoryInfo.class}" data-category="${cat.type}">
+            <span class="category-icon">${categoryInfo.icon}</span>
+            <div class="category-name">${cat.name}</div>
+            <div class="category-count">${cat.count} items</div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers
+      grid.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', () => {
+          // Remove active class from all cards
+          grid.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+          // Add active class to clicked card
+          card.classList.add('active');
+          // Filter items by category
+          const category = card.dataset.category;
+          filterByCategory(category);
+        });
+      });
+    }
+
+    // Load Knowledge Items
+    async function loadKnowledgeItems(filter = 'all') {
+      const loadingState = document.getElementById('loadingState');
+      const knowledgeGrid = document.getElementById('knowledgeGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      loadingState.style.display = 'block';
+      knowledgeGrid.style.display = 'none';
+      emptyState.style.display = 'none';
+
+      try {
+        // For demo, create mock knowledge items
+        // In production, this would fetch from the API
+        const mockItems = [
+          {
+            id: 1,
+            title: 'OKLCH Color System',
+            description: 'Complete guide to modern color management with OKLCH perceptual color space',
+            type: 'interactive',
+            category: 'UI Systems',
+            size: '2.3 MB',
+            updated: '2025-10-12'
+          },
+          {
+            id: 2,
+            title: 'React Component Library',
+            description: 'Reusable UI components with accessibility built-in',
+            type: 'components',
+            category: 'UI Systems',
+            size: '1.8 MB',
+            updated: '2025-10-11'
+          },
+          {
+            id: 3,
+            title: 'API Authentication Patterns',
+            description: 'JWT, OAuth2, and API key best practices',
+            type: 'documentation',
+            category: 'Backend APIs',
+            size: '856 KB',
+            updated: '2025-10-10'
+          },
+          {
+            id: 4,
+            title: 'Auto-Proactive Engine',
+            description: 'Self-optimizing loops for autonomous project management',
+            type: 'interactive',
+            category: 'AI Integration',
+            size: '3.1 MB',
+            updated: '2025-10-13'
+          },
+          {
+            id: 5,
+            title: 'Database Schema Design',
+            description: 'Optimized SQLite schemas for multi-registry systems',
+            type: 'documentation',
+            category: 'Data Models',
+            size: '1.2 MB',
+            updated: '2025-10-09'
+          },
+          {
+            id: 6,
+            title: 'Security Audit Checklist',
+            description: 'Comprehensive security validation for MCP systems',
+            type: 'documentation',
+            category: 'Security',
+            size: '645 KB',
+            updated: '2025-10-08'
+          }
+        ];
+
+        // Filter items based on selected filter
+        const filteredItems = filter === 'all'
+          ? mockItems
+          : mockItems.filter(item => item.type === filter);
+
+        loadingState.style.display = 'none';
+
+        if (filteredItems.length === 0) {
+          emptyState.style.display = 'block';
+        } else {
+          knowledgeGrid.style.display = 'grid';
+          renderKnowledgeItems(filteredItems);
+        }
+      } catch (error) {
+        console.error('Failed to load knowledge items:', error);
+        loadingState.style.display = 'none';
+        emptyState.style.display = 'block';
+      }
+    }
+
+    // Render Knowledge Items
+    function renderKnowledgeItems(items) {
+      const grid = document.getElementById('knowledgeGrid');
+      grid.innerHTML = items.map(item => {
+        const categoryInfo = categoryMap[item.category] || categoryMap.default;
+        return `
+          <div class="knowledge-item" data-id="${item.id}">
+            <div class="knowledge-header">
+              <div class="knowledge-title">${item.title}</div>
+              <div class="knowledge-type">${item.type}</div>
+            </div>
+            <div class="knowledge-description">${item.description}</div>
+            <div class="knowledge-meta">
+              <div class="knowledge-meta-item">
+                <span>${categoryInfo.icon}</span>
+                <span>${item.category}</span>
+              </div>
+              <div class="knowledge-meta-item">
+                <span>📦</span>
+                <span>${item.size}</span>
+              </div>
+              <div class="knowledge-meta-item">
+                <span>📅</span>
+                <span>${item.updated}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Add click handlers for items
+      grid.querySelectorAll('.knowledge-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const id = item.dataset.id;
+          // Navigate to knowledge item detail
+          console.log('Open knowledge item:', id);
+        });
+      });
+    }
+
+    // Filter by Category
+    function filterByCategory(category) {
+      console.log('Filtering by category:', category);
+      // In production, this would filter the items
+      loadKnowledgeItems('all');
+    }
+
+    // Search Functionality
+    function setupSearch() {
+      const searchInput = document.getElementById('searchInput');
+      let searchTimeout;
+
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+          const query = e.target.value.toLowerCase();
+          // Filter items based on search
+          console.log('Searching for:', query);
+        }, 300);
+      });
+    }
+
+    // Filter Chips
+    function setupFilterChips() {
+      const chips = document.querySelectorAll('.filter-chip');
+      chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+          // Remove active class from all chips
+          chips.forEach(c => c.classList.remove('active'));
+          // Add active class to clicked chip
+          chip.classList.add('active');
+          // Load items with selected filter
+          const filter = chip.dataset.filter;
+          loadKnowledgeItems(filter);
+        });
+      });
+    }
+
+    // Initialize the Knowledge Space
+    function init() {
+      console.log('Initializing Knowledge Space...');
+
+      // Load categories
+      initializeCategories();
+
+      // Load initial knowledge items
+      loadKnowledgeItems('all');
+
+      // Setup interactions
+      setupSearch();
+      setupFilterChips();
+
+      console.log('Knowledge Space initialized');
+    }
+
+    // Start the application
+    document.addEventListener('DOMContentLoaded', init);
+
+    // Optional: Auto-refresh every 5 minutes
+    setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        console.log('Refreshing knowledge data...');
+        // loadKnowledgeItems();
+      }
+    }, 5 * 60 * 1000);
+  </script>
+
+</body>
+</html>

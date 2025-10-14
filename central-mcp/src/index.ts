@@ -130,6 +130,18 @@ async function main() {
     logger.info('   GitPushMonitor/Loop 9: READY TO ACTIVATE! ⚡');
     logger.info('');
 
+    // 🏛️ Initialize Central Systems Registry - THE SINGLE SOURCE OF TRUTH!
+    logger.info('🏛️ Initializing Central Systems Registry...');
+    const { centralSystemsRegistry } = await import('./registry/CentralSystemsRegistry.js');
+    await centralSystemsRegistry.initialize();
+
+    logger.info('✅ Central Systems Registry initialized');
+    logger.info('   📊 All systems registered and cataloged');
+    logger.info('   🔍 Single source of truth established');
+    logger.info('   🚫 Duplicate prevention enabled');
+    logger.info('   📋 High-confidence system intelligence available');
+    logger.info('');
+
     // Initialize Auto-Proactive Engine (THE LIVING SYSTEM!)
     logger.info('⚡ Starting Auto-Proactive Engine...');
     const { AutoProactiveEngine } = await import('./auto-proactive/AutoProactiveEngine.js');
@@ -176,6 +188,24 @@ async function main() {
       loop6Interval: 900,  // Every 15 minutes (opportunity scanning)
       loop7Interval: 600,  // Every 10 minutes (spec generation)
       loop8Interval: 120,  // Every 2 minutes (task assignment)
+
+      // 🚀 NEW: Enhanced Database Integration Configuration
+      databaseIntegration: {
+        enabled: true,  // ACTIVATE ENHANCED DATABASE FEATURES! ⚡
+        enableConnectionPooling: true,
+        enableMonitoring: true,
+        enableIntegrityValidation: true,
+        enableJsonColumns: true,
+        poolConfig: {
+          maxConnections: 10,
+          minConnections: 2,
+          idleTimeoutMillis: 30000
+        },
+        monitoringConfig: {
+          slowQueryThreshold: 1000,  // 1 second
+          monitoringInterval: 60000    // 1 minute
+        }
+      },
 
       // ════════════════════════════════════════════════════════════════
       // REVOLUTIONARY SYSTEMS - THE INTELLIGENCE LAYER! 🧠
@@ -227,15 +257,34 @@ async function main() {
     logger.info('⚡ Features: Atomic claiming, Auto-unblocking, Git verification, Real-time progress');
 
     // Graceful shutdown handler
-    const shutdown = () => {
+    const shutdown = async () => {
       logger.info('🛑 Shutting down gracefully...');
-      autoProactive.stop();
-      registry.close();
-      process.exit(0);
+
+      try {
+        // Enhanced shutdown with database cleanup
+        await autoProactive.shutdown();
+        await registry.close();
+        logger.info('✅ All systems shut down gracefully');
+        process.exit(0);
+      } catch (error) {
+        logger.error('❌ Error during shutdown:', error);
+        process.exit(1);
+      }
     };
 
-    process.on('SIGINT', shutdown);
-    process.on('SIGTERM', shutdown);
+    process.on('SIGINT', () => {
+    shutdown().catch((error) => {
+      logger.error('💥 Unhandled error during SIGINT shutdown:', error);
+      process.exit(1);
+    });
+  });
+
+  process.on('SIGTERM', () => {
+    shutdown().catch((error) => {
+      logger.error('💥 Unhandled error during SIGTERM shutdown:', error);
+      process.exit(1);
+    });
+  });
 
   } catch (error) {
     logger.error('❌ Fatal error starting MCP server:', error);

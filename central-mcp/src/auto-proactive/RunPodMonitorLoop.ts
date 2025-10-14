@@ -14,6 +14,7 @@
 import { BaseLoop, LoopTriggerConfig, LoopExecutionContext } from './BaseLoop.js';
 import { getRunPodStatus } from '../tools/runpod/runpodIntegration.js';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 import Database from 'better-sqlite3';
 import { join } from 'path';
 
@@ -101,11 +102,58 @@ export class RunPodMonitorLoop extends BaseLoop {
           logger.info(`[Loop 10] 🤖 ${summary.active_agents} agent(s) active on RunPod`);
         }
 
-        // TODO: Credit balance check (requires separate API call)
-        // const balance = await getRunPodBalance();
-        // if (balance < 10) {
-        //   logger.error('[Loop 10] 🚨 LOW CREDIT BALANCE: Add funds to prevent termination!');
-        // }
+        // Credit balance check (PREVENT ACCOUNT TERMINATION)
+        const balance = await this.getRunPodBalance();
+        if (balance !== null && balance < 10.0) {
+          logger.error(`[Loop 10] 🚨 CRITICAL: LOW CREDIT BALANCE $${balance.toFixed(2)} - Add funds immediately!`);
+
+          // Write critical alert to Universal Write System
+          await writeSystemEvent({
+            eventType: 'credit_alert',
+            eventCategory: 'system',
+            eventActor: 'Loop-10',
+            eventAction: `Critical: Low RunPod credit balance $${balance.toFixed(2)}`,
+            eventDescription: `RunPod account balance below $10.00 - immediate action required to prevent service termination`,
+            systemHealth: 'critical',
+            eventSeverity: 'critical',
+            eventMetadata: {
+              balance: balance,
+              threshold: 10.0,
+              currency: 'USD',
+              urgency: 'immediate',
+              action_required: 'add_funds',
+              potential_impact: 'account_termination'
+            },
+            timestamp: new Date().toISOString()
+          });
+
+          // Send external alert if configured
+          await this.sendCreditAlert(balance);
+        } else if (balance !== null && balance < 25.0) {
+          logger.warn(`[Loop 10] ⚠️  WARNING: Low RunPod credit balance $${balance.toFixed(2)} - Consider adding funds`);
+
+          await writeSystemEvent({
+            eventType: 'credit_warning',
+            eventCategory: 'system',
+            eventActor: 'Loop-10',
+            eventAction: `Warning: Low RunPod credit balance $${balance.toFixed(2)}`,
+            eventDescription: `RunPod account balance below $25.00 - action recommended soon`,
+            systemHealth: 'degraded',
+            eventSeverity: 'warning',
+            eventMetadata: {
+              balance: balance,
+              threshold: 25.0,
+              currency: 'USD',
+              urgency: 'soon',
+              action_required: 'consider_adding_funds'
+            },
+            timestamp: new Date().toISOString()
+          });
+        } else if (balance !== null) {
+          logger.info(`[Loop 10] 💰 RunPod credit balance: $${balance.toFixed(2)}`);
+        } else {
+          logger.warn('[Loop 10] ⚠️  Unable to retrieve RunPod credit balance');
+        }
 
       } else {
         logger.error(`[Loop 10] ❌ Failed to get RunPod status: ${status.error}`);
@@ -169,6 +217,181 @@ export class RunPodMonitorLoop extends BaseLoop {
       db.close();
     } catch (error) {
       logger.error('[Loop 10] Failed to save cost snapshot:', error);
+    }
+  }
+
+  /**
+   * Get RunPod account balance to prevent account termination
+   */
+  private async getRunPodBalance(): Promise<number | null> {
+    try {
+      const apiKey = process.env.RUNPOD_API_KEY;
+      if (!apiKey) {
+        logger.warn('[Loop 10] ⚠️  RUNPOD_API_KEY not configured - cannot check balance');
+        return null;
+      }
+
+      const response = await fetch('https://api.runpod.io/v2/user', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+
+      if (!response.ok) {
+        logger.warn(`[Loop 10] ⚠️  Failed to get balance: ${response.status} ${response.statusText}`);
+        return null;
+      }
+
+      const data = await response.json();
+
+      // RunPod API returns balance in USD
+      if (data && typeof data.balance === 'number') {
+        return data.balance;
+      } else if (data && typeof data.credits === 'number') {
+        return data.credits;
+      } else {
+        logger.warn('[Loop 10] ⚠️  Unexpected balance response format:', JSON.stringify(data));
+        return null;
+      }
+
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        logger.warn('[Loop 10] ⚠️  Balance check timeout (10s)');
+      } else {
+        logger.warn('[Loop 10] ⚠️  Balance check error:', error.message);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Send credit alert via configured channels
+   */
+  private async sendCreditAlert(balance: number): Promise<void> {
+    try {
+      const webhookUrl = process.env.ALERT_WEBHOOK_URL;
+      const slackUrl = process.env.SLACK_WEBHOOK_URL;
+      const discordUrl = process.env.DISCORD_WEBHOOK_URL;
+
+      const alertMessage = {
+        title: '🚨 CRITICAL: RunPod Credit Balance Low',
+        text: `Current balance: $${balance.toFixed(2)} - Add funds immediately to prevent account termination!`,
+        color: 'danger',
+        fields: [
+          { name: 'Balance', value: `$${balance.toFixed(2)}`, short: true },
+          { name: 'Threshold', value: '$10.00', short: true },
+          { name: 'Action Required', value: 'Add funds immediately', short: true },
+          { name: 'Impact', value: 'Account termination', short: true }
+        ],
+        timestamp: new Date().toISOString()
+      };
+
+      // Send to primary webhook
+      if (webhookUrl) {
+        await this.sendWebhookAlert(webhookUrl, alertMessage);
+      }
+
+      // Send to Slack
+      if (slackUrl) {
+        await this.sendSlackAlert(slackUrl, alertMessage);
+      }
+
+      // Send to Discord
+      if (discordUrl) {
+        await this.sendDiscordAlert(discordUrl, alertMessage);
+      }
+
+      logger.info(`[Loop 10] 📢 Credit alert sent via ${[webhookUrl, slackUrl, discordUrl].filter(Boolean).length} channels`);
+
+    } catch (error: any) {
+      logger.error('[Loop 10] ❌ Failed to send credit alert:', error.message);
+    }
+  }
+
+  /**
+   * Send webhook alert
+   */
+  private async sendWebhookAlert(url: string, message: any): Promise<void> {
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(message),
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Webhook failed: ${response.status}`);
+      }
+    } catch (error: any) {
+      logger.warn('[Loop 10] ⚠️  Webhook alert failed:', error.message);
+    }
+  }
+
+  /**
+   * Send Slack alert
+   */
+  private async sendSlackAlert(url: string, message: any): Promise<void> {
+    try {
+      const slackPayload = {
+        text: message.title,
+        attachments: [{
+          color: 'danger',
+          fields: message.fields,
+          footer: 'Central-MCP RunPod Monitor',
+          ts: Math.floor(Date.now() / 1000)
+        }]
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(slackPayload),
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Slack webhook failed: ${response.status}`);
+      }
+    } catch (error: any) {
+      logger.warn('[Loop 10] ⚠️  Slack alert failed:', error.message);
+    }
+  }
+
+  /**
+   * Send Discord alert
+   */
+  private async sendDiscordAlert(url: string, message: any): Promise<void> {
+    try {
+      const discordPayload = {
+        embeds: [{
+          title: message.title,
+          description: message.text,
+          color: 0xFF0000, // Red for critical
+          fields: message.fields.map((field: any) => ({
+            name: field.name,
+            value: field.value,
+            inline: field.short
+          })),
+          timestamp: message.timestamp
+        }]
+      };
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(discordPayload),
+        signal: AbortSignal.timeout(5000)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Discord webhook failed: ${response.status}`);
+      }
+    } catch (error: any) {
+      logger.warn('[Loop 10] ⚠️  Discord alert failed:', error.message);
     }
   }
 

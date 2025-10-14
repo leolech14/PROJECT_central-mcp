@@ -20,6 +20,7 @@ import { existsSync } from 'fs';
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 
 export interface StatusAnalysisConfig {
   intervalSeconds: number;       // How often to run (default: 300 = 5min)
@@ -131,13 +132,25 @@ export class StatusAnalysisLoop {
       }
 
       const duration = Date.now() - startTime;
-      logger.info(`✅ Loop 2 Complete: Analyzed ${analyzed} projects, found ${blockers} blockers in ${duration}ms`);
+      logger.info(`✅ Loop 5 Complete: Analyzed ${analyzed} projects, found ${blockers} blockers in ${duration}ms`);
 
-      // Log execution
-      this.logLoopExecution({
-        projectsAnalyzed: analyzed,
-        blockersFound: blockers,
-        durationMs: duration
+      // Write event to Universal Write System
+      writeSystemEvent({
+        eventType: 'loop_execution',
+        eventCategory: 'system',
+        eventActor: 'Loop-5',
+        eventAction: `Status analysis: Analyzed ${analyzed} projects, found ${blockers} blockers`,
+        eventDescription: `Loop #${this.loopCount}`,
+        systemHealth: blockers > 0 ? 'warning' : 'healthy',
+        activeLoops: 9,
+        avgResponseTimeMs: duration,
+        successRate: blockers === 0 ? 1.0 : 0.8,
+        tags: ['loop-5', 'status-analysis', 'auto-proactive'],
+        metadata: {
+          loopCount: this.loopCount,
+          projectsAnalyzed: analyzed,
+          blockersFound: blockers
+        }
       });
 
     } catch (err: any) {

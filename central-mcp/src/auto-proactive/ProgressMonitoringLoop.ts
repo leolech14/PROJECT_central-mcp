@@ -21,6 +21,7 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 import { BaseLoop, LoopTriggerConfig, LoopExecutionContext } from './BaseLoop.js';
 import { LoopEvent } from './EventBus.js';
 
@@ -208,13 +209,26 @@ export class ProgressMonitoringLoop extends BaseLoop {
     const duration = Date.now() - startTime;
     logger.info(`✅ Loop 4 Complete: ${activeSessions.length} sessions monitored in ${duration}ms`);
 
-    // Log execution
-    this.logLoopExecution({
-      sessionsMonitored: activeSessions.length,
-      staleDetected: staleCount,
-      tasksReleased: releasedCount,
-      tasksUnblocked: unblockedCount,
-      durationMs: duration
+    // Write event to Universal Write System
+    writeSystemEvent({
+      eventType: 'loop_execution',
+      eventCategory: 'system',
+      eventActor: 'Loop-4',
+      eventAction: `Progress monitoring: ${activeSessions.length} sessions, ${staleCount} stale, ${releasedCount} released, ${unblockedCount} unblocked`,
+      eventDescription: `Loop #${this.executionCount}`,
+      systemHealth: 'healthy',
+      activeLoops: 9,
+      activeTasks: activeSessions.length,
+      avgResponseTimeMs: duration,
+      successRate: 1.0,
+      tags: ['loop-4', 'progress-monitoring', 'auto-proactive'],
+      metadata: {
+        executionCount: this.executionCount,
+        sessionsMonitored: activeSessions.length,
+        staleDetected: staleCount,
+        tasksReleased: releasedCount,
+        tasksUnblocked: unblockedCount
+      }
     });
   }
 

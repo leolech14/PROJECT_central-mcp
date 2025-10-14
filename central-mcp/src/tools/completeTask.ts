@@ -13,7 +13,7 @@
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import Database from 'better-sqlite3';
-import { TaskRegistry } from '../registry/TaskRegistry.js';
+import IntegratedTaskStore from '../registry/JsonTaskStore.js';
 import { GitTracker } from '../registry/GitTracker.js';
 import { KeepInTouchEnforcer } from '../core/KeepInTouchEnforcer.js';
 import { BestPracticesEngine } from '../core/BestPracticesEngine.js';
@@ -62,7 +62,7 @@ export const completeTaskTool: Tool = {
 };
 
 export function createCompleteTaskToolIntegrated(
-  registry: TaskRegistry,
+  taskStore: IntegratedTaskStore,
   gitTracker: GitTracker,
   db: Database.Database,
   projectPath: string
@@ -121,7 +121,7 @@ export function createCompleteTaskToolIntegrated(
 
       console.log('📊 LAYER 2: Git verification...');
 
-      const task = registry.getTask(parsed.taskId);
+      const task = await taskStore.getTask(parsed.taskId);
       if (!task) {
         return {
           content: [{
@@ -212,7 +212,7 @@ export function createCompleteTaskToolIntegrated(
 
       console.log('✅ All enforcement layers passed! Completing task...\n');
 
-      const result = await registry.completeTask(
+      const result = await taskStore.completeTask(
         parsed.taskId,
         parsed.agent,
         parsed.filesCreated,
@@ -229,7 +229,7 @@ export function createCompleteTaskToolIntegrated(
         const costScheduler = new CostAwareScheduler(db);
 
         // Calculate hours spent
-        const task = registry.getTask(parsed.taskId);
+        const task = await taskStore.getTask(parsed.taskId);
         if (task?.startedAt) {
           const claimedTime = new Date(task.startedAt).getTime();
           const now = Date.now();
@@ -243,7 +243,7 @@ export function createCompleteTaskToolIntegrated(
 
       // Broadcast completion events (legacy)
       if (result.success) {
-        const task = registry.getTask(parsed.taskId);
+        const task = await taskStore.getTask(parsed.taskId);
 
         if (task) {
           // Broadcast task completed event
@@ -257,8 +257,8 @@ export function createCompleteTaskToolIntegrated(
 
           // Broadcast unblocked tasks
           if (result.unblocked && result.unblocked.length > 0) {
-            result.unblocked.forEach(taskId => {
-              const unblockedTask = registry.getTask(taskId);
+            result.unblocked.forEach(async taskId => {
+              const unblockedTask = await taskStore.getTask(taskId);
               if (unblockedTask) {
                 eventBroadcaster.taskUpdate(taskId, 'AVAILABLE');
                 eventBroadcaster.agentLog(parsed.agent, `Unblocked task ${taskId}`, 'info');
@@ -356,13 +356,13 @@ export function createCompleteTaskToolIntegrated(
         }
 
         // CASCADE EVENT 4: Agent workload reduced
-        const newWorkload = (registry as any).getAgentWorkload?.(parsed.agent) || 0;
+        const newWorkload = await taskStore.getAgentWorkload(parsed.agent);
         eventBus.emitLoopEvent(
           LoopEvent.AGENT_WORKLOAD_CHANGED,
           {
             agent: parsed.agent,
-            workload: typeof newWorkload === 'number' ? newWorkload : 0,
-            capacity: typeof newWorkload === 'number' ? (5 - newWorkload) : 5,
+            workload: newWorkload.totalTasks,
+            capacity: newWorkload.capacity || (5 - newWorkload.totalTasks),
             action: 'completed'
           },
           {

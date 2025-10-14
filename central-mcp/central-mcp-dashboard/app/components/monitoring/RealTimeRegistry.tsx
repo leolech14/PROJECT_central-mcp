@@ -24,6 +24,15 @@ const KnowledgeSpace = dynamic(() => import('../../knowledge/page'), {
   ),
 });
 
+const ToolsPage = dynamic(() => import('../../tools/page'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-full flex items-center justify-center bg-scaffold-0">
+      <div className="text-text-secondary">Loading Available Tools...</div>
+    </div>
+  ),
+});
+
 const QuickLaunch = dynamic(() => import('../widgets/QuickLaunch'), {
   ssr: false,
 });
@@ -140,7 +149,7 @@ export default function RealTimeRegistry() {
     return () => console.log('[RealTimeRegistry] Component unmounted');
   }, []);
   const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
-  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals' | 'files' | 'knowledge'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'projects' | 'loops' | 'agents' | 'settings' | 'terminals' | 'files' | 'knowledge' | 'tools'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [retryCount, setRetryCount] = useState(0);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -320,6 +329,7 @@ export default function RealTimeRegistry() {
           case '6': setActiveView('terminals'); e.preventDefault(); break;
           case '7': setActiveView('files'); e.preventDefault(); break;
           case '8': setActiveView('knowledge'); e.preventDefault(); break;
+          case '9': setActiveView('tools'); e.preventDefault(); break;
         }
       }
     };
@@ -586,6 +596,23 @@ export default function RealTimeRegistry() {
                 <span className="text-sm">Knowledge Space</span>
               </div>
               <span className="text-xs opacity-50">⌘8</span>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setActiveView('tools')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeView === 'tools'
+                ? 'bg-accent-primary/20 text-accent-primary font-medium'
+                : 'text-text-secondary hover:bg-scaffold-2'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-lg">🛠️</span>
+                <span className="text-sm">Available Tools</span>
+              </div>
+              <span className="text-xs opacity-50">⌘9</span>
             </div>
           </button>
         </nav>
@@ -950,6 +977,12 @@ export default function RealTimeRegistry() {
           {activeView === 'knowledge' && (
             <div className="space-y-6">
               <KnowledgeSpace />
+            </div>
+          )}
+
+          {activeView === 'tools' && (
+            <div className="space-y-6">
+              <ToolsPage />
             </div>
           )}
         </div>

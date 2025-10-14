@@ -18,6 +18,9 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
+import { AgentRealityVerificationSystem, AgentRealityConfig } from './AgentRealityVerificationSystem.js';
+import { EnhancedModelDetectionSystem, ModelDetectionResult } from './ModelDetectionSystem.js';
 
 export interface AgentAutoDiscoveryConfig {
   intervalSeconds: number;     // How often to run (default: 60)
@@ -95,10 +98,24 @@ export class AgentAutoDiscoveryLoop {
   private isRunning: boolean = false;
   private loopCount: number = 0;
   private agentsDiscovered: number = 0;
+  private realitySystem: AgentRealityVerificationSystem;
+  private enhancedModelDetectionSystem: EnhancedModelDetectionSystem;
 
   constructor(db: Database.Database, config: AgentAutoDiscoveryConfig) {
     this.db = db;
     this.config = config;
+
+    // Initialize Reality Verification System
+    const realityConfig: AgentRealityConfig = {
+      enableTemporalDisclaimers: true,
+      enableLiveVerification: true,
+      maxHistoricalInterpretationMinutes: 10, // 10 minutes threshold for "live"
+      strictModeEnabled: true // Prevent false assumptions
+    };
+    this.realitySystem = new AgentRealityVerificationSystem(db, realityConfig);
+
+    // Initialize Enhanced Model Detection System
+    this.enhancedModelDetectionSystem = new EnhancedModelDetectionSystem(db);
   }
 
   /**
@@ -159,6 +176,56 @@ export class AgentAutoDiscoveryLoop {
         logger.info(`   Working in: ${currentAgent.projectName}`);
         logger.info(`   Capabilities: ${currentAgent.capabilities.join(', ')}`);
 
+        // 🔍 ENHANCED MODEL DETECTION: Reality-based model identification
+        const sessionId = `loop-1-session-${this.loopCount}`;
+        const modelDetection = await this.enhancedModelDetectionSystem.detectCurrentModel(sessionId);
+
+        logger.info(`   🤖 ENHANCED MODEL DETECTION COMPLETE`);
+        logger.info(`   📊 DETECTED MODEL: ${modelDetection.detectedModel}`);
+        logger.info(`   🏢 PROVIDER: ${modelDetection.modelProvider}`);
+        logger.info(`   📚 CONTEXT WINDOW: ${modelDetection.contextWindow.toLocaleString()} tokens`);
+        logger.info(`   ✅ CONFIDENCE: ${(modelDetection.confidence * 100).toFixed(0)}% (${modelDetection.verified ? 'VERIFIED' : 'UNVERIFIED'})`);
+        logger.info(`   🔍 DETECTION METHOD: ${modelDetection.detectionMethod}`);
+
+        // Log self-correction if applied
+        if (modelDetection.selfCorrection?.correctionApplied) {
+          logger.info(`   🧠 SELF-CORRECTION APPLIED: ${modelDetection.selfCorrection.originalModel} → ${modelDetection.selfCorrection.correctedModel}`);
+          logger.info(`   📋 CORRECTION REASON: ${modelDetection.selfCorrection.correctionReason}`);
+        }
+
+        // Update agent info with enhanced model detection results
+        if (modelDetection.verified && modelDetection.confidence > 0.7) {
+          currentAgent.agentLetter = modelDetection.agentLetter;
+          currentAgent.modelId = modelDetection.detectedModel;
+          currentAgent.capabilities = Object.values(modelDetection.capabilities);
+
+          logger.info(`   🔄 UPDATED: Agent ${modelDetection.agentLetter} (${modelDetection.agentRole})`);
+          logger.info(`   🎯 CAPABILITIES: ${modelDetection.capabilities.reasoning} reasoning, ${modelDetection.capabilities.coding} coding, ${modelDetection.capabilities.multimodal ? 'multimodal' : 'text-only'}`);
+        }
+
+        // 🔍 REALITY CHECK: Prevent false assumptions
+        const realityCheck = await this.realitySystem.verifyAgentReality(
+          currentAgent.agentLetter,
+          'agent-discovery'
+        );
+
+        // Display temporal warnings
+        if (realityCheck.warnings.length > 0) {
+          logger.warn(`   ⚠️  ${realityCheck.warnings.join(' | ')}`);
+        }
+
+        // Display disclaimers
+        if (realityCheck.disclaimers.length > 0) {
+          logger.info(`   📚 ${realityCheck.disclaimers.join(' | ')}`);
+        }
+
+        // Add temporal disclaimer to logs
+        const temporalDisclaimer = this.realitySystem.generateTemporalDisclaimer(
+          currentAgent.agentLetter,
+          'Discovery'
+        );
+        logger.info(`   ${temporalDisclaimer}`);
+
         // 2. Register or update agent session
         if (this.config.autoRegister) {
           this.registerAgentSession(currentAgent);
@@ -177,14 +244,52 @@ export class AgentAutoDiscoveryLoop {
       const activeAgents = this.getActiveAgents();
       logger.info(`   Active agents: ${activeAgents.length}`);
 
+      // 🔍 REALITY CHECK: All active agents
+      if (activeAgents.length > 0) {
+        logger.info(`   🔍 REALITY VERIFICATION FOR ALL ACTIVE AGENTS:`);
+        for (const agent of activeAgents) {
+          const agentReality = await this.realitySystem.verifyAgentReality(
+            agent.agentLetter,
+            'active-agents-check'
+          );
+          const status = agentReality.isLiveConnection ? '🟢 LIVE' : '📚 HISTORICAL';
+          logger.info(`      ${status} Agent ${agent.agentLetter}: ${agentReality.timeSinceLastActivity.toFixed(1)} min ago`);
+        }
+      }
+
       const duration = Date.now() - startTime;
       logger.info(`✅ Loop 1 Complete: ${activeAgents.length} agents active in ${duration}ms`);
 
-      // Log execution
-      this.logLoopExecution({
-        currentAgent: currentAgent?.agentLetter,
+      // Get enhanced model detection system statistics
+      const systemStats = this.enhancedModelDetectionSystem.getSystemStats();
+
+      // Write enhanced event to Universal Write System
+      writeSystemEvent({
+        eventType: 'loop_execution',
+        eventCategory: 'system',
+        eventActor: 'Loop-1',
+        eventAction: `Enhanced agent discovery: ${activeAgents.length} agents active`,
+        eventDescription: `Loop #${this.loopCount} - Current agent: ${currentAgent?.agentLetter || 'unknown'} (Enhanced Detection)`,
+        systemHealth: systemStats.systemHealth,
+        activeLoops: 9,
         activeAgents: activeAgents.length,
-        durationMs: duration
+        avgResponseTimeMs: duration,
+        successRate: 1.0,
+        tags: ['loop-1', 'agent-discovery', 'auto-proactive', 'enhanced-detection'],
+        metadata: {
+          loopCount: this.loopCount,
+          currentAgent: currentAgent?.agentLetter,
+          activeAgentsCount: activeAgents.length,
+          enhancedDetectionStats: {
+            totalDetections: systemStats.totalDetections,
+            avgConfidence: systemStats.avgConfidence,
+            accuracyRate: systemStats.accuracyRate,
+            topModels: systemStats.topModels,
+            selfCorrectionStats: systemStats.selfCorrectionStats
+          },
+          sessionId: `loop-1-session-${this.loopCount}`,
+          detectionMethod: currentAgent ? 'enhanced-model-detection' : 'fallback-detection'
+        }
       });
 
     } catch (err: any) {
@@ -418,6 +523,7 @@ export class AgentAutoDiscoveryLoop {
    */
   getStats(): any {
     const activeAgents = this.getActiveAgents();
+    const enhancedStats = this.enhancedModelDetectionSystem.getSystemStats();
 
     return {
       isRunning: this.isRunning,
@@ -425,7 +531,73 @@ export class AgentAutoDiscoveryLoop {
       agentsDiscovered: this.agentsDiscovered,
       activeAgents: activeAgents.length,
       agents: activeAgents,
-      intervalSeconds: this.config.intervalSeconds
+      intervalSeconds: this.config.intervalSeconds,
+      enhancedModelDetection: enhancedStats,
+      integration: {
+        realityVerificationEnabled: true,
+        selfCorrectionEnabled: true,
+        universalWriteEnabled: true
+      }
     };
+  }
+
+  /**
+   * Provide feedback to enhanced model detection system
+   */
+  async provideAgentDetectionFeedback(
+    detectionId: string,
+    actualModel: string,
+    userConfirmed: boolean,
+    context: string = 'agent-discovery-feedback'
+  ): Promise<void> {
+    try {
+      await this.enhancedModelDetectionSystem.provideFeedback(
+        detectionId,
+        actualModel,
+        userConfirmed,
+        context
+      );
+
+      logger.info(`📚 Agent discovery feedback processed: ${detectionId} → ${actualModel} (confirmed: ${userConfirmed})`);
+
+      // Write feedback event to Universal Write System
+      await writeSystemEvent({
+        eventType: 'agent-feedback',
+        eventCategory: 'learning',
+        eventActor: 'Loop-1',
+        eventAction: `Agent detection feedback: ${actualModel}`,
+        eventDescription: `User feedback for agent detection - ${userConfirmed ? 'confirmed' : 'corrected'}`,
+        systemHealth: 'healthy',
+        activeLoops: 9,
+        avgResponseTimeMs: 0,
+        successRate: 1.0,
+        tags: ['loop-1', 'agent-feedback', 'learning', 'enhanced-detection'],
+        metadata: {
+          detectionId,
+          actualModel,
+          userConfirmed,
+          context,
+          loopCount: this.loopCount,
+          feedbackSource: 'agent-auto-discovery'
+        }
+      });
+
+    } catch (error: any) {
+      logger.error(`❌ Failed to process agent detection feedback:`, error);
+    }
+  }
+
+  /**
+   * Get enhanced model detection statistics for monitoring
+   */
+  getModelDetectionStatistics(): any {
+    return this.enhancedModelDetectionSystem.getSystemStats();
+  }
+
+  /**
+   * Export model detection data for analysis
+   */
+  exportModelDetectionData(hours: number = 24): any {
+    return this.enhancedModelDetectionSystem.exportDetectionData(hours);
   }
 }

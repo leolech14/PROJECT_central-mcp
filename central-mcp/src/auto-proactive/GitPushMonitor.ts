@@ -28,6 +28,7 @@
 import Database from 'better-sqlite3';
 import { randomUUID } from 'crypto';
 import { logger } from '../utils/logger.js';
+import { writeSystemEvent } from '../api/universal-write.js';
 import { BaseLoop, LoopTriggerConfig, LoopExecutionContext } from './BaseLoop.js';
 import { LoopEvent } from './EventBus.js';
 import {
@@ -201,15 +202,32 @@ export class GitPushMonitor extends BaseLoop {
     logger.info(`   📊 Repo stats: ${stats.commitCount} commits, ${stats.contributors} contributors`);
 
     const duration = Date.now() - startTime;
-    logger.info(`✅ Loop 5.5 Complete: Git scan finished in ${duration}ms`);
+    logger.info(`✅ Loop 9 Complete: Git scan finished in ${duration}ms`);
 
-    // Log execution
-    this.logLoopExecution({
-      pushesDetected: pushes.length,
-      needsPush,
-      branchesActive: branches.filter(b => b.status === 'active').length,
-      branchesStale: branches.filter(b => b.status === 'stale').length,
-      durationMs: duration
+    // Write event to Universal Write System
+    const branchesActive = branches.filter(b => b.status === 'active').length;
+    const branchesStale = branches.filter(b => b.status === 'stale').length;
+
+    writeSystemEvent({
+      eventType: 'loop_execution',
+      eventCategory: 'system',
+      eventActor: 'Loop-9',
+      eventAction: `Git monitor: ${pushes.length} pushes detected, ${branchesActive} active branches, ${branchesStale} stale`,
+      eventDescription: `Loop #${this.executionCount}`,
+      systemHealth: branchesStale > 5 ? 'warning' : 'healthy',
+      activeLoops: 9,
+      avgResponseTimeMs: duration,
+      successRate: 1.0,
+      tags: ['loop-9', 'git-monitor', 'auto-proactive'],
+      metadata: {
+        executionCount: this.executionCount,
+        pushesDetected: pushes.length,
+        needsPush,
+        branchesActive,
+        branchesStale,
+        versionsTagged: this.versionsTagged,
+        deploymentsTriggered: this.deploymentsTriggered
+      }
     });
   }
 

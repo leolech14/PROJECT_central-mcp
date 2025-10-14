@@ -3464,6 +3464,208 @@ app.post('/api/engine/control', (req, res) => {
   }
 });
 
+// ============================================================================
+// 🧠 KNOWLEDGE SPACE API - REAL-TIME KNOWLEDGE PACK SYSTEM
+// ============================================================================
+// 🚀 TRANSFORMS STATIC MOCK INTO DYNAMIC REAL-TIME SYSTEM!
+// ============================================================================
+
+const path = require('path');
+
+/**
+ * Real-time knowledge space scanning and category generation
+ * Replaces the fake static mock data with actual directory content
+ */
+app.get('/api/knowledge/space', async (req, res) => {
+  try {
+    console.log('🚀 API /api/knowledge/space called!');
+    const knowledgeSpacePath = path.join(__dirname, '03_CONTEXT_FILES', 'SPECIALIZED_KNOWLEDGE_PACKS');
+    console.log(`📂 Knowledge space path: ${knowledgeSpacePath}`);
+    console.log(`📂 Path exists: ${await fs.promises.access(knowledgeSpacePath).then(() => true).catch(() => false)}`);
+
+    // Helper function to recursively scan directories
+    async function scanDirectory(dirPath, categoryName) {
+      try {
+        const items = [];
+        const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+        console.log(`📂 Scanning ${dirPath} - found ${entries.length} entries`);
+
+        for (const entry of entries) {
+          const fullPath = path.join(dirPath, entry.name);
+          const stats = await fs.promises.stat(fullPath);
+
+          if (entry.isFile() && entry.name.endsWith('.zip')) {
+            console.log(`📦 Found ZIP file: ${entry.name}`);
+            // Extract knowledge pack info
+            const item = {
+              id: `${categoryName}-${entry.name}`,
+              title: entry.name.replace('.zip', '').replace(/_/g, ' '),
+              description: `Knowledge pack: ${entry.name}`,
+              type: 'knowledge-pack',
+              category: categoryName,
+              size: `${(stats.size / 1024 / 1024).toFixed(1)} MB`,
+              updated: stats.mtime.toISOString().split('T')[0],
+              fileName: entry.name,
+              filePath: path.relative(__dirname, fullPath),
+              downloadUrl: `/api/knowledge/download/${categoryName}/${entry.name}`
+            };
+            items.push(item);
+          } else if (entry.isFile() && entry.name === 'README.md') {
+            // Extract README content for category description
+            try {
+              const readmeContent = await fs.promises.readFile(fullPath, 'utf-8');
+              const firstLine = readmeContent.split('\n')[0].replace('#', '').trim();
+              return {
+                description: firstLine || `README for ${categoryName}`,
+                content: readmeContent
+              };
+            } catch (error) {
+              console.warn(`Could not read README: ${fullPath}`, error.message);
+            }
+          }
+        }
+
+        return { items };
+      } catch (error) {
+        console.error(`Error scanning directory ${dirPath}:`, error.message);
+        return { items: [] };
+      }
+    }
+
+    // Main knowledge space scanning logic
+    async function scanKnowledgeSpace() {
+      const categories = [];
+      let totalKnowledgePacks = 0;
+      let totalSize = 0;
+
+      try {
+        const entries = await fs.promises.readdir(knowledgeSpacePath, { withFileTypes: true });
+        console.log('🔍 Knowledge space entries found:', entries.length);
+
+        for (const entry of entries) {
+          if (entry.isDirectory()) {
+            const categoryName = entry.name;
+            const categoryPath = path.join(knowledgeSpacePath, categoryName);
+            console.log(`🔍 Scanning category: ${categoryName}`);
+
+            // Scan the category directory
+            const scanResult = await scanDirectory(categoryPath, categoryName);
+            const items = scanResult.items || [];
+            const description = scanResult.description;
+            const content = scanResult.content;
+            console.log(`📁 Category ${categoryName} items:`, items.length);
+            console.log(`📁 Category ${categoryName} items detail:`, JSON.stringify(items, null, 2));
+
+            // Count .zip files for this category
+            const zipFiles = items.filter(item => item.type === 'knowledge-pack');
+            const categorySize = items.reduce((sum, item) => {
+              const sizeInMB = parseFloat(item.size);
+              return sum + sizeInMB;
+            }, 0);
+
+            // Create category object
+            const category = {
+              id: categoryName,
+              name: categoryName.split('-').map(word =>
+                word.charAt(0).toUpperCase() + word.slice(1)
+              ).join(' '),
+              description: description || `Knowledge packs for ${categoryName}`,
+              knowledgePacks: items,
+              count: zipFiles.length,
+              size: `${categorySize.toFixed(1)} MB`,
+              type: getCategoryType(categoryName),
+              updated: items.length > 0 ?
+                Math.max(...items.map(item => new Date(item.updated))) :
+                new Date().toISOString().split('T')[0]
+            };
+
+            if (zipFiles.length > 0) {
+              categories.push(category);
+              totalKnowledgePacks += zipFiles.length;
+              totalSize += categorySize;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error scanning knowledge space:', error.message);
+      }
+
+      return {
+        categories,
+        stats: {
+          totalCategories: categories.length,
+          totalKnowledgePacks,
+          totalSize: `${totalSize.toFixed(1)} MB`,
+          lastScanned: new Date().toISOString(),
+          rootPath: knowledgeSpacePath
+        }
+      };
+    }
+
+    // Helper function to determine category type
+    function getCategoryType(categoryName) {
+      const typeMap = {
+        'ai-integration': 'ai',
+        'voice-systems': 'voice',
+        'web-development': 'web',
+        'backend-services': 'backend',
+        'system-registries': 'system',
+        'deployment': 'deployment',
+        'miscellaneous': 'misc'
+      };
+      return typeMap[categoryName] || 'general';
+    }
+
+    // Execute the knowledge space scan
+    const result = await scanKnowledgeSpace();
+
+    res.json({
+      success: true,
+      data: result,
+      meta: {
+        version: '1.0.0',
+        generated: new Date().toISOString(),
+        source: 'real-time-directory-scan',
+        message: '🧠 LIVE KNOWLEDGE SPACE - Real directory content, not mock data!'
+      }
+    });
+
+  } catch (error) {
+    console.error('Knowledge space API error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      message: '❌ Knowledge space scanning failed'
+    });
+  }
+});
+
+/**
+ * Knowledge pack download endpoint
+ */
+app.get('/api/knowledge/download/:category/:filename', async (req, res) => {
+  try {
+    const { category, filename } = req.params;
+    const filePath = path.join(__dirname, '03_CONTEXT_FILES', 'SPECIALIZED_KNOWLEDGE_PACKS', category, filename);
+
+    // Security check - ensure file exists and is within knowledge packs directory
+    const fullPath = path.resolve(filePath);
+    const knowledgeSpacePath = path.resolve(path.join(__dirname, '03_CONTEXT_FILES', 'SPECIALIZED_KNOWLEDGE_PACKS'));
+
+    if (!fullPath.startsWith(knowledgeSpacePath)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+      res.download(fullPath, filename);
+    } else {
+      res.status(404).json({ error: 'Knowledge pack not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Initialize and start the auto-proactive engine
 const autoProactiveEngine = new AutoProactiveEngine();
 // autoProactiveEngine.start(); // Temporarily disabled for testing

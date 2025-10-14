@@ -225,6 +225,39 @@
       gap: 4px;
     }
 
+    .knowledge-actions {
+      margin-top: var(--space-3);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border);
+    }
+
+    .download-btn {
+      width: 100%;
+      padding: var(--space-2) var(--space-3);
+      background: linear-gradient(135deg, #0066cc, #0052a3);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: var(--text-xs);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 150ms ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .download-btn:hover {
+      background: linear-gradient(135deg, #0052a3, #004494);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+    }
+
+    .download-btn:active {
+      transform: translateY(0);
+    }
+
     /* Filter Bar */
     .filter-bar {
       display: flex;
@@ -344,6 +377,9 @@
           <span>Knowledge Space</span>
         </h1>
         <div class="header-subtitle">Specialized Knowledge Packs & Documentation</div>
+        <div class="knowledge-stats" style="margin-top: 8px; font-size: var(--text-xs); color: var(--text-secondary);">
+          📊 <strong>Loading...</strong> Knowledge Packs
+        </div>
       </div>
       <div style="display: flex; gap: var(--space-2);">
         <a href="/central-mcp-dashboard.html" style="padding: var(--space-2) var(--space-3); background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; color: var(--text-secondary); text-decoration: none; font-size: var(--text-xs); transition: all 150ms ease;">
@@ -473,82 +509,85 @@
       emptyState.style.display = 'none';
 
       try {
-        // For demo, create mock knowledge items
-        // In production, this would fetch from the API
-        const mockItems = [
-          {
-            id: 1,
-            title: 'OKLCH Color System',
-            description: 'Complete guide to modern color management with OKLCH perceptual color space',
-            type: 'interactive',
-            category: 'UI Systems',
-            size: '2.3 MB',
-            updated: '2025-10-12'
-          },
-          {
-            id: 2,
-            title: 'React Component Library',
-            description: 'Reusable UI components with accessibility built-in',
-            type: 'components',
-            category: 'UI Systems',
-            size: '1.8 MB',
-            updated: '2025-10-11'
-          },
-          {
-            id: 3,
-            title: 'API Authentication Patterns',
-            description: 'JWT, OAuth2, and API key best practices',
-            type: 'documentation',
-            category: 'Backend APIs',
-            size: '856 KB',
-            updated: '2025-10-10'
-          },
-          {
-            id: 4,
-            title: 'Auto-Proactive Engine',
-            description: 'Self-optimizing loops for autonomous project management',
-            type: 'interactive',
-            category: 'AI Integration',
-            size: '3.1 MB',
-            updated: '2025-10-13'
-          },
-          {
-            id: 5,
-            title: 'Database Schema Design',
-            description: 'Optimized SQLite schemas for multi-registry systems',
-            type: 'documentation',
-            category: 'Data Models',
-            size: '1.2 MB',
-            updated: '2025-10-09'
-          },
-          {
-            id: 6,
-            title: 'Security Audit Checklist',
-            description: 'Comprehensive security validation for MCP systems',
-            type: 'documentation',
-            category: 'Security',
-            size: '645 KB',
-            updated: '2025-10-08'
-          }
-        ];
+        // 🚀 REAL-TIME API CALL - LIVE KNOWLEDGE SPACE SCANNING!
+        const response = await fetch('/api/knowledge/space');
+        const result = await response.json();
+
+        if (!result.success) {
+          throw new Error(result.error || 'Failed to load knowledge space');
+        }
+
+        // Extract real knowledge packs from all categories
+        const realKnowledgePacks = [];
+        result.data.categories.forEach(category => {
+          category.knowledgePacks.forEach(pack => {
+            realKnowledgePacks.push({
+              id: pack.id,
+              title: pack.title,
+              description: pack.description,
+              type: pack.type,
+              category: category.name,
+              size: pack.size,
+              updated: pack.updated,
+              downloadUrl: pack.downloadUrl,
+              fileName: pack.fileName
+            });
+          });
+        });
 
         // Filter items based on selected filter
         const filteredItems = filter === 'all'
-          ? mockItems
-          : mockItems.filter(item => item.type === filter);
+          ? realKnowledgePacks
+          : realKnowledgePacks.filter(item => item.type === filter);
 
         loadingState.style.display = 'none';
 
         if (filteredItems.length === 0) {
           emptyState.style.display = 'block';
+          emptyState.innerHTML = `
+            <div class="empty-icon">📚</div>
+            <h3>No knowledge packs found</h3>
+            <p>No ${filter} knowledge packs available in the current knowledge space.</p>
+            <div style="margin-top: 16px; font-size: 14px; color: #888;">
+              🧠 <strong>Real-time scan completed</strong><br>
+              Last scanned: ${new Date(result.meta.generated).toLocaleString()}
+            </div>
+          `;
         } else {
           knowledgeGrid.style.display = 'grid';
+
+          // Update page title with real stats
+          document.querySelector('.knowledge-stats').innerHTML = `
+            📊 <strong>${result.data.stats.totalKnowledgePacks}</strong> Knowledge Packs |
+            📁 <strong>${result.data.stats.totalCategories}</strong> Categories |
+            💾 <strong>${result.data.stats.totalSize}</strong> Total
+          `;
+
           renderKnowledgeItems(filteredItems);
         }
+
+        console.log('🧠 LIVE KNOWLEDGE SPACE LOADED:', {
+          total: result.data.stats.totalKnowledgePacks,
+          categories: result.data.stats.totalCategories,
+          size: result.data.stats.totalSize,
+          source: result.meta.source,
+          scanned: result.meta.generated
+        });
+
       } catch (error) {
-        console.error('Failed to load knowledge items:', error);
+        console.error('❌ Failed to load real knowledge items:', error);
         loadingState.style.display = 'none';
         emptyState.style.display = 'block';
+        emptyState.innerHTML = `
+          <div class="empty-icon">⚠️</div>
+          <h3>Knowledge Space Error</h3>
+          <p>Could not load knowledge space: ${error.message}</p>
+          <div style="margin-top: 16px;">
+            <button onclick="loadKnowledgeItems('${filter}')" style="padding: 8px 16px; background: #0066cc; color: white; border: none; border-radius: 4px; cursor: pointer;">
+              🔄 Retry
+            </button>
+          </div>
+        `;
       }
     }
 
@@ -558,7 +597,7 @@
       grid.innerHTML = items.map(item => {
         const categoryInfo = categoryMap[item.category] || categoryMap.default;
         return `
-          <div class="knowledge-item" data-id="${item.id}">
+          <div class="knowledge-item" data-id="${item.id}" data-download-url="${item.downloadUrl || ''}" data-filename="${item.fileName || ''}">
             <div class="knowledge-header">
               <div class="knowledge-title">${item.title}</div>
               <div class="knowledge-type">${item.type}</div>
@@ -578,18 +617,241 @@
                 <span>${item.updated}</span>
               </div>
             </div>
+            ${item.downloadUrl ? `
+              <div class="knowledge-actions">
+                <button class="download-btn" onclick="downloadKnowledgePack('${item.downloadUrl}', '${item.fileName}')">
+                  ⬇️ Download
+                </button>
+              </div>
+            ` : ''}
           </div>
         `;
       }).join('');
 
-      // Add click handlers for items
+      // Add click handlers for items (excluding download button clicks)
       grid.querySelectorAll('.knowledge-item').forEach(item => {
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (e) => {
+          // Don't trigger item click if download button was clicked
+          if (e.target.classList.contains('download-btn')) {
+            return;
+          }
+
           const id = item.dataset.id;
-          // Navigate to knowledge item detail
-          console.log('Open knowledge item:', id);
+          const downloadUrl = item.dataset.downloadUrl;
+          const filename = item.dataset.filename;
+
+          // Show knowledge item details
+          showKnowledgeItemDetails({
+            id,
+            title: item.querySelector('.knowledge-title').textContent,
+            description: item.querySelector('.knowledge-description').textContent,
+            category: item.querySelector('.knowledge-meta-item:nth-child(1) span:last-child').textContent,
+            type: item.querySelector('.knowledge-type').textContent,
+            size: item.querySelector('.knowledge-meta-item:nth-child(2) span:last-child').textContent,
+            updated: item.querySelector('.knowledge-meta-item:nth-child(3) span:last-child').textContent,
+            downloadUrl,
+            filename
+          });
         });
       });
+    }
+
+    // Download Knowledge Pack
+    function downloadKnowledgePack(downloadUrl, filename) {
+      console.log('📦 Downloading knowledge pack:', filename);
+
+      // Create a temporary link element for download
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Show success message
+      showNotification(`✅ Downloading ${filename}...`, 'success');
+    }
+
+    // Show Knowledge Item Details
+    function showKnowledgeItemDetails(item) {
+      // Create modal overlay
+      const modal = document.createElement('div');
+      modal.className = 'knowledge-modal';
+      modal.innerHTML = `
+        <div class="knowledge-modal-content">
+          <div class="knowledge-modal-header">
+            <h2>${item.title}</h2>
+            <button class="close-btn" onclick="this.closest('.knowledge-modal').remove()">✕</button>
+          </div>
+          <div class="knowledge-modal-body">
+            <div class="knowledge-modal-description">${item.description}</div>
+            <div class="knowledge-modal-meta">
+              <div class="meta-row">
+                <span class="meta-label">Category:</span>
+                <span class="meta-value">${item.category}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Type:</span>
+                <span class="meta-value">${item.type}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Size:</span>
+                <span class="meta-value">${item.size}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Updated:</span>
+                <span class="meta-value">${item.updated}</span>
+              </div>
+            </div>
+            ${item.downloadUrl ? `
+              <div class="knowledge-modal-actions">
+                <button class="primary-btn" onclick="downloadKnowledgePack('${item.downloadUrl}', '${item.filename}')">
+                  ⬇️ Download ${item.filename}
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        </div>
+      `;
+
+      // Add modal styles
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      `;
+
+      const modalContent = modal.querySelector('.knowledge-modal-content');
+      modalContent.style.cssText = `
+        background: white;
+        border-radius: 8px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      `;
+
+      // Add modal content styles
+      const style = document.createElement('style');
+      style.textContent = `
+        .knowledge-modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px;
+          border-bottom: 1px solid #eee;
+        }
+        .knowledge-modal-header h2 {
+          margin: 0;
+          color: #333;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: #666;
+        }
+        .knowledge-modal-body {
+          padding: 20px;
+        }
+        .knowledge-modal-description {
+          margin-bottom: 20px;
+          line-height: 1.6;
+          color: #555;
+        }
+        .knowledge-modal-meta {
+          margin-bottom: 20px;
+        }
+        .meta-row {
+          display: flex;
+          margin-bottom: 8px;
+        }
+        .meta-label {
+          font-weight: bold;
+          width: 80px;
+          color: #333;
+        }
+        .meta-value {
+          color: #666;
+        }
+        .knowledge-modal-actions {
+          text-align: center;
+        }
+        .primary-btn {
+          background: #0066cc;
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 16px;
+        }
+        .primary-btn:hover {
+          background: #0052a3;
+        }
+      `;
+      document.head.appendChild(style);
+
+      document.body.appendChild(modal);
+
+      // Close modal when clicking outside
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.remove();
+        }
+      });
+    }
+
+    // Show notification
+    function showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = 'notification';
+      notification.textContent = message;
+      notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#4CAF50' : '#2196F3'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        z-index: 1001;
+        animation: slideIn 0.3s ease-out;
+      `;
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      document.body.appendChild(notification);
+
+      // Remove notification after 3 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
     }
 
     // Filter by Category

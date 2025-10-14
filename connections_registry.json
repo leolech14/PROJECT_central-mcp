@@ -1,0 +1,144 @@
+{
+  "backend_connections": [
+    {
+      "id": "s3-prod",
+      "category": "storage",
+      "provider": "aws-s3",
+      "environment": "production",
+      "owner": null,
+      "endpoints": {},
+      "secrets_ref": null,
+      "health_probes": [],
+      "slo": {
+        "availability_percentage": 99.0,
+        "latency_p95_ms": 500,
+        "latency_p99_ms": 1000,
+        "error_rate_percentage": 1.0,
+        "error_budget_policy": "alert_only"
+      },
+      "quotas": null,
+      "discovered_at": "2025-10-13T15:44:39.108287",
+      "discovered_in_files": [
+        "03_ANALYSIS/reports/universal_classifier.py"
+      ],
+      "usage_patterns": []
+    }
+  ],
+  "external_apis": [
+    {
+      "id": "openai-prod",
+      "category": "llm",
+      "provider": "openai",
+      "environment": "production",
+      "owner": null,
+      "endpoints": {},
+      "auth_type": "api_key",
+      "secrets_ref": null,
+      "quotas": null,
+      "cost": {
+        "model": "per_token",
+        "currency": "USD",
+        "pricing": {
+          "input_per_1k": 0.01,
+          "output_per_1k": 0.03
+        },
+        "budget_monthly": 1000.0,
+        "current_spend": null,
+        "projected_monthly": null
+      },
+      "health_probes": [
+        {
+          "type": "http",
+          "target": "health_check_endpoint",
+          "interval_seconds": 300,
+          "timeout_ms": 5000,
+          "expected_response": null,
+          "auth_required": true
+        }
+      ],
+      "slo": {
+        "availability_percentage": 99.5,
+        "latency_p95_ms": 1200,
+        "latency_p99_ms": 3000,
+        "error_rate_percentage": 2.0,
+        "error_budget_policy": "alert_only"
+      },
+      "compliance": [
+        "SOC2",
+        "GDPR"
+      ],
+      "total_requests": 0,
+      "last_used": null,
+      "top_consumers": {},
+      "discovered_at": "2025-10-13T15:44:39.204639",
+      "discovered_in_files": [
+        "03_ANALYSIS/reports/ENHANCED_ANALYSIS_METHODS.py",
+        "01_CODEBASES/core/ENHANCED_ANALYSIS_METHODS.py"
+      ],
+      "api_patterns": []
+    }
+  ],
+  "commercial_readiness": {
+    "overall_score": 5,
+    "max_score": 13,
+    "completion_percentage": 38.46153846153847,
+    "identity": {
+      "name": "Identity & Auth",
+      "score": 0,
+      "max_score": 4,
+      "items": {
+        "oauth2": false,
+        "mfa": false,
+        "session_mgmt": false,
+        "password_recovery": false
+      },
+      "blockers": [
+        "identity.oauth2",
+        "identity.password_recovery"
+      ]
+    },
+    "payments": {
+      "name": "Payments",
+      "score": 2,
+      "max_score": 4,
+      "items": {
+        "provider": true,
+        "plans": false,
+        "trial": false,
+        "webhooks": true
+      },
+      "blockers": []
+    },
+    "email": {
+      "name": "Email Infrastructure",
+      "score": 1,
+      "max_score": 3,
+      "items": {
+        "transactional": true,
+        "spf": false,
+        "dkim": false
+      },
+      "blockers": []
+    },
+    "support": null,
+    "legal": null,
+    "security": {
+      "name": "Security",
+      "score": 2,
+      "max_score": 2,
+      "items": {
+        "secrets_vault": true,
+        "ssl": true
+      },
+      "blockers": []
+    },
+    "observability": null,
+    "infrastructure": null,
+    "ux": null,
+    "analytics": null,
+    "blocking_layers": [
+      "identity.oauth2",
+      "identity.password_recovery"
+    ]
+  }
+}

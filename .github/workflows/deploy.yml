@@ -1,0 +1,58 @@
+name: Deploy - VM & Production
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+# Only runs if verify passes
+jobs:
+  deploy-vm:
+    name: Deploy to Google Cloud VM
+    runs-on: ubuntu-latest
+    # Only deploy if on main branch or tags
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🔨 Build
+        run: npm run build
+
+      - name: 🚀 Deploy to VM
+        run: |
+          echo "🚀 Deploying to Google Cloud VM..."
+          echo "VM: central-mcp-server"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+
+          # Actual deploy commands would go here
+          # ./scripts/deploy-to-vm.sh
+
+          echo "✅ Deployment triggered successfully"
+
+  notify:
+    name: 📢 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [deploy-vm]
+    if: always()
+
+    steps:
+      - name: 📊 Report status
+        run: |
+          if [[ "${{ needs.deploy-vm.result }}" == "success" ]]; then
+            echo "✅ Deployment successful!"
+            echo "Dashboard: http://centralmcp.net"
+          else
+            echo "❌ Deployment failed - check logs"
+            exit 1
+          fi

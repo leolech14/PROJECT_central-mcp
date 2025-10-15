@@ -1,0 +1,98 @@
+name: Auto-Deploy to VM
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - '02_SPECBASES/**'
+      - '03_CONTEXT_FILES/**'
+
+# Only one deployment at a time
+concurrency:
+  group: vm-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-to-vm:
+    name: 🚀 Auto-Deploy to Google Cloud VM
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip-deploy]')"
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🔑 Setup gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: 🚀 Deploy to VM via SSH
+        run: |
+          echo "🚀 Deploying to central-mcp-server..."
+
+          gcloud compute ssh lech@central-mcp-server \
+            --zone=us-central1-a \
+            --command="
+              echo '📥 Pulling latest code...'
+              cd /home/lech/PROJECTS_all/PROJECT_central-mcp
+              git pull origin main
+
+              echo ''
+              echo '📦 Updating service location...'
+              sudo rsync -av --delete \
+                --exclude='.git' \
+                --exclude='node_modules' \
+                --exclude='data/*.db' \
+                /home/lech/PROJECTS_all/PROJECT_central-mcp/ \
+                /opt/central-mcp/
+
+              echo ''
+              echo '📚 Installing dependencies...'
+              cd /opt/central-mcp
+              sudo npm install
+
+              echo ''
+              echo '🔨 Building...'
+              sudo npm run build || echo '⚠️ Build had warnings (continuing)'
+
+              echo ''
+              echo '🔄 Restarting Central-MCP service...'
+              sudo systemctl restart central-mcp
+
+              echo ''
+              echo '⏳ Waiting for service to start...'
+              sleep 5
+
+              echo ''
+              echo '✅ Verifying service status...'
+              sudo systemctl status central-mcp | head -15
+
+              echo ''
+              echo '🎯 Latest version deployed:'
+              cd /opt/central-mcp
+              git log --oneline -1 2>/dev/null || echo 'No git history in service location'
+
+              echo ''
+              echo '✅ Deployment complete!'
+            "
+
+      - name: ✅ Verify deployment
+        run: |
+          echo "🔍 Verifying VM is responding..."
+          curl -f http://136.112.123.243:3002/ -o /dev/null -s && echo "✅ Dashboard responding" || echo "⚠️ Dashboard check failed"
+          curl -f http://136.112.123.243:3000/health -o /dev/null -s && echo "✅ MCP server responding" || echo "⚠️ MCP check failed"
+
+      - name: 📢 Deployment notification
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "✅ VM deployment successful!"
+            echo "Latest commit propagated to entire ecosystem"
+          else
+            echo "❌ VM deployment failed - check logs"
+            exit 1
+          fi

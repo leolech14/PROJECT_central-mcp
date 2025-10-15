@@ -6,7 +6,7 @@
  * Serves system status, loop statistics, and intelligence metrics
  */
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AutoProactiveEngine } from '../auto-proactive/AutoProactiveEngine.js';
 import express, { Request, Response } from 'express';
 

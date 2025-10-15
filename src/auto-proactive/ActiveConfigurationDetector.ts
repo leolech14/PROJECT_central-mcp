@@ -127,7 +127,8 @@ export class ActiveConfigurationDetector {
       'CLAUDE_PROVIDER': envVars.CLAUDE_PROVIDER,
       'ANTHROPIC_BASE_URL': envVars.ANTHROPIC_BASE_URL,
       'ANTHROPIC_API_KEY': envVars.ANTHROPIC_API_KEY,
-      'ANTHROPIC_AUTH_TOKEN': envVars.ANTHROPIC_AUTH_TOKEN
+      'ANTHROPIC_AUTH_TOKEN': envVars.ANTHROPIC_AUTH_TOKEN,
+      'ANTHROPIC_BETA': envVars.ANTHROPIC_BETA
     };
 
     // Determine which config is actually active based on environment
@@ -144,7 +145,7 @@ export class ActiveConfigurationDetector {
     // Try to load the detected configuration
     const config = await this.loadConfigFile(targetConfig);
 
-    if (config) {
+    if (config && config.activeConfig) {
       logger.info(`      ✅ Process indicators point to: ${targetConfig}`);
       return {
         activeConfig: config.activeConfig,
@@ -161,7 +162,7 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No clear process indicators found');
-    return null;
+    return {};
   }
 
   /**
@@ -215,7 +216,7 @@ export class ActiveConfigurationDetector {
           logger.info(`      ✅ Endpoint accessible: ${endpoint.url} (${test.config})`);
 
           const config = await this.loadConfigFile(endpoint.config);
-          if (config) {
+          if (config && config.activeConfig) {
             return {
               activeConfig: config.activeConfig,
               activeConfigPath: config.activeConfigPath,
@@ -247,7 +248,7 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No accessible endpoints found');
-    return null;
+    return {};
   }
 
   /**
@@ -299,7 +300,7 @@ export class ActiveConfigurationDetector {
 
     if (configs.length === 0) {
       logger.info('      ❌ No valid configuration files found');
-      return null;
+      return {};
     }
 
     // Sort by priority and recency
@@ -345,16 +346,18 @@ export class ActiveConfigurationDetector {
     }
 
     // Weight the different detection methods
-    const weights = {
+    const weights: Record<string, number> = {
       'process': 0.90,
       'endpoint': 0.85,
-      'file': 0.70
+      'file': 0.70,
+      'default': 0.10,
+      'environment': 0.60
     };
 
     // Calculate weighted confidence scores
     const scoredCandidates = candidates.map(candidate => {
-      const methodWeight = weights[candidate.detectionMethod] || 0.5;
-      const weightedConfidence = candidate.confidence * methodWeight;
+      const methodWeight = candidate.detectionMethod ? weights[candidate.detectionMethod] || 0.5 : 0.5;
+      const weightedConfidence = (candidate.confidence || 0) * methodWeight;
 
       return {
         ...candidate,
@@ -378,14 +381,10 @@ export class ActiveConfigurationDetector {
       logger.warn(`      ⚠️  Inconsistent detections: ${consistencyCheck.warnings.join(', ')}`);
     }
 
-    return {
-      activeConfig: winner.activeConfig,
-      activeConfigPath: winner.activeConfigPath,
-      detectionMethod: winner.detectionMethod,
+    const result: Partial<ActiveConfigurationResult> = {
+      detectionMethod: winner.detectionMethod || 'file',
       confidence: winner.weightedConfidence,
-      actualModel: winner.actualModel,
-      verificationStatus: winner.verificationStatus,
-      allConfigs: winner.allConfigs,
+      verificationStatus: winner.verificationStatus || 'unverified',
       metadata: {
         ...winner.metadata,
         allCandidates: scoredCandidates,
@@ -394,6 +393,14 @@ export class ActiveConfigurationDetector {
         methodWeight: winner.methodWeight
       }
     };
+
+    // Only add properties if they exist
+    if (winner.activeConfig) result.activeConfig = winner.activeConfig;
+    if (winner.activeConfigPath) result.activeConfigPath = winner.activeConfigPath;
+    if (winner.actualModel) result.actualModel = winner.actualModel;
+    if (winner.allConfigs) result.allConfigs = winner.allConfigs;
+
+    return result;
   }
 
   /**
@@ -576,7 +583,7 @@ export class ActiveConfigurationDetector {
       activeConfigPath: 'fallback-generated',
       detectionMethod: 'default',
       confidence: 0.10, // Very low confidence
-      actualModel: fallbackConfig.defaultModel,
+      actualModel: fallbackConfig.defaultModel || 'claude-sonnet-4-5',
       verificationStatus: 'error',
       metadata: {
         error: error.message,

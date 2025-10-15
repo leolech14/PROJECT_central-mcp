@@ -8,7 +8,6 @@
 
 import { promises as fs } from 'fs';
 import { join, extname, basename } from 'path';
-import { promisify } from 'util';
 import { createReadStream, statSync } from 'fs';
 import type {
   KnowledgeSpaceResponse,
@@ -20,9 +19,10 @@ import type {
   KnowledgeSpaceSearchResult
 } from '../types/knowledge-space.js';
 
-const readdir = promisify(fs.readdir);
-const readFile = promisify(fs.readFile);
-const stat = promisify(fs.stat);
+// Use fs.promises directly (already returns promises)
+const readdir = fs.readdir;
+const readFile = fs.readFile;
+const stat = fs.stat;
 
 /**
  * Knowledge Space configuration
@@ -268,7 +268,7 @@ export async function getKnowledgeSpace(query?: KnowledgeSpaceQuery): Promise<Kn
 
         const category: KnowledgeCategory = {
           id: entry,
-          name: entry.split('-').map(word =>
+          name: entry.split('-').map((word: string) =>
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' '),
           description: extractDescription(readmeContent),
@@ -324,7 +324,8 @@ export async function getKnowledgeSpace(query?: KnowledgeSpaceQuery): Promise<Kn
     return filterKnowledgeSpace(response, query);
   } catch (error) {
     console.error('Error getting knowledge space:', error);
-    throw new Error(`Failed to get knowledge space: ${error.message}`);
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`Failed to get knowledge space: ${message}`);
   }
 }
 

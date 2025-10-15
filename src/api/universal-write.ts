@@ -116,12 +116,12 @@ export interface AgentActivityEvent {
  * System Status Event
  */
 export interface SystemEvent {
-  eventType: 'loop_execution' | 'migration_run' | 'backup_created' | 'health_check';
-  eventCategory: 'system' | 'maintenance' | 'health';
+  eventType: 'loop_execution' | 'migration_run' | 'backup_created' | 'health_check' | 'loop_error' | 'agent-feedback' | 'reality_verification';
+  eventCategory: 'system' | 'maintenance' | 'health' | 'learning' | 'agent';
   eventActor: string;
   eventAction: string;
   eventDescription?: string;
-  systemHealth?: 'healthy' | 'warning' | 'critical';
+  systemHealth?: 'healthy' | 'warning' | 'critical' | 'degraded';
   activeLoops?: number;
   activeAgents?: number;
   activeTasks?: number;

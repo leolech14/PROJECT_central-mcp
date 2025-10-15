@@ -10,12 +10,13 @@
  * Claude Code → MCP Client Bridge → Central-MCP (ws://34.41.115.199:3000/mcp)
  */
 
-const WebSocket = require('ws');
-const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+import WebSocket from 'ws';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 // Central-MCP connection details
-const CENTRAL_MCP_URL = 'ws://34.41.115.199:3000/mcp';
+const CENTRAL_MCP_URL = 'ws://136.112.123.243:3000/mcp';
 const PROJECT_NAME = 'PROJECT_central-mcp';
 const WORKING_DIRECTORY = process.cwd();
 
@@ -131,112 +132,117 @@ const server = new Server(
 );
 
 // Register tools that proxy to Central-MCP
-server.setRequestHandler('tools/list', async () => {
-  return {
-    tools: [
-      {
-        name: 'get_project_soul',
-        description: 'Load project soul (specs + context) from Central-MCP',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            projectName: {
-              type: 'string',
-              description: 'Name of the project (e.g., PROJECT_central-mcp)'
-            }
-          },
-          required: ['projectName']
-        }
-      },
-      {
-        name: 'get_available_tasks',
-        description: 'Get available tasks from Central-MCP task registry',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            projectName: {
-              type: 'string',
-              description: 'Filter by project name (optional)'
+server.setRequestHandler(
+  ListToolsRequestSchema,
+  async () => {
+    return {
+      tools: [
+        {
+          name: 'get_project_soul',
+          description: 'Load project soul (specs + context) from Central-MCP',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              projectName: {
+                type: 'string',
+                description: 'Name of the project (e.g., PROJECT_central-mcp)'
+              }
+            },
+            required: ['projectName']
+          }
+        },
+        {
+          name: 'get_available_tasks',
+          description: 'Get available tasks from Central-MCP task registry',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              projectName: {
+                type: 'string',
+                description: 'Filter by project name (optional)'
+              }
             }
           }
-        }
-      },
-      {
-        name: 'claim_task',
-        description: 'Claim a task from Central-MCP',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            taskId: {
-              type: 'string',
-              description: 'Task ID to claim'
-            }
-          },
-          required: ['taskId']
-        }
-      },
-      {
-        name: 'report_progress',
-        description: 'Report task progress to Central-MCP',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            taskId: {
-              type: 'string',
-              description: 'Task ID'
+        },
+        {
+          name: 'claim_task',
+          description: 'Claim a task from Central-MCP',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              taskId: {
+                type: 'string',
+                description: 'Task ID to claim'
+              }
             },
-            progress: {
-              type: 'number',
-              description: 'Progress percentage (0-100)'
+            required: ['taskId']
+          }
+        },
+        {
+          name: 'report_progress',
+          description: 'Report task progress to Central-MCP',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              taskId: {
+                type: 'string',
+                description: 'Task ID'
+              },
+              progress: {
+                type: 'number',
+                description: 'Progress percentage (0-100)'
+              },
+              notes: {
+                type: 'string',
+                description: 'Progress notes'
+              }
             },
-            notes: {
-              type: 'string',
-              description: 'Progress notes'
-            }
-          },
-          required: ['taskId', 'progress']
-        }
-      },
-      {
-        name: 'complete_task',
-        description: 'Mark task as complete in Central-MCP',
-        inputSchema: {
-          type: 'object',
-          properties: {
-            taskId: {
-              type: 'string',
-              description: 'Task ID'
+            required: ['taskId', 'progress']
+          }
+        },
+        {
+          name: 'complete_task',
+          description: 'Mark task as complete in Central-MCP',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              taskId: {
+                type: 'string',
+                description: 'Task ID'
+              },
+              completionNotes: {
+                type: 'string',
+                description: 'Completion notes'
+              }
             },
-            completionNotes: {
-              type: 'string',
-              description: 'Completion notes'
-            }
-          },
-          required: ['taskId']
+            required: ['taskId']
+          }
+        },
+        {
+          name: 'scan_opportunities',
+          description: 'Trigger opportunity scanning for current project',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          }
+        },
+        {
+          name: 'get_session_status',
+          description: 'Get current session status from Central-MCP',
+          inputSchema: {
+            type: 'object',
+            properties: {}
+          }
         }
-      },
-      {
-        name: 'scan_opportunities',
-        description: 'Trigger opportunity scanning for current project',
-        inputSchema: {
-          type: 'object',
-          properties: {}
-        }
-      },
-      {
-        name: 'get_session_status',
-        description: 'Get current session status from Central-MCP',
-        inputSchema: {
-          type: 'object',
-          properties: {}
-        }
-      }
-    ]
-  };
-});
+      ]
+    };
+  }
+);
 
-server.setRequestHandler('tools/call', async (request) => {
-  const { name, arguments: args } = request.params;
+server.setRequestHandler(
+  CallToolRequestSchema,
+  async (request) => {
+    const { name, arguments: args } = request.params;
 
   if (!connected) {
     return {
@@ -260,37 +266,38 @@ server.setRequestHandler('tools/call', async (request) => {
     timestamp: Date.now()
   };
 
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      reject(new Error('Central-MCP request timeout'));
-    }, 30000); // 30s timeout
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Central-MCP request timeout'));
+      }, 30000); // 30s timeout
 
-    // Listen for response
-    const responseHandler = (data) => {
-      try {
-        const response = JSON.parse(data.toString());
-        if (response.type === 'mcp_tool_response' && response.requestId === requestId) {
-          clearTimeout(timeout);
-          centralMCP.off('message', responseHandler);
+      // Listen for response
+      const responseHandler = (data) => {
+        try {
+          const response = JSON.parse(data.toString());
+          if (response.type === 'mcp_tool_response' && response.requestId === requestId) {
+            clearTimeout(timeout);
+            centralMCP.off('message', responseHandler);
 
-          resolve({
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify(response.result, null, 2)
-              }
-            ]
-          });
+            resolve({
+              content: [
+                {
+                  type: 'text',
+                  text: JSON.stringify(response.result, null, 2)
+                }
+              ]
+            });
+          }
+        } catch (err) {
+          // Ignore parsing errors for non-response messages
         }
-      } catch (err) {
-        // Ignore parsing errors for non-response messages
-      }
-    };
+      };
 
-    centralMCP.on('message', responseHandler);
-    centralMCP.send(JSON.stringify(message));
-  });
-});
+      centralMCP.on('message', responseHandler);
+      centralMCP.send(JSON.stringify(message));
+    });
+  }
+);
 
 // Start server
 async function main() {

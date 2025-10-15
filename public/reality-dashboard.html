@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central-MCP Reality Check Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @keyframes pulse-green {
+            0%, 100% { background-color: rgba(34, 197, 94, 0.2); }
+            50% { background-color: rgba(34, 197, 94, 0.4); }
+        }
+        @keyframes pulse-red {
+            0%, 100% { background-color: rgba(239, 68, 68, 0.2); }
+            50% { background-color: rgba(239, 68, 68, 0.4); }
+        }
+        .status-online { animation: pulse-green 2s infinite; }
+        .status-offline { animation: pulse-red 2s infinite; }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen text-white p-6">
+    <!-- Header -->
+    <header class="text-center mb-8">
+        <h1 class="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            🔍 Central-MCP Reality Check Dashboard
+        </h1>
+        <p class="text-gray-400">Evidence-based monitoring of what actually works</p>
+        <p class="text-sm text-gray-500 mt-2">Last Updated: <span id="timestamp" class="font-mono"></span></p>
+    </header>
+
+    <!-- Main Status Grid -->
+    <main class="max-w-6xl mx-auto">
+        <!-- System Status -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div id="unit-card" class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">System Unit</p>
+                        <p id="unit-status" class="text-2xl font-bold">Checking...</p>
+                    </div>
+                    <div class="text-3xl">⚙️</div>
+                </div>
+                <p id="unit-detail" class="text-xs text-gray-500 mt-2"></p>
+            </div>
+
+            <div id="health-card" class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Health Endpoint</p>
+                        <p id="health-status" class="text-2xl font-bold">Checking...</p>
+                    </div>
+                    <div class="text-3xl">💚</div>
+                </div>
+                <p id="health-detail" class="text-xs text-gray-500 mt-2"></p>
+            </div>
+
+            <div id="mcp-card" class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">MCP Bridge</p>
+                        <p id="mcp-status" class="text-2xl font-bold">Checking...</p>
+                    </div>
+                    <div class="text-3xl">🔌</div>
+                </div>
+                <p id="mcp-detail" class="text-xs text-gray-500 mt-2"></p>
+            </div>
+
+            <div id="git-card" class="glass-effect rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Git Commit</p>
+                        <p id="git-status" class="text-2xl font-bold">Checking...</p>
+                    </div>
+                    <div class="text-3xl">🔄</div>
+                </div>
+                <p id="git-detail" class="text-xs text-gray-500 mt-2"></p>
+            </div>
+        </section>
+
+        <!-- Database Status -->
+        <section class="glass-effect rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="text-2xl mr-2">🗄️</span> Database Reality Check
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="text-center p-6 bg-blue-900/20 rounded-lg">
+                    <p class="text-4xl font-bold text-blue-400" id="tables-count">-</p>
+                    <p class="text-gray-400 mt-2">Tables (44 verified by Agent 1)</p>
+                    <p class="text-xs text-yellow-400 mt-1">Not 156 theoretical!</p>
+                </div>
+                <div class="text-center p-6 bg-green-900/20 rounded-lg">
+                    <p class="text-4xl font-bold text-green-400" id="tasks-count">-</p>
+                    <p class="text-gray-400 mt-2">Tasks Records</p>
+                    <p class="text-xs text-green-400 mt-1">Actual data exists</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Implementation Assessment -->
+        <section class="glass-effect rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="text-2xl mr-2">🎯</span> Implementation Reality Assessment
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-3 text-yellow-400">Current Status</h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span>Real Implementation:</span>
+                            <span id="real-percent" class="text-green-400 font-bold">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Theoretical Features:</span>
+                            <span id="theory-percent" class="text-yellow-400 font-bold">-</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-3 text-blue-400">Critical Gaps</h3>
+                    <ul class="text-sm space-y-1" id="gaps-list">
+                        <li>• Loading assessment...</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Evidence Log -->
+        <section class="glass-effect rounded-xl p-6">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <span class="text-2xl mr-2">📋</span> Evidence Log
+            </h2>
+            <div id="evidence-log" class="bg-black/30 rounded-lg p-4 font-mono text-sm max-h-64 overflow-y-auto">
+                <div class="text-green-400">✅ Reality Check Dashboard v0 deployed</div>
+                <div class="text-blue-400">📊 Loading real-time evidence...</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Dashboard functionality
+        async function updateStatus() {
+            try {
+                const response = await fetch('/status');
+                const data = await response.json();
+
+                // Update timestamp
+                document.getElementById('timestamp').textContent = new Date().toLocaleString();
+
+                // Update system status
+                updateCard('unit', data.system.unit, data.system.unit === 'active');
+                updateCard('health', data.system.health, data.system.health !== 'down');
+                updateCard('mcp', data.integration.mcpBridge, data.integration.mcpBridge === 'connected');
+                updateCard('git', data.system.gitCommit.substring(0, 8), true);
+
+                // Update database
+                document.getElementById('tables-count').textContent = data.database.tables;
+                document.getElementById('tasks-count').textContent = data.database.tasks;
+
+                // Update implementation assessment
+                const [real, theory] = data.assessment.implementationStatus.split(',').map(s => s.trim());
+                document.getElementById('real-percent').textContent = real;
+                document.getElementById('theory-percent').textContent = theory;
+
+                // Update gaps
+                const gapsList = document.getElementById('gaps-list');
+                gapsList.innerHTML = `
+                    <li>• ${data.assessment.biggestGap}</li>
+                    <li>• ${data.assessment.nextPriority}</li>
+                `;
+
+                // Update evidence log
+                const evidenceLog = document.getElementById('evidence-log');
+                evidenceLog.innerHTML = `
+                    <div class="text-green-400">✅ ${new Date().toLocaleTimeString()}: Status retrieved successfully</div>
+                    <div class="text-blue-400">📊 Database: ${data.database.tables} tables, ${data.database.tasks} tasks</div>
+                    <div class="text-purple-400">🔌 MCP Bridge: ${data.integration.mcpBridge}</div>
+                    <div class="text-yellow-400">💡 Reality: ${data.assessment.implementationStatus}</div>
+                    <div class="text-gray-400">🔍 Evidence: ${data.integration.evidence}</div>
+                `;
+
+            } catch (error) {
+                console.error('Failed to fetch status:', error);
+                document.getElementById('evidence-log').innerHTML +=
+                    `<div class="text-red-400">❌ ${new Date().toLocaleTimeString()}: Failed to fetch status</div>`;
+            }
+        }
+
+        function updateCard(cardId, status, isOnline) {
+            const card = document.getElementById(`${cardId}-card`);
+            const statusEl = document.getElementById(`${cardId}-status`);
+            const detailEl = document.getElementById(`${cardId}-detail`);
+
+            statusEl.textContent = status;
+            card.className = `glass-effect rounded-xl p-6 ${isOnline ? 'status-online' : 'status-offline'}`;
+
+            if (cardId === 'git') {
+                detailEl.textContent = 'Latest commit';
+            } else if (cardId === 'mcp') {
+                detailEl.textContent = 'WebSocket connection';
+            } else if (cardId === 'health') {
+                detailEl.textContent = 'HTTP endpoint response';
+            } else if (cardId === 'unit') {
+                detailEl.textContent = 'Systemd service state';
+            }
+        }
+
+        // Initial load and refresh every 30 seconds
+        updateStatus();
+        setInterval(updateStatus, 30000);
+
+        // Add some interactivity
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.glass-effect')) {
+                updateStatus(); // Refresh on card click
+            }
+        });
+    </script>
+</body>
+</html>

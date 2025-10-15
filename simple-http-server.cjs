@@ -3487,6 +3487,8 @@ app.get('/api/knowledge/space', async (req, res) => {
     async function scanDirectory(dirPath, categoryName) {
       try {
         const items = [];
+        let description = null;
+        let content = null;
         const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
         console.log(`📂 Scanning ${dirPath} - found ${entries.length} entries`);
 
@@ -3515,17 +3517,19 @@ app.get('/api/knowledge/space', async (req, res) => {
             try {
               const readmeContent = await fs.promises.readFile(fullPath, 'utf-8');
               const firstLine = readmeContent.split('\n')[0].replace('#', '').trim();
-              return {
-                description: firstLine || `README for ${categoryName}`,
-                content: readmeContent
-              };
+              description = firstLine || `README for ${categoryName}`;
+              content = readmeContent;
+              console.log(`📄 Found README: ${description}`);
             } catch (error) {
               console.warn(`Could not read README: ${fullPath}`, error.message);
             }
           }
         }
 
-        return { items };
+        const result = { items };
+        if (description) result.description = description;
+        if (content) result.content = content;
+        return result;
       } catch (error) {
         console.error(`Error scanning directory ${dirPath}:`, error.message);
         return { items: [] };

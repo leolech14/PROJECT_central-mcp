@@ -1,0 +1,119 @@
+# 🎯 ADVANCED GITHUB CLI ALIASES FOR TRINITY INTELLIGENCE
+# Import with: gh alias import scripts/github-aliases.yml
+
+# Quick repo operations
+repo-quick-info: api repos/$1 --jq '{name, visibility, defaultBranch: .default_branch, stars: .stargazers_count, size: .size, language, pushed: .pushed_at}'
+
+# Protection operations
+protect-main: |
+  api -X PUT repos/$1/branches/main/protection \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    -f required_status_checks.strict:=true \
+    -F required_status_checks.contexts[]="Verify Build" \
+    -F required_pull_request_reviews.required_approving_review_count:=1 \
+    -F required_pull_request_reviews.dismiss_stale_reviews:=true \
+    -F required_conversation_resolution:=true
+
+unprotect-main: api -X DELETE repos/$1/branches/main/protection -H "X-GitHub-Api-Version: 2022-11-28"
+
+# Quick PR operations
+pr-draft: pr create --draft --fill
+pr-ready: pr ready
+pr-auto: pr merge --auto --squash --delete-branch
+
+# Workflow operations
+wf-list: workflow list
+wf-run: workflow run $1
+wf-watch: run list --limit 1 | head -1 | awk '{print $7}' | xargs gh run watch
+
+# Cache operations
+cache-clean: |
+  for cache_id in $(gh cache list --json id --jq '.[].id'); do
+    gh cache delete $cache_id || true
+  done
+
+# Bulk operations on PROJECT_ repos
+project-list: repo list leolech14 --limit 200 --json nameWithOwner --jq '.[] | select(.nameWithOwner | contains("PROJECT_")) | .nameWithOwner'
+
+project-stats: |
+  gh repo list leolech14 --limit 200 --json nameWithOwner,visibility,pushedAt | \
+  jq '.[] | select(.nameWithOwner | contains("PROJECT_")) | {repo: .nameWithOwner, visibility, lastPush: .pushedAt}'
+
+# Secret management
+secret-prod: secret set $1 --env production --body "$2"
+secret-dev: secret set $1 --env development --body "$2"
+
+# Quick status check
+status: |
+  echo "📊 GitHub Status:" && \
+  echo "User: $(gh api user --jq .login)" && \
+  echo "Repos: $(gh repo list --limit 200 | wc -l)" && \
+  echo "PROJECT_: $(gh repo list --limit 200 --json nameWithOwner --jq '.[] | select(.nameWithOwner | contains("PROJECT_"))' | wc -l)"
+
+# REPL session workflow
+repl-session: |
+  SESSION="repl/$(date +%Y-%m-%d_%H-%M)-$$"
+  git switch -c "$SESSION"
+  echo "✅ Created REPL session branch: $SESSION"
+  echo "   Edit your code, then run: gh repl-commit"
+
+repl-commit: |
+  git add -A
+  git commit -m "repl: WIP $(date -Iseconds)"
+  git push -u origin HEAD
+  gh pr create --draft --fill
+  echo "✅ Changes committed and draft PR created"
+
+# Environment management
+env-create: api -X PUT repos/$1/environments/$2 -H "X-GitHub-Api-Version: 2022-11-28"
+
+env-list: api repos/$1/environments --jq '.environments[] | {name, protection_rules}'
+
+# Run management
+run-latest: run list --limit 1 --json databaseId --jq '.[0].databaseId'
+run-retry: run rerun $1 --failed
+
+# Comprehensive repo health check
+repo-health: |
+  echo "=== REPOSITORY HEALTH: $1 ===" && \
+  gh api repos/$1 --jq '{
+    name,
+    visibility,
+    defaultBranch: .default_branch,
+    protection: "check with gh api repos/$1/branches/main/protection",
+    deleteBranchOnMerge: .delete_branch_on_merge,
+    hasIssues: .has_issues,
+    hasWiki: .has_wiki,
+    size: .size,
+    language,
+    lastPush: .pushed_at
+  }'
+
+# Trinity-specific: Sync all PROJECT_ repos
+trinity-sync-all: |
+  gh repo list leolech14 --limit 200 --json nameWithOwner --jq '.[] | select(.nameWithOwner | contains("PROJECT_")) | .nameWithOwner' | \
+  while read repo; do
+    echo "Syncing $repo..."
+    repo_name=$(basename "$repo")
+    if [ -d "/Users/lech/PROJECTS_all/$repo_name" ]; then
+      cd "/Users/lech/PROJECTS_all/$repo_name"
+      git pull origin main || echo "  ⚠️  Pull failed"
+      cd -
+    fi
+  done
+
+# Trinity-specific: Check all PROJECT_ CI/CD status
+trinity-ci-status: |
+  echo "=== CI/CD STATUS FOR ALL PROJECT_ REPOS ===" && \
+  gh repo list leolech14 --limit 200 --json nameWithOwner --jq '.[] | select(.nameWithOwner | contains("PROJECT_")) | .nameWithOwner' | \
+  while read repo; do
+    echo -n "$repo: "
+    LATEST=$(gh run list -R "$repo" --limit 1 --json conclusion --jq '.[0].conclusion' 2>/dev/null)
+    if [ "$LATEST" = "success" ]; then
+      echo "✅ PASSING"
+    elif [ "$LATEST" = "failure" ]; then
+      echo "❌ FAILING"
+    else
+      echo "⚪ NO RUNS"
+    fi
+  done

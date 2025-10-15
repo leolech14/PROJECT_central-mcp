@@ -1,0 +1,50 @@
+═══════════════════════════════════════════════════════════
+⚡ CENTRAL-MCP QUICK CONNECT
+═══════════════════════════════════════════════════════════
+
+SERVER:   http://34.41.115.199:3000
+LOCATION: GCP VM (us-central1-a)
+STATUS:   LIVE 24/7
+
+─────────────────────────────────────────────────────────────
+CONNECT COMMAND
+─────────────────────────────────────────────────────────────
+
+curl -X POST http://34.41.115.199:3000/api/agents/connect \
+  -H 'Content-Type: application/json' \
+  -d '{"agent":"A","model":"glm-4-6","project":"PROJECT_central-mcp"}'
+
+CHANGE:
+  "agent":"A" → Your letter (A/B/C/D/E/F)
+  "model":"glm-4-6" → Your model
+
+─────────────────────────────────────────────────────────────
+AGENT ROLES
+─────────────────────────────────────────────────────────────
+
+A - UI Velocity (GLM-4.6)
+B - Design System (Sonnet-4.5, 1M context)
+C - Backend Services (GLM-4.6)
+D - Integration (Sonnet-4.5)
+E - Ground Supervisor (Gemini-2.5-Pro, 1M)
+F - Strategic Supervisor (ChatGPT-5)
+
+─────────────────────────────────────────────────────────────
+RESPONSE
+─────────────────────────────────────────────────────────────
+
+You'll receive:
+  - Your identity confirmation
+  - Project status (% complete)
+  - Your assigned tasks
+  - Team status
+  - Clear next steps
+
+─────────────────────────────────────────────────────────────
+⚠️  DO NOT RUN LOCALLY!
+═══════════════════════════════════════════════════════════
+
+Central-MCP is already LIVE on the VM.
+Just connect remotely with the curl command above.
+
+═══════════════════════════════════════════════════════════

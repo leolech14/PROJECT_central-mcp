@@ -1,0 +1,269 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+
+interface Provider {
+  id: string;
+  name: string;
+  icon: string;
+  health: number;
+  data: number;
+  status: 'up' | 'down' | 'degraded';
+  ms: number;
+  healthTrend: 'up' | 'down' | 'stable';
+  msTrend: 'up' | 'down' | 'stable';
+  alertLevel: 'none' | 'warning' | 'critical';
+}
+
+export default function UltraDenseRegistry() {
+  const [providers, setProviders] = useState<Provider[]>([
+    { id: '1', name: 'Prometheus', icon: '📈', health: 99.8, data: 40, status: 'up', ms: 145, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' },
+    { id: '2', name: 'Central-MCP', icon: '🎯', health: 100, data: 19, status: 'up', ms: 85, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' },
+    { id: '3', name: 'Node Exporter', icon: '🖥️', health: 99.9, data: 150, status: 'up', ms: 12, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' },
+    { id: '4', name: 'Metrics', icon: '📊', health: 98.5, data: 40, status: 'up', ms: 95, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' },
+    { id: '5', name: 'Grafana', icon: '📉', health: 99.5, data: 0, status: 'up', ms: 210, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' },
+    { id: '6', name: 'Alerts', icon: '🚨', health: 99.2, data: 7, status: 'up', ms: 75, healthTrend: 'stable', msTrend: 'stable', alertLevel: 'none' }
+  ]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [filter, setFilter] = useState<'all' | 'issues' | 'healthy'>('all');
+
+  const totalData = providers.reduce((sum, p) => sum + p.data, 0);
+  const avgHealth = providers.reduce((sum, p) => sum + p.health, 0) / providers.length;
+  const activeCount = providers.filter(p => p.status === 'up').length;
+  const issuesCount = providers.filter(p => p.alertLevel !== 'none' || p.status === 'degraded').length;
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === 'a') setFilter('all');
+      if (e.key === 'i') setFilter('issues');
+      if (e.key === 'h') setFilter('healthy');
+      if (e.key === 'Escape') setSelectedId(null);
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const idx = providers.findIndex(p => p.id === selectedId);
+        if (idx < providers.length - 1) setSelectedId(providers[idx + 1].id);
+        else setSelectedId(providers[0].id);
+      }
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const idx = providers.findIndex(p => p.id === selectedId);
+        if (idx > 0) setSelectedId(providers[idx - 1].id);
+        else setSelectedId(providers[providers.length - 1].id);
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [selectedId, providers]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProviders(prev => prev.map(p => {
+        const oldHealth = p.health;
+        const oldMs = p.ms;
+        const newHealth = Math.min(100, Math.max(95, p.health + Math.random() * 0.4 - 0.2));
+        const newMs = Math.max(5, p.ms + Math.random() * 20 - 10);
+
+        // Determine trends
+        const healthTrend = newHealth > oldHealth + 0.1 ? 'up' : newHealth < oldHealth - 0.1 ? 'down' : 'stable';
+        const msTrend = newMs > oldMs + 5 ? 'up' : newMs < oldMs - 5 ? 'down' : 'stable';
+
+        // Determine alert level
+        let alertLevel: 'none' | 'warning' | 'critical' = 'none';
+        if (newHealth < 98 || newMs > 200) alertLevel = 'warning';
+        if (newHealth < 95 || newMs > 300) alertLevel = 'critical';
+
+        // Determine status
+        let status: 'up' | 'down' | 'degraded' = 'up';
+        if (alertLevel === 'critical') status = 'degraded';
+
+        return {
+          ...p,
+          health: newHealth,
+          ms: newMs,
+          healthTrend,
+          msTrend,
+          alertLevel,
+          status
+        };
+      }));
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const filteredProviders = providers.filter(p => {
+    if (filter === 'issues') return p.alertLevel !== 'none' || p.status === 'degraded';
+    if (filter === 'healthy') return p.alertLevel === 'none' && p.status === 'up';
+    return true;
+  });
+
+  return (
+    <div className="min-h-screen bg-scaffold-0 p-2 font-mono text-[10px] leading-tight">
+      <div className="max-w-[1400px] mx-auto">
+      {/* Ultra-Dense Header - ONE LINE */}
+      <div className="flex items-center justify-between mb-2 pb-1 border-b border-border-subtle">
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-bold">📡 Registry</span>
+          <span className={`font-bold ${avgHealth >= 99 ? 'text-color-success' : avgHealth >= 98 ? 'text-color-warning' : 'text-color-error'}`}>
+            {avgHealth.toFixed(1)}%
+          </span>
+          <span className="text-text-tertiary">|</span>
+          <span className="text-accent-primary font-bold">{totalData}</span>
+          <span className="text-text-tertiary text-[9px]">pts</span>
+          <span className="text-text-tertiary">|</span>
+          <span className="text-color-success">{activeCount}/{providers.length}</span>
+          <span className="text-text-tertiary text-[9px]">up</span>
+          {issuesCount > 0 && (
+            <>
+              <span className="text-text-tertiary">|</span>
+              <span className="text-color-warning font-bold animate-pulse">{issuesCount}</span>
+              <span className="text-text-tertiary text-[9px]">⚠️</span>
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-text-tertiary text-[9px]">
+            {new Date().toLocaleTimeString()}
+          </span>
+          <span className="text-text-tertiary text-[9px]">
+            [{filter === 'all' ? 'a' : filter === 'issues' ? 'i' : 'h'}]
+          </span>
+        </div>
+      </div>
+
+      {/* Filter Badges - Ultra-Compact */}
+      <div className="flex items-center gap-1 mb-1">
+        <button
+          onClick={() => setFilter('all')}
+          className={`px-1.5 py-0.5 text-[9px] rounded transition-colors ${
+            filter === 'all'
+              ? 'bg-accent-primary text-text-primary'
+              : 'bg-scaffold-1 text-text-tertiary hover:bg-scaffold-2'
+          }`}
+        >
+          All [a]
+        </button>
+        <button
+          onClick={() => setFilter('issues')}
+          className={`px-1.5 py-0.5 text-[9px] rounded transition-colors ${
+            filter === 'issues'
+              ? 'bg-color-warning text-text-primary'
+              : 'bg-scaffold-1 text-text-tertiary hover:bg-scaffold-2'
+          }`}
+        >
+          Issues [i] {issuesCount > 0 && `(${issuesCount})`}
+        </button>
+        <button
+          onClick={() => setFilter('healthy')}
+          className={`px-1.5 py-0.5 text-[9px] rounded transition-colors ${
+            filter === 'healthy'
+              ? 'bg-color-success text-text-primary'
+              : 'bg-scaffold-1 text-text-tertiary hover:bg-scaffold-2'
+          }`}
+        >
+          Healthy [h]
+        </button>
+        <span className="text-[9px] text-text-tertiary ml-2">↑↓ arrows • ESC clear</span>
+      </div>
+
+      {/* Ultra-Dense Table - ONE ROW PER PROVIDER */}
+      <div className="space-y-0.5">
+        {filteredProviders.map(p => (
+          <div
+            key={p.id}
+            onClick={() => setSelectedId(p.id === selectedId ? null : p.id)}
+            className={`flex items-center justify-between rounded px-2 py-1 transition-all cursor-pointer ${
+              p.alertLevel === 'critical'
+                ? 'bg-color-error/10 border border-color-error animate-pulse'
+                : p.alertLevel === 'warning'
+                ? 'bg-color-warning/10 border border-color-warning'
+                : selectedId === p.id
+                ? 'bg-accent-primary/20 border border-accent-primary'
+                : 'bg-scaffold-1 hover:bg-scaffold-2'
+            }`}
+          >
+            {/* Left: Icon + Name */}
+            <div className="flex items-center gap-2 min-w-[100px]">
+              <span className="text-sm">{p.icon}</span>
+              <span className="font-medium truncate">{p.name}</span>
+            </div>
+
+            {/* Middle: Metrics with Trends */}
+            <div className="flex items-center gap-3 text-[9px]">
+              {/* Health */}
+              <div className="flex items-center gap-0.5">
+                <span className="text-text-tertiary">H:</span>
+                <span className={`font-bold ${
+                  p.health >= 99 ? 'text-color-success' :
+                  p.health >= 98 ? 'text-color-warning' :
+                  'text-color-error'
+                }`}>
+                  {p.health.toFixed(1)}
+                </span>
+                {p.healthTrend !== 'stable' && (
+                  <span className={p.healthTrend === 'up' ? 'text-color-success' : 'text-color-error'}>
+                    {p.healthTrend === 'up' ? '↑' : '↓'}
+                  </span>
+                )}
+              </div>
+
+              {/* Data Points */}
+              <div className="flex items-center gap-0.5">
+                <span className="text-text-tertiary">D:</span>
+                <span className="text-accent-primary font-bold">{p.data}</span>
+              </div>
+
+              {/* Response Time */}
+              <div className="flex items-center gap-0.5">
+                <span className="text-text-tertiary">R:</span>
+                <span className={`${
+                  p.ms < 100 ? 'text-color-success' :
+                  p.ms < 200 ? 'text-text-secondary' :
+                  'text-color-warning'
+                }`}>{Math.round(p.ms)}ms</span>
+                {p.msTrend !== 'stable' && (
+                  <span className={p.msTrend === 'down' ? 'text-color-success' : 'text-color-warning'}>
+                    {p.msTrend === 'up' ? '↑' : '↓'}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Right: Status */}
+            <div className="flex items-center gap-1">
+              <div className={`w-1.5 h-1.5 rounded-full ${
+                p.status === 'up' ? 'bg-color-success animate-pulse' :
+                p.status === 'degraded' ? 'bg-color-warning' :
+                'bg-color-error'
+              }`} />
+              <span className={`text-[9px] font-medium ${
+                p.status === 'up' ? 'text-color-success' :
+                p.status === 'degraded' ? 'text-color-warning' :
+                'text-color-error'
+              }`}>
+                {p.status.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Ultra-Dense Footer - ONE LINE SUMMARY */}
+      <div className="mt-2 pt-1 border-t border-border-subtle flex items-center justify-between text-[9px] text-text-tertiary">
+        <div className="flex items-center gap-2">
+          <span>System: 150</span>
+          <span>•</span>
+          <span>App: 80</span>
+          <span>•</span>
+          <span>API: 19</span>
+          <span>•</span>
+          <span>Alerts: 7</span>
+        </div>
+        <div>
+          Σ={totalData} • Avg {avgHealth.toFixed(1)}% • {activeCount} active • {issuesCount} issues
+        </div>
+      </div>
+      </div>
+    </div>
+  );
+}

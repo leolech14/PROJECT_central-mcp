@@ -1,0 +1,5 @@
+PROJECT_profilepro
+LocalBrain
+PROJECT_central-mcp
+PROJECT_youtube
+PROJECT_finops

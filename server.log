@@ -1,6 +1,0 @@
-🚀 Starting Agent HTTP API Server...
-✅ Agent HTTP API Server running on port 3001
-📍 Connect: POST http://localhost:3001/api/agents/connect
-📍 Context: GET http://localhost:3001/api/context/:projectName
-✅ Database loaded with sql.js
-🔗 Agent E (gemini-2.5-pro) connecting to PROJECT_central-mcp

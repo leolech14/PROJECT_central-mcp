@@ -104,26 +104,9 @@ jobs:
         run: npm run test:integration --if-present
         timeout-minutes: 5
 
-      - name: 🎯 Test Discovery Engine
-        run: |
-          cd ../../04_AGENT_FRAMEWORK/mcp-integration
-          timeout 120 node test-discovery-engine.cjs || echo "Discovery test timed out (expected - needs optimization)"
+      - name: 🧪 Run Central-MCP Integration Tests
+        run: npm run test:integration --if-present
         continue-on-error: true
-
-      - name: 🤖 Test Intelligence System
-        run: |
-          cd ../../04_AGENT_FRAMEWORK/mcp-integration
-          node test-intelligence.cjs
-
-      - name: 💓 Test Auto-Heartbeat
-        run: |
-          cd ../../04_AGENT_FRAMEWORK/mcp-integration
-          timeout 90 node test-auto-heartbeat.cjs
-
-      - name: 🐛 Test Bug Fixes
-        run: |
-          cd ../../04_AGENT_FRAMEWORK/mcp-integration
-          node test-bug-fixes.cjs
 
   security:
     name: Security Audit

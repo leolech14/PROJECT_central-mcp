@@ -1,0 +1,34 @@
+💾 COMPLETE STORAGE STATUS:
+
+All disks:
+NAME      SIZE TYPE MOUNTPOINT
+loop1    73.9M loop /snap/core22/2133
+loop2    63.8M loop /snap/core20/2669
+loop3     437M loop /snap/google-cloud-cli/389
+loop4    91.4M loop /snap/lxd/35819
+loop5    50.8M loop /snap/snapd/25202
+loop6   437.2M loop /snap/google-cloud-cli/392
+sda        30G disk 
+├─sda1   29.9G part /
+├─sda14     4M part 
+└─sda15   106M part /boot/efi
+sdb      1000G disk /mnt/data
+
+Mounted filesystems:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        29G   15G   15G  51% /
+tmpfs           7.9G     0  7.9G   0% /dev/shm
+/dev/sda15      105M  6.1M   99M   6% /boot/efi
+/dev/sdb        984G  117M  934G   1% /mnt/data
+
+Data disk mount:
+total 28
+drwxrwxrwx 4 lech lech  4096 Oct 16 01:39 .
+drwxr-xr-x 3 root root  4096 Oct 16 01:38 ..
+drwx------ 2 lech lech 16384 Oct 16 01:38 lost+found
+drwxr-xr-x 3 lech lech  4096 Oct 16 01:39 mobileviews_data
+✅ 1TB disk mounted at /mnt/data
+
+Available on 1TB disk:
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sdb        984G  117M  934G   1% /mnt/data

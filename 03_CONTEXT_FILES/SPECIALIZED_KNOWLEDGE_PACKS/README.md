@@ -40,6 +40,12 @@ Application deployment, infrastructure management, CI/CD pipelines, and producti
 - **Platforms**: AWS, GCP, Azure, Multi-cloud
 - **Tools**: Docker, Kubernetes, Terraform, GitHub Actions
 
+#### 🎯 **claude-code-architecture**
+Complete Claude Code CLI architecture, hooks, subagents, plugins, and native integration patterns.
+- **Core Topics**: Hook system, subagents, memory (CLAUDE.md), plugins, directory structure
+- **Integration**: Git automation via native hooks, Central-MCP coordination
+- **Status**: Self-learned (Claude Code understanding itself!)
+
 #### 📚 **miscellaneous**
 Development tools, project management, specialized implementations, and emerging technologies.
 - **Topics**: Code quality, team collaboration, debugging, emerging trends

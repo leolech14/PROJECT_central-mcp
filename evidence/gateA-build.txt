@@ -1,0 +1,51 @@
+Running npm run build...
+src/tools/visual/generateImage.ts(235,22): error TS18046: 'result' is of type 'unknown'.
+src/tools/xray-tool/tools/getFileSummary.ts(91,51): error TS2345: Argument of type 'AnalysisMetadata' is not assignable to parameter of type 'AnalysisResults'.
+  Type 'AnalysisMetadata' is missing the following properties from type 'AnalysisResults': metadata, files
+src/utils/FilePreviewHelper.ts(14,24): error TS7016: Could not find a declaration file for module 'marked'. '/opt/central-mcp/node_modules/marked/lib/marked.cjs' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/marked` if it exists or add a new declaration (.d.ts) file containing `declare module 'marked';`
+src/utils/FilePreviewHelper.ts(255,45): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(path: PathLike | FileHandle, options?: ({ encoding?: null | undefined; flag?: OpenMode | undefined; } & Abortable) | null | undefined): Promise<...>', gave the following error.
+    Type 'string' has no properties in common with type '{ encoding?: null | undefined; flag?: OpenMode | undefined; } & Abortable'.
+  Overload 2 of 3, '(path: PathLike | FileHandle, options: BufferEncoding | ({ encoding: BufferEncoding; flag?: OpenMode | undefined; } & Abortable)): Promise<...>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'BufferEncoding | ({ encoding: BufferEncoding; flag?: OpenMode | undefined; } & Abortable)'.
+  Overload 3 of 3, '(path: PathLike | FileHandle, options?: BufferEncoding | (ObjectEncodingOptions & Abortable & { flag?: OpenMode | undefined; }) | null | undefined): Promise<...>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'BufferEncoding | (ObjectEncodingOptions & Abortable & { flag?: OpenMode | undefined; }) | null | undefined'.
+src/utils/FilePreviewHelper.ts(261,49): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(path: PathLike | FileHandle, options?: ({ encoding?: null | undefined; flag?: OpenMode | undefined; } & Abortable) | null | undefined): Promise<...>', gave the following error.
+    Type 'string' has no properties in common with type '{ encoding?: null | undefined; flag?: OpenMode | undefined; } & Abortable'.
+  Overload 2 of 3, '(path: PathLike | FileHandle, options: BufferEncoding | ({ encoding: BufferEncoding; flag?: OpenMode | undefined; } & Abortable)): Promise<...>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'BufferEncoding | ({ encoding: BufferEncoding; flag?: OpenMode | undefined; } & Abortable)'.
+  Overload 3 of 3, '(path: PathLike | FileHandle, options?: BufferEncoding | (ObjectEncodingOptions & Abortable & { flag?: OpenMode | undefined; }) | null | undefined): Promise<...>', gave the following error.
+    Argument of type 'string' is not assignable to parameter of type 'BufferEncoding | (ObjectEncodingOptions & Abortable & { flag?: OpenMode | undefined; }) | null | undefined'.
+src/utils/FilePreviewHelper.ts(520,15): error TS2484: Export declaration conflicts with exported declaration of 'FilePreview'.
+src/utils/FilePreviewHelper.ts(520,28): error TS2484: Export declaration conflicts with exported declaration of 'FileMetadata'.
+src/utils/FilePreviewHelper.ts(520,42): error TS2484: Export declaration conflicts with exported declaration of 'PreviewOptions'.
+src/utils/KnowledgePackProcessor.ts(17,39): error TS7016: Could not find a declaration file for module 'tar'. '/opt/central-mcp/node_modules/tar/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/tar` if it exists or add a new declaration (.d.ts) file containing `declare module 'tar';`
+src/utils/KnowledgePackProcessor.ts(18,19): error TS7016: Could not find a declaration file for module 'yauzl'. '/opt/central-mcp/node_modules/yauzl/index.js' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/yauzl` if it exists or add a new declaration (.d.ts) file containing `declare module 'yauzl';`
+src/utils/KnowledgePackProcessor.ts(138,74): error TS2339: Property 'split' does not exist on type 'string[]'.
+src/utils/KnowledgePackProcessor.ts(138,89): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(206,51): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(206,56): error TS7006: Parameter 'zipfile' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(218,36): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(225,50): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(225,55): error TS7006: Parameter 'readStream' implicitly has an 'any' type.
+src/utils/KnowledgePackProcessor.ts(294,30): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/utils/KnowledgePackProcessor.ts(298,45): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/utils/KnowledgePackProcessor.ts(307,27): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/utils/KnowledgePackProcessor.ts(319,50): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/utils/KnowledgePackProcessor.ts(437,48): error TS2339: Property 'toLowerCase' does not exist on type 'string[]'.
+src/utils/KnowledgePackProcessor.ts(585,23): error TS2339: Property 'fileName' does not exist on type 'ProcessedContent'.
+src/utils/KnowledgePackProcessor.ts(610,15): error TS2484: Export declaration conflicts with exported declaration of 'KnowledgePackMetadata'.
+src/utils/KnowledgePackProcessor.ts(610,38): error TS2484: Export declaration conflicts with exported declaration of 'ProcessedContent'.
+src/utils/KnowledgePackProcessor.ts(610,56): error TS2484: Export declaration conflicts with exported declaration of 'KnowledgePackOptions'.
+src/utils/ReadmeParser.ts(14,24): error TS7016: Could not find a declaration file for module 'marked'. '/opt/central-mcp/node_modules/marked/lib/marked.cjs' implicitly has an 'any' type.
+  Try `npm i --save-dev @types/marked` if it exists or add a new declaration (.d.ts) file containing `declare module 'marked';`
+src/utils/ReadmeParser.ts(382,59): error TS2339: Property 'split' does not exist on type 'string[]'.
+src/utils/ReadmeParser.ts(382,74): error TS7006: Parameter 't' implicitly has an 'any' type.
+src/utils/ReadmeParser.ts(393,15): error TS2484: Export declaration conflicts with exported declaration of 'ReadmeMetadata'.
+src/utils/ReadmeParser.ts(393,31): error TS2484: Export declaration conflicts with exported declaration of 'ReadmeContent'.
+src/utils/ReadmeParser.ts(393,46): error TS2484: Export declaration conflicts with exported declaration of 'ReadmeSection'.
+src/validation/SpecFrontmatterParser.ts(78,36): error TS2307: Cannot find module 'yaml' or its corresponding type declarations.

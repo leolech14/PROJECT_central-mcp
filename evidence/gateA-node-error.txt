@@ -1,0 +1,9 @@
+Running node manually to see actual error:
+[2025-10-16T01:58:24.927Z] INFO  🚀 Starting LocalBrain Task Registry MCP Server...
+[2025-10-16T01:58:24.928Z] INFO  📍 Built by Agent D (Integration + Ground Supervision)
+[2025-10-16T01:58:24.929Z] INFO  ⭐ Enhanced with Git Tracking by Lech (HITL)
+[2025-10-16T01:58:25.022Z] ERROR ❌ Fatal error starting MCP server:
+{
+  "errorMessage": "The requested module './ModelDetectionSystem.js' does not provide an export named 'ModelDetectionSystem'",
+  "stack": "file:///opt/central-mcp/dist/auto-proactive/AutoProactiveEngine.js:30\nimport { ModelDetectionSystem } from './ModelDetectionSystem.js';\n         ^^^^^^^^^^^^^^^^^^^^\nSyntaxError: The requested module './ModelDetectionSystem.js' does not provide an export named 'ModelDetectionSystem'\n    at ModuleJob._instantiate (node:internal/modules/esm/module_job:213:21)\n    at async ModuleJob.run (node:internal/modules/esm/module_job:320:5)\n    at async ModuleLoader.import (node:internal/modules/esm/loader:606:24)\n    at async main (file:///opt/central-mcp/dist/index.js:28:35)"
+}

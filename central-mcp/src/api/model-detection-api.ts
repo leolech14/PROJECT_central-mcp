@@ -8,7 +8,7 @@
 
 import * as express from 'express';
 import Database from 'better-sqlite3';
-import { EnhancedModelDetectionSystem } from '../../auto-proactive/ModelDetectionSystem';
+import { EnhancedModelDetectionSystem } from '../auto-proactive/ModelDetectionSystem.js';
 import { logger } from '../utils/logger.js';
 
 export class ModelDetectionAPI {

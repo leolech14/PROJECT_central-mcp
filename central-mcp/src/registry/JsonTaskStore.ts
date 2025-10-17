@@ -380,7 +380,7 @@ export class JsonTaskStore {
           task.velocity || null,
           task.estimatedHours || null,
           task.actualMinutes || null,
-          'localbrain' // Default project ID since Task interface doesn't have projectId
+          task.projectId || 'localbrain' // Use project ID from task or default
         );
       });
 
@@ -633,7 +633,7 @@ export class JsonTaskStore {
         SELECT dependencies FROM tasks WHERE id = ?
       `).get(task.id) as { dependencies: string } | undefined;
 
-      const deps = safeJsonParse(dependencies, []);
+      const deps = dependencies ? safeJsonParse(dependencies.dependencies, []) : [];
       const updatedDeps = deps.filter((dep: string) => dep !== completedTaskId);
 
       db.prepare(`
@@ -687,7 +687,7 @@ export class JsonTaskStore {
       velocity: row.velocity || undefined,
       estimatedHours: row.estimated_hours || undefined,
       actualMinutes: row.actual_minutes || undefined,
-      // projectId removed as Task interface doesn't have this property
+      projectId: row.project_id || 'localbrain' // Add project ID from database row
     };
   }
 

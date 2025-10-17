@@ -46,6 +46,7 @@ export interface Task {
   velocity?: number;             // % of estimated time
   estimatedHours?: number;       // Original estimate
   actualMinutes?: number;        // Actual time taken
+  projectId?: string;             // Multi-project support (optional)
 }
 
 export interface TaskDependency {

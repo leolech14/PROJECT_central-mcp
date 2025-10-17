@@ -151,7 +151,7 @@ export class Llama24HBrainService {
 
       // Write error event
       writeSystemEvent({
-        eventType: 'loop_error',
+        eventType: 'health_check',
         eventCategory: 'system',
         eventActor: '24H-Brain',
         eventAction: `Inference error: ${error.message}`,

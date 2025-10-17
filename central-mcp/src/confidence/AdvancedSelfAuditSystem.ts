@@ -158,7 +158,7 @@ export class FileSystemTest {
 
     try {
       const exists = await fs.access(filePath).then(() => true).catch(() => false);
-      let actualResult = { exists };
+      let actualResult: { exists: boolean; content?: string } = { exists }; // TEST: TypeScript validation
 
       if (exists && expectedContent) {
         const content = await fs.readFile(filePath, 'utf8');
@@ -607,7 +607,10 @@ export class AdvancedSelfAuditSystem {
       WHERE created_at > datetime('now', '-7 days')
     `);
 
-    const result = stmt.get();
+    const result = stmt.get() as {
+      expected_accuracy?: number;
+      actual_accuracy?: number;
+    } | undefined;
 
     return {
       expectedAccuracy: result?.expected_accuracy || 0,

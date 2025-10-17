@@ -145,14 +145,14 @@ export class ActiveConfigurationDetector {
     // Try to load the detected configuration
     const config = await this.loadConfigFile(targetConfig);
 
-    if (config && config.activeConfig) {
+    if (config) {
       logger.info(`      ✅ Process indicators point to: ${targetConfig}`);
       return {
         activeConfig: config.activeConfig,
         activeConfigPath: config.activeConfigPath,
         detectionMethod: 'process',
         confidence: 0.90, // High confidence for process detection
-        actualModel: this.extractModelFromConfig(config.activeConfig),
+        actualModel: this.extractModelFromConfig(config.activeConfig || {}),
         verificationStatus: 'verified',
         metadata: {
           processIndicators: indicators,
@@ -162,13 +162,24 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No clear process indicators found');
-    return {};
+    return {
+      activeConfig: undefined,
+      activeConfigPath: undefined,
+      detectionMethod: 'process',
+      confidence: 0.0,
+      actualModel: 'unknown',
+      verificationStatus: 'error',
+      metadata: {
+        processIndicators: indicators,
+        detectedConfig: targetConfig
+      }
+    };
   }
 
   /**
    * Method 2: Active Endpoint Verification
    */
-  private async verifyActiveEndpoint(): Promise<Partial<ActiveConfigurationResult>> {
+  private async verifyActiveEndpoint(): Promise<Partial<ActiveConfigurationResult> | undefined> {
     logger.info('   🔍 Method 2: Active endpoint verification...');
 
     const endpoints = [
@@ -216,13 +227,13 @@ export class ActiveConfigurationDetector {
           logger.info(`      ✅ Endpoint accessible: ${endpoint.url} (${test.config})`);
 
           const config = await this.loadConfigFile(endpoint.config);
-          if (config && config.activeConfig) {
+          if (config) {
             return {
               activeConfig: config.activeConfig,
               activeConfigPath: config.activeConfigPath,
               detectionMethod: 'endpoint',
               confidence: 0.85, // High confidence for endpoint verification
-              actualModel: this.extractModelFromConfig(config.activeConfig),
+              actualModel: config.activeConfig ? this.extractModelFromConfig(config.activeConfig) : 'unknown',
               verificationStatus: 'verified',
               metadata: {
                 endpointTest: test,
@@ -248,7 +259,7 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No accessible endpoints found');
-    return {};
+    return undefined;
   }
 
   /**
@@ -300,7 +311,7 @@ export class ActiveConfigurationDetector {
 
     if (configs.length === 0) {
       logger.info('      ❌ No valid configuration files found');
-      return {};
+      return undefined;
     }
 
     // Sort by priority and recency
@@ -346,17 +357,15 @@ export class ActiveConfigurationDetector {
     }
 
     // Weight the different detection methods
-    const weights: Record<string, number> = {
+    const weights = {
       'process': 0.90,
       'endpoint': 0.85,
-      'file': 0.70,
-      'default': 0.10,
-      'environment': 0.60
+      'file': 0.70
     };
 
     // Calculate weighted confidence scores
     const scoredCandidates = candidates.map(candidate => {
-      const methodWeight = candidate.detectionMethod ? weights[candidate.detectionMethod] || 0.5 : 0.5;
+      const methodWeight = weights[candidate.detectionMethod as keyof typeof weights] || 0.5;
       const weightedConfidence = (candidate.confidence || 0) * methodWeight;
 
       return {
@@ -381,10 +390,14 @@ export class ActiveConfigurationDetector {
       logger.warn(`      ⚠️  Inconsistent detections: ${consistencyCheck.warnings.join(', ')}`);
     }
 
-    const result: Partial<ActiveConfigurationResult> = {
-      detectionMethod: winner.detectionMethod || 'file',
+    return {
+      activeConfig: winner.activeConfig,
+      activeConfigPath: winner.activeConfigPath,
+      detectionMethod: winner.detectionMethod,
       confidence: winner.weightedConfidence,
-      verificationStatus: winner.verificationStatus || 'unverified',
+      actualModel: winner.actualModel,
+      verificationStatus: winner.verificationStatus,
+      allConfigs: winner.allConfigs,
       metadata: {
         ...winner.metadata,
         allCandidates: scoredCandidates,
@@ -393,14 +406,6 @@ export class ActiveConfigurationDetector {
         methodWeight: winner.methodWeight
       }
     };
-
-    // Only add properties if they exist
-    if (winner.activeConfig) result.activeConfig = winner.activeConfig;
-    if (winner.activeConfigPath) result.activeConfigPath = winner.activeConfigPath;
-    if (winner.actualModel) result.actualModel = winner.actualModel;
-    if (winner.allConfigs) result.allConfigs = winner.allConfigs;
-
-    return result;
   }
 
   /**
@@ -457,12 +462,12 @@ export class ActiveConfigurationDetector {
   /**
    * Load a specific configuration file
    */
-  private async loadConfigFile(fileName: string): Promise<Partial<ActiveConfigurationResult> | null> {
+  private async loadConfigFile(fileName: string): Promise<Partial<ActiveConfigurationResult> | undefined> {
     try {
       const fullPath = join(this.claudeConfigDir, fileName);
 
       if (!existsSync(fullPath)) {
-        return null;
+        return undefined;
       }
 
       const content = readFileSync(fullPath, 'utf-8');
@@ -479,7 +484,7 @@ export class ActiveConfigurationDetector {
 
     } catch (error: any) {
       logger.warn(`Could not load ${fileName}: ${error.message}`);
-      return null;
+      return undefined;
     }
   }
 
@@ -534,7 +539,7 @@ export class ActiveConfigurationDetector {
 
     // Check model consistency
     const models = candidates.map(c => c.actualModel).filter(Boolean);
-    const uniqueModels = [...new Set(models)];
+    const uniqueModels = Array.from(new Set(models));
 
     if (uniqueModels.length > 1) {
       consistent = false;
@@ -545,7 +550,7 @@ export class ActiveConfigurationDetector {
     const endpoints = candidates
       .map(c => c.activeConfig?.env?.ANTHROPIC_BASE_URL)
       .filter(Boolean);
-    const uniqueEndpoints = [...new Set(endpoints)];
+    const uniqueEndpoints = Array.from(new Set(endpoints));
 
     if (uniqueEndpoints.length > 1) {
       consistent = false;
@@ -583,7 +588,7 @@ export class ActiveConfigurationDetector {
       activeConfigPath: 'fallback-generated',
       detectionMethod: 'default',
       confidence: 0.10, // Very low confidence
-      actualModel: fallbackConfig.defaultModel || 'claude-sonnet-4-5',
+      actualModel: fallbackConfig.defaultModel || 'unknown',
       verificationStatus: 'error',
       metadata: {
         error: error.message,

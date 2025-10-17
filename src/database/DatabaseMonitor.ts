@@ -148,9 +148,9 @@ export class DatabaseMonitor extends EventEmitter {
         // Handle different types of results
         let rowsAffected: number | undefined;
         if (result && typeof result === 'object') {
-          if ('changes' in result) {
+          if ('changes' in result && typeof result.changes === 'number') {
             rowsAffected = result.changes;
-          } else if ('length' in result) {
+          } else if ('length' in result && typeof result.length === 'number') {
             rowsAffected = result.length;
           }
         }
@@ -388,6 +388,86 @@ export class DatabaseMonitor extends EventEmitter {
     this.queryHistory = [];
     this.queryPatterns.clear();
     console.log('📊 Database metrics cleared');
+  }
+
+  /**
+   * Get performance metrics (alias for getMetrics)
+   */
+  getPerformanceMetrics(): PerformanceMetrics {
+    return this.getMetrics();
+  }
+
+  /**
+   * Get performance recommendations (alias for getRecommendations)
+   */
+  getPerformanceRecommendations(): Array<{
+    type: 'index' | 'query' | 'pool' | 'schema';
+    priority: 'high' | 'medium' | 'low';
+    message: string;
+    details?: any;
+  }> {
+    return this.getRecommendations();
+  }
+
+  /**
+   * Get system health status
+   */
+  getSystemHealth(): {
+    status: 'healthy' | 'warning' | 'critical';
+    score: number;
+    issues: string[];
+  } {
+    const metrics = this.getMetrics();
+    const issues: string[] = [];
+    let score = 100;
+
+    // Check average query time
+    if (metrics.averageQueryTime > 200) {
+      issues.push(`High average query time: ${metrics.averageQueryTime.toFixed(0)}ms`);
+      score -= 30;
+    } else if (metrics.averageQueryTime > 100) {
+      issues.push(`Elevated average query time: ${metrics.averageQueryTime.toFixed(0)}ms`);
+      score -= 15;
+    }
+
+    // Check connection pool usage
+    const connectionUsageRatio = metrics.connectionUsage.current / metrics.connectionUsage.max;
+    if (connectionUsageRatio > 0.9) {
+      issues.push(`Critical connection pool usage: ${(connectionUsageRatio * 100).toFixed(1)}%`);
+      score -= 40;
+    } else if (connectionUsageRatio > 0.8) {
+      issues.push(`High connection pool usage: ${(connectionUsageRatio * 100).toFixed(1)}%`);
+      score -= 20;
+    }
+
+    // Check failure rate
+    const failureRate = metrics.totalQueries > 0 ? metrics.failedQueries / metrics.totalQueries : 0;
+    if (failureRate > 0.1) {
+      issues.push(`Critical query failure rate: ${(failureRate * 100).toFixed(1)}%`);
+      score -= 50;
+    } else if (failureRate > 0.05) {
+      issues.push(`High query failure rate: ${(failureRate * 100).toFixed(1)}%`);
+      score -= 25;
+    }
+
+    // Check slow queries
+    if (metrics.slowQueries > metrics.totalQueries * 0.2) {
+      issues.push(`High rate of slow queries: ${metrics.slowQueries}/${metrics.totalQueries}`);
+      score -= 20;
+    }
+
+    let status: 'healthy' | 'warning' | 'critical' = 'healthy';
+    if (score < 50) {
+      status = 'critical';
+    } else if (score < 80) {
+      status = 'warning';
+    }
+
+    return {
+      status,
+      score,
+      issues
+    };
   }
 }
 

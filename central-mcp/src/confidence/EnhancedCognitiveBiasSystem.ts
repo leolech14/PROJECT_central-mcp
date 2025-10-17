@@ -3,7 +3,7 @@
 // Implements: ML-based bias detection, pattern recognition, adaptive thresholds, behavioral analysis
 
 import { Database } from 'better-sqlite3';
-import { Evidence, ConfidenceResult } from './AdvancedSelfAuditSystem.js';
+import { Evidence, ConfidenceResult, EvidenceType } from './AdvancedSelfAuditSystem.js';
 
 export interface BiasPattern {
   biasType: 'optimism' | 'confirmation' | 'completion' | 'authority' | 'availability' | 'anchoring';
@@ -314,7 +314,7 @@ export class EnhancedCognitiveBiasSystem {
   ): Promise<BiasDetectionResult['detectedBiases'][0] | null> {
     let biasConfidence = 0;
     let description = '';
-    const evidenceList: string[] = [];
+    let evidenceList: string[] = [];
     let suggestedCorrection = 0;
     let automaticCorrection = true;
 
@@ -912,7 +912,11 @@ export class EnhancedCognitiveBiasSystem {
       WHERE created_at > ${timeFilter}
     `);
 
-    const summaryData = summaryStmt.get();
+    const summaryData = summaryStmt.get() as {
+      total_detections?: number;
+      average_correction?: number;
+      automatic_correction_rate?: number;
+    } | undefined;
 
     // Get bias type distribution
     const typeDistStmt = this.db.prepare(`
@@ -925,7 +929,7 @@ export class EnhancedCognitiveBiasSystem {
     const biasTypeDistribution = typeDistStmt.all().reduce((acc, row: any) => {
       acc[row.bias_type] = row.count;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     // Get severity distribution
     const severityDistStmt = this.db.prepare(`
@@ -938,7 +942,7 @@ export class EnhancedCognitiveBiasSystem {
     const severityDistribution = severityDistStmt.all().reduce((acc, row: any) => {
       acc[row.severity] = row.count;
       return acc;
-    }, {});
+    }, {} as Record<string, number>);
 
     // Get trends
     const trendsStmt = this.db.prepare(`
@@ -953,7 +957,13 @@ export class EnhancedCognitiveBiasSystem {
       ORDER BY date DESC
     `);
 
-    const rawTrends = trendsStmt.all();
+    const rawTrends = trendsStmt.all() as {
+      date: string;
+      bias_type: string;
+      frequency: number;
+      average_confidence: number;
+    }[];
+
     const trends = rawTrends.map(t => ({
       date: new Date(t.date),
       biasType: t.bias_type,
@@ -973,7 +983,11 @@ export class EnhancedCognitiveBiasSystem {
       ORDER BY average_effectiveness DESC
     `);
 
-    const effectiveness = effectivenessStmt.all();
+    const effectiveness = effectivenessStmt.all() as {
+      bias_type: string;
+      correction_method: string;
+      average_effectiveness: number;
+    }[];
 
     // Generate recommendations
     const recommendations = this.generateBiasRecommendations(summaryData, biasTypeDistribution, trends);

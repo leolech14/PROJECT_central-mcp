@@ -6,7 +6,8 @@
  * Provides prepared statements, connection pooling, and query optimization.
  */
 
-import { Database, Statement } from 'better-sqlite3';
+import Database from 'better-sqlite3';
+import type { Statement } from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 
 export interface DatabaseConfig {

@@ -154,13 +154,13 @@ function extractVersion(fileName: string): string | undefined {
  */
 async function scanDirectory(dirPath: string, relativePath: string = ''): Promise<KnowledgePack[]> {
   try {
-    const entries = await readdir(dirPath);
+    const entries = await fs.readdir(dirPath) as string[];
     const packs: KnowledgePack[] = [];
 
     for (const entry of entries) {
       const fullPath = join(dirPath, entry);
       const entryRelativePath = relativePath ? join(relativePath, entry) : entry;
-      const stats = await stat(fullPath);
+      const stats = await fs.stat(fullPath) as { isDirectory: () => boolean; size: number; mtime: Date };
 
       if (entry.startsWith('.') || entry === 'node_modules') {
         continue;
@@ -243,20 +243,20 @@ export async function getKnowledgeSpace(query?: KnowledgeSpaceQuery): Promise<Kn
 
   try {
     const categories: KnowledgeCategory[] = [];
-    const entries = await readdir(KNOWLEDGE_SPACE_CONFIG.rootPath);
+    const entries = await fs.readdir(KNOWLEDGE_SPACE_CONFIG.rootPath) as string[];
     let totalKnowledgePacks = 0;
     let totalSize = 0;
 
     for (const entry of entries) {
       const categoryPath = join(KNOWLEDGE_SPACE_CONFIG.rootPath, entry);
-      const stats = await stat(categoryPath);
+      const stats = await fs.stat(categoryPath) as { isDirectory: () => boolean; size: number; mtime: Date };
 
       if (stats.isDirectory() && !entry.startsWith('.')) {
         // Read README.md if it exists
         let readmeContent = '';
         try {
           const readmePath = join(categoryPath, 'README.md');
-          readmeContent = await readFile(readmePath, 'utf-8');
+          readmeContent = await readFile(readmePath, 'utf-8') as string;
         } catch (error) {
           // README not found, continue with empty content
         }
@@ -268,7 +268,7 @@ export async function getKnowledgeSpace(query?: KnowledgeSpaceQuery): Promise<Kn
 
         const category: KnowledgeCategory = {
           id: entry,
-          name: entry.split('-').map(word =>
+          name: entry.split('-').map((word: string) =>
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' '),
           description: extractDescription(readmeContent),
@@ -324,7 +324,7 @@ export async function getKnowledgeSpace(query?: KnowledgeSpaceQuery): Promise<Kn
     return filterKnowledgeSpace(response, query);
   } catch (error) {
     console.error('Error getting knowledge space:', error);
-    throw new Error(`Failed to get knowledge space: ${error.message}`);
+    throw new Error(`Failed to get knowledge space: ${(error as Error).message}`);
   }
 }
 

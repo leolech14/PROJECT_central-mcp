@@ -412,7 +412,7 @@ export class SessionManager {
    * 🔒 SECURITY: Blacklist all tokens for a session
    */
   private async blacklistAllSessionTokens(sessionId: string, reason: string): Promise<void> {
-    for (const [jti, tokenData] of this.activeTokens.entries()) {
+    for (const [jti, tokenData] of Array.from(this.activeTokens.entries())) {
       if (tokenData.sessionId === sessionId) {
         await this.blacklistToken(jti, sessionId, 'both', reason);
       }
@@ -481,7 +481,7 @@ export class SessionManager {
    */
   private cleanupExpiredTokens(): void {
     const now = Date.now();
-    for (const [jti, tokenData] of this.activeTokens.entries()) {
+    for (const [jti, tokenData] of Array.from(this.activeTokens.entries())) {
       if (tokenData.expiresAt < now) {
         this.activeTokens.delete(jti);
       }

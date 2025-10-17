@@ -127,7 +127,8 @@ export class ActiveConfigurationDetector {
       'CLAUDE_PROVIDER': envVars.CLAUDE_PROVIDER,
       'ANTHROPIC_BASE_URL': envVars.ANTHROPIC_BASE_URL,
       'ANTHROPIC_API_KEY': envVars.ANTHROPIC_API_KEY,
-      'ANTHROPIC_AUTH_TOKEN': envVars.ANTHROPIC_AUTH_TOKEN
+      'ANTHROPIC_AUTH_TOKEN': envVars.ANTHROPIC_AUTH_TOKEN,
+      'ANTHROPIC_BETA': envVars.ANTHROPIC_BETA
     };
 
     // Determine which config is actually active based on environment
@@ -151,7 +152,7 @@ export class ActiveConfigurationDetector {
         activeConfigPath: config.activeConfigPath,
         detectionMethod: 'process',
         confidence: 0.90, // High confidence for process detection
-        actualModel: this.extractModelFromConfig(config.activeConfig),
+        actualModel: this.extractModelFromConfig(config.activeConfig || {}),
         verificationStatus: 'verified',
         metadata: {
           processIndicators: indicators,
@@ -161,13 +162,24 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No clear process indicators found');
-    return null;
+    return {
+      activeConfig: undefined,
+      activeConfigPath: undefined,
+      detectionMethod: 'process',
+      confidence: 0.0,
+      actualModel: 'unknown',
+      verificationStatus: 'error',
+      metadata: {
+        processIndicators: indicators,
+        detectedConfig: targetConfig
+      }
+    };
   }
 
   /**
    * Method 2: Active Endpoint Verification
    */
-  private async verifyActiveEndpoint(): Promise<Partial<ActiveConfigurationResult>> {
+  private async verifyActiveEndpoint(): Promise<Partial<ActiveConfigurationResult> | undefined> {
     logger.info('   🔍 Method 2: Active endpoint verification...');
 
     const endpoints = [
@@ -221,7 +233,7 @@ export class ActiveConfigurationDetector {
               activeConfigPath: config.activeConfigPath,
               detectionMethod: 'endpoint',
               confidence: 0.85, // High confidence for endpoint verification
-              actualModel: this.extractModelFromConfig(config.activeConfig),
+              actualModel: config.activeConfig ? this.extractModelFromConfig(config.activeConfig) : 'unknown',
               verificationStatus: 'verified',
               metadata: {
                 endpointTest: test,
@@ -247,7 +259,7 @@ export class ActiveConfigurationDetector {
     }
 
     logger.info('      ⚠️  No accessible endpoints found');
-    return null;
+    return undefined;
   }
 
   /**
@@ -299,7 +311,7 @@ export class ActiveConfigurationDetector {
 
     if (configs.length === 0) {
       logger.info('      ❌ No valid configuration files found');
-      return null;
+      return undefined;
     }
 
     // Sort by priority and recency
@@ -353,8 +365,8 @@ export class ActiveConfigurationDetector {
 
     // Calculate weighted confidence scores
     const scoredCandidates = candidates.map(candidate => {
-      const methodWeight = weights[candidate.detectionMethod] || 0.5;
-      const weightedConfidence = candidate.confidence * methodWeight;
+      const methodWeight = weights[candidate.detectionMethod as keyof typeof weights] || 0.5;
+      const weightedConfidence = (candidate.confidence || 0) * methodWeight;
 
       return {
         ...candidate,
@@ -450,12 +462,12 @@ export class ActiveConfigurationDetector {
   /**
    * Load a specific configuration file
    */
-  private async loadConfigFile(fileName: string): Promise<Partial<ActiveConfigurationResult> | null> {
+  private async loadConfigFile(fileName: string): Promise<Partial<ActiveConfigurationResult> | undefined> {
     try {
       const fullPath = join(this.claudeConfigDir, fileName);
 
       if (!existsSync(fullPath)) {
-        return null;
+        return undefined;
       }
 
       const content = readFileSync(fullPath, 'utf-8');
@@ -472,7 +484,7 @@ export class ActiveConfigurationDetector {
 
     } catch (error: any) {
       logger.warn(`Could not load ${fileName}: ${error.message}`);
-      return null;
+      return undefined;
     }
   }
 
@@ -527,7 +539,7 @@ export class ActiveConfigurationDetector {
 
     // Check model consistency
     const models = candidates.map(c => c.actualModel).filter(Boolean);
-    const uniqueModels = [...new Set(models)];
+    const uniqueModels = Array.from(new Set(models));
 
     if (uniqueModels.length > 1) {
       consistent = false;
@@ -538,7 +550,7 @@ export class ActiveConfigurationDetector {
     const endpoints = candidates
       .map(c => c.activeConfig?.env?.ANTHROPIC_BASE_URL)
       .filter(Boolean);
-    const uniqueEndpoints = [...new Set(endpoints)];
+    const uniqueEndpoints = Array.from(new Set(endpoints));
 
     if (uniqueEndpoints.length > 1) {
       consistent = false;
@@ -576,7 +588,7 @@ export class ActiveConfigurationDetector {
       activeConfigPath: 'fallback-generated',
       detectionMethod: 'default',
       confidence: 0.10, // Very low confidence
-      actualModel: fallbackConfig.defaultModel,
+      actualModel: fallbackConfig.defaultModel || 'unknown',
       verificationStatus: 'error',
       metadata: {
         error: error.message,

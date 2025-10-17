@@ -197,7 +197,7 @@ export class AgentAutoDiscoveryLoop {
         if (modelDetection.verified && modelDetection.confidence > 0.7) {
           currentAgent.agentLetter = modelDetection.agentLetter;
           currentAgent.modelId = modelDetection.detectedModel;
-          currentAgent.capabilities = Object.values(modelDetection.capabilities);
+          currentAgent.capabilities = Object.values(modelDetection.capabilities || {}).filter(cap => typeof cap === 'string');
 
           logger.info(`   🔄 UPDATED: Agent ${modelDetection.agentLetter} (${modelDetection.agentRole})`);
           logger.info(`   🎯 CAPABILITIES: ${modelDetection.capabilities.reasoning} reasoning, ${modelDetection.capabilities.coding} coding, ${modelDetection.capabilities.multimodal ? 'multimodal' : 'text-only'}`);
@@ -270,7 +270,7 @@ export class AgentAutoDiscoveryLoop {
         eventActor: 'Loop-1',
         eventAction: `Enhanced agent discovery: ${activeAgents.length} agents active`,
         eventDescription: `Loop #${this.loopCount} - Current agent: ${currentAgent?.agentLetter || 'unknown'} (Enhanced Detection)`,
-        systemHealth: systemStats.systemHealth,
+        systemHealth: systemStats.systemHealth === 'degraded' ? 'warning' as const : systemStats.systemHealth as 'healthy' | 'critical' | 'warning',
         activeLoops: 9,
         activeAgents: activeAgents.length,
         avgResponseTimeMs: duration,
@@ -562,8 +562,8 @@ export class AgentAutoDiscoveryLoop {
 
       // Write feedback event to Universal Write System
       await writeSystemEvent({
-        eventType: 'agent-feedback',
-        eventCategory: 'learning',
+        eventType: 'health_check' as const,
+        eventCategory: 'health' as const,
         eventActor: 'Loop-1',
         eventAction: `Agent detection feedback: ${actualModel}`,
         eventDescription: `User feedback for agent detection - ${userConfirmed ? 'confirmed' : 'corrected'}`,

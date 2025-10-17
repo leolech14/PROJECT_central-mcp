@@ -9,10 +9,10 @@
  * Purpose: Knowledge Space README parsing and metadata extraction
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { marked } from 'marked';
-import matter from 'gray-matter';
+import * as matter from 'gray-matter';
 
 export interface ReadmeMetadata {
   title?: string;
@@ -108,7 +108,7 @@ export class ReadmeParser {
       );
 
       // Convert to HTML
-      const htmlContent = marked(markdownContent);
+      const htmlContent = marked.parse(markdownContent);
 
       // Generate excerpt
       const excerpt = this.generateExcerpt(markdownContent, sections);
@@ -151,7 +151,7 @@ export class ReadmeParser {
         // Save previous section if exists
         if (currentSection) {
           currentSection.content = currentContent.join('\n').trim();
-          currentSection.htmlContent = marked(currentSection.content);
+          currentSection.htmlContent = marked.parse(currentSection.content);
           sections.push(currentSection);
         }
 
@@ -171,7 +171,7 @@ export class ReadmeParser {
     // Save last section
     if (currentSection) {
       currentSection.content = currentContent.join('\n').trim();
-      currentSection.htmlContent = marked(currentSection.content);
+      currentSection.htmlContent = marked.parse(currentSection.content);
       sections.push(currentSection);
     }
 
@@ -379,7 +379,7 @@ export class ReadmeParser {
     return {
       title: content.metadata.title || 'Untitled',
       description: content.excerpt || content.metadata.description || 'No description available',
-      tags: content.metadata.tags ? content.metadata.tags.split(',').map(t => t.trim()) : [],
+      tags: content.metadata.tags ? (Array.isArray(content.metadata.tags) ? content.metadata.tags : content.metadata.tags.split(',').map(t => t.trim())) : [],
       status: content.metadata.status,
       readingTime: content.readingTime
     };
@@ -389,5 +389,4 @@ export class ReadmeParser {
 // Export singleton instance
 export const readmeParser = new ReadmeParser();
 
-// Export types for external use
-export type { ReadmeMetadata, ReadmeContent, ReadmeSection };
+// Types are already exported above

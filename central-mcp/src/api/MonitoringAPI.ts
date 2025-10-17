@@ -6,9 +6,9 @@
  * Serves system status, loop statistics, and intelligence metrics
  */
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AutoProactiveEngine } from '../auto-proactive/AutoProactiveEngine.js';
-import express, { Request, Response } from 'express';
+import * as express from 'express';
 
 export class MonitoringAPI {
   private db: Database.Database;
@@ -24,27 +24,27 @@ export class MonitoringAPI {
    */
   registerRoutes(app: express.Application) {
     // System status endpoint
-    app.get('/api/system/status', (req: Request, res: Response) => {
+    app.get('/api/system/status', (req: express.Request, res: express.Response) => {
       this.getSystemStatus(req, res);
     });
 
     // Loop statistics endpoint
-    app.get('/api/loops/stats', (req: Request, res: Response) => {
+    app.get('/api/loops/stats', (req: express.Request, res: express.Response) => {
       this.getLoopStats(req, res);
     });
 
     // Project statistics
-    app.get('/api/projects/stats', (req: Request, res: Response) => {
+    app.get('/api/projects/stats', (req: express.Request, res: express.Response) => {
       this.getProjectStats(req, res);
     });
 
     // Agent statistics
-    app.get('/api/agents/stats', (req: Request, res: Response) => {
+    app.get('/api/agents/stats', (req: express.Request, res: express.Response) => {
       this.getAgentStats(req, res);
     });
 
     // Task statistics
-    app.get('/api/tasks/stats', (req: Request, res: Response) => {
+    app.get('/api/tasks/stats', (req: express.Request, res: express.Response) => {
       this.getTaskStats(req, res);
     });
   }
@@ -52,7 +52,7 @@ export class MonitoringAPI {
   /**
    * Get overall system status
    */
-  private getSystemStatus(req: Request, res: Response) {
+  private getSystemStatus(req: express.Request, res: express.Response) {
     try {
       // Get engine status if available
       let engineStatus = null;
@@ -136,7 +136,7 @@ export class MonitoringAPI {
   /**
    * Get loop execution statistics
    */
-  private getLoopStats(req: Request, res: Response) {
+  private getLoopStats(req: express.Request, res: express.Response) {
     try {
       // Get stats for each loop from the last 10 minutes
       const loopNames = [
@@ -193,7 +193,7 @@ export class MonitoringAPI {
   /**
    * Get project statistics
    */
-  private getProjectStats(req: Request, res: Response) {
+  private getProjectStats(req: express.Request, res: express.Response) {
     try {
       const stats = this.db.prepare(`
         SELECT
@@ -227,7 +227,7 @@ export class MonitoringAPI {
   /**
    * Get agent statistics
    */
-  private getAgentStats(req: Request, res: Response) {
+  private getAgentStats(req: express.Request, res: express.Response) {
     try {
       const agents = this.db.prepare(`
         SELECT
@@ -276,7 +276,7 @@ export class MonitoringAPI {
   /**
    * Get task statistics
    */
-  private getTaskStats(req: Request, res: Response) {
+  private getTaskStats(req: express.Request, res: express.Response) {
     try {
       const stats = this.db.prepare(`
         SELECT

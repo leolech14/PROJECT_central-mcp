@@ -6,7 +6,7 @@
  * Prevents false assumptions about live connections vs historical data
  */
 
-import { Request, Response } from 'express';
+import * as express from 'express';
 import Database from 'better-sqlite3';
 import { AgentRealityVerificationSystem, AgentRealityConfig } from '../auto-proactive/AgentRealityVerificationSystem.js';
 import { logger } from '../utils/logger.js';
@@ -34,7 +34,7 @@ export class AgentRealityAPI {
    *
    * Check reality status of a specific agent
    */
-  async checkAgentReality(req: Request, res: Response): Promise<void> {
+  async checkAgentReality(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { agentLetter } = req.params;
       const { context } = req.query;
@@ -86,7 +86,7 @@ export class AgentRealityAPI {
    *
    * Verify if current exploration is real-time vs historical
    */
-  async verifyExplorationReality(req: Request, res: Response): Promise<void> {
+  async verifyExplorationReality(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { agentLetter, explorationContext } = req.query;
 
@@ -128,7 +128,7 @@ export class AgentRealityAPI {
    *
    * Get temporal disclaimer for any agent data
    */
-  async getTemporalDisclaimer(req: Request, res: Response): Promise<void> {
+  async getTemporalDisclaimer(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { agentLetter } = req.params;
       const { dataType } = req.query;
@@ -173,7 +173,7 @@ export class AgentRealityAPI {
    *
    * Get reality status for all agents
    */
-  async getRealityDashboard(req: Request, res: Response): Promise<void> {
+  async getRealityDashboard(req: express.Request, res: express.Response): Promise<void> {
     try {
       const agents = ['A', 'B', 'C', 'D', 'E', 'F'];
       const agentRealities = [];
@@ -222,7 +222,7 @@ export class AgentRealityAPI {
    *
    * Educational warnings to prevent false assumptions
    */
-  async getEducationalWarnings(req: Request, res: Response): Promise<void> {
+  async getEducationalWarnings(req: express.Request, res: express.Response): Promise<void> {
     try {
       const warnings = [
         {

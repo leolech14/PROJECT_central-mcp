@@ -229,8 +229,8 @@ export class AgentRealityVerificationSystem {
    */
   private logRealityVerification(check: AgentRealityCheck): void {
     writeSystemEvent({
-      eventType: 'reality_verification',
-      eventCategory: 'agent',
+      eventType: 'health_check' as const,
+      eventCategory: 'system' as const,
       eventActor: 'RealitySystem',
       eventAction: `Agent ${check.agentId} reality check: ${check.connectionType}`,
       eventDescription: `Reality Score: ${check.realityScore.toFixed(2)} | Warnings: ${check.warnings.length}`,

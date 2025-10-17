@@ -18,7 +18,7 @@ import Database from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 import { randomUUID } from 'crypto';
 import { ModelDetectionResult } from './ModelDetectionSystem.js';
-import { ModelCapabilityVerifier } from './ModelCapabilityVerifier.js';
+import { ModelCapabilityVerifier, ModelCapability } from './ModelCapabilityVerifier.js';
 
 export interface DetectionCorrection {
   id: string;
@@ -52,6 +52,7 @@ export interface CorrectionPattern {
   confidence: number;
   lastSeen: string;
   autoApply: boolean;
+  shouldCorrect: boolean;
 }
 
 export interface ModelPerformanceMetrics {
@@ -509,7 +510,7 @@ export class DetectionSelfCorrection {
   /**
    * Check if correction is reasonable
    */
-  private isReasonaableCorrection(original: string, corrected: string): boolean {
+  private isReasonableCorrection(original: string, corrected: string): boolean {
     const originalFamily = this.extractModelFamily(original);
     const correctedFamily = this.extractModelFamily(corrected);
 
@@ -633,32 +634,7 @@ export class DetectionSelfCorrection {
     }
   }
 
-  /**
-   * Get correction statistics
-   */
-  private async getCorrectionStats(model: string): Promise<{
-    totalCorrections: number;
-    accuracyImprovement: number;
-  }> {
-    try {
-      const stats = this.db.prepare(`
-        SELECT COUNT(*) as total_corrections,
-               AVG(confidence_after - confidence_before) as avg_improvement
-        FROM detection_corrections
-        WHERE original_model = ?
-          AND correction_applied = 1
-      `).get(model) as any;
-
-      return {
-        totalCorrections: stats.total_corrections || 0,
-        accuracyImprovement: stats.avg_improvement || 0
-      };
-
-    } catch (error: any) {
-      return { totalCorrections: 0, accuracyImprovement: 0 };
-    }
-  }
-
+  
   /**
    * Initialize database tables
    */
@@ -819,6 +795,128 @@ export class DetectionSelfCorrection {
         topCorrectedModels: [],
         recentPatterns: []
       };
+    }
+  }
+
+  /**
+   * Update confidence scores based on feedback
+   */
+  private async updateConfidenceScores(
+    detectedModel: string,
+    actualModel: string,
+    userConfirmed: boolean,
+    confidence: number
+  ): Promise<void> {
+    try {
+      // Simple confidence adjustment logic
+      const newConfidence = userConfirmed ?
+        Math.min(1.0, confidence + 0.1) :
+        Math.max(0.1, confidence - 0.2);
+
+      // Store updated confidence in database
+      this.db.prepare(`
+        INSERT OR REPLACE INTO model_confidence (
+          model, confidence, last_updated, confirmation_count
+        ) VALUES (?, ?, ?, COALESCE((SELECT confirmation_count FROM model_confidence WHERE model = ?), 0) + ?)
+      `).run(
+        detectedModel,
+        newConfidence,
+        new Date().toISOString(),
+        detectedModel,
+        userConfirmed ? 1 : 0
+      );
+
+      logger.debug(`Updated confidence for ${detectedModel}: ${confidence} → ${newConfidence}`);
+    } catch (error: any) {
+      logger.error(`Failed to update confidence scores:`, error);
+    }
+  }
+
+  /**
+   * Detect and update patterns from model corrections
+   */
+  private async detectAndUpdatePatterns(
+    detectedModel: string,
+    actualModel: string
+  ): Promise<void> {
+    try {
+      // Simple pattern detection - if this correction happened before, strengthen the pattern
+      const existingPattern = this.db.prepare(`
+        SELECT COUNT(*) as count FROM detection_corrections
+        WHERE original_model = ? AND corrected_to = ?
+      `).get(detectedModel, actualModel) as { count: number };
+
+      if (existingPattern.count > 1) {
+        // Store or strengthen the pattern
+        this.db.prepare(`
+          INSERT OR REPLACE INTO correction_patterns (
+            pattern_id, from_model, to_model, strength, last_seen
+          ) VALUES (?, ?, ?, ?, ?)
+        `).run(
+          `${detectedModel}_to_${actualModel}`,
+          detectedModel,
+          actualModel,
+          existingPattern.count,
+          new Date().toISOString()
+        );
+
+        logger.debug(`Pattern strengthened: ${detectedModel} → ${actualModel} (strength: ${existingPattern.count})`);
+      }
+    } catch (error: any) {
+      logger.error(`Failed to detect and update patterns:`, error);
+    }
+  }
+
+  /**
+   * Update model registry with verified information
+   */
+  private async updateModelRegistry(
+    detectedModel: string,
+    actualModel: string
+  ): Promise<void> {
+    try {
+      // Update model registry with correction information
+      this.db.prepare(`
+        INSERT OR REPLACE INTO model_registry_updates (
+          model, corrected_to, correction_reason, timestamp
+        ) VALUES (?, ?, ?, ?)
+      `).run(
+        detectedModel,
+        actualModel,
+        'user_confirmed_correction',
+        new Date().toISOString()
+      );
+
+      logger.debug(`Model registry updated: ${detectedModel} corrected to ${actualModel}`);
+    } catch (error: any) {
+      logger.error(`Failed to update model registry:`, error);
+    }
+  }
+
+  /**
+   * Update performance metrics for a model
+   */
+  private async updatePerformanceMetrics(
+    model: string,
+    userConfirmed: boolean,
+    confidence: number
+  ): Promise<void> {
+    try {
+      // Update performance tracking
+      this.db.prepare(`
+        INSERT INTO model_performance_log (
+          model, confidence, user_confirmed, timestamp
+        ) VALUES (?, ?, ?, ?)
+      `).run(
+        model,
+        confidence,
+        userConfirmed ? 1 : 0,
+        new Date().toISOString()
+      );
+
+      logger.debug(`Performance metrics updated for ${model}`);
+    } catch (error: any) {
+      logger.error(`Failed to update performance metrics:`, error);
     }
   }
 }

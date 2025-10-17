@@ -6,9 +6,9 @@
  * Never trust what the model says - detect what's actually configured!
  */
 
-import { Request, Response } from 'express';
+import * as express from 'express';
 import Database from 'better-sqlite3';
-import { EnhancedModelDetectionSystem } from '../auto-proactive/EnhancedModelDetectionSystem.js';
+import { EnhancedModelDetectionSystem } from '../../auto-proactive/ModelDetectionSystem';
 import { logger } from '../utils/logger.js';
 
 export class ModelDetectionAPI {
@@ -25,7 +25,7 @@ export class ModelDetectionAPI {
    *
    * Get comprehensive model detection for current agent
    */
-  async detectCurrentModel(req: Request, res: Response): Promise<void> {
+  async detectCurrentModel(req: express.Request, res: express.Response): Promise<void> {
     try {
       logger.info('🔍 API: Starting comprehensive model detection...');
 
@@ -69,7 +69,7 @@ export class ModelDetectionAPI {
    *
    * Verify context window through actual testing
    */
-  async verifyContextWindow(req: Request, res: Response): Promise<void> {
+  async verifyContextWindow(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { model, contextWindow } = req.query;
 
@@ -110,7 +110,7 @@ export class ModelDetectionAPI {
    *
    * Get current agent mapping based on detected model
    */
-  async getAgentMapping(req: Request, res: Response): Promise<void> {
+  async getAgentMapping(req: express.Request, res: express.Response): Promise<void> {
     try {
       const detection = await this.modelDetectionSystem.detectCurrentModel();
 
@@ -150,7 +150,7 @@ export class ModelDetectionAPI {
    *
    * Analyze Claude Code CLI configuration files
    */
-  async analyzeConfiguration(req: Request, res: Response): Promise<void> {
+  async analyzeConfiguration(req: express.Request, res: express.Response): Promise<void> {
     try {
       const analysis = await this.analyzeClaudeConfiguration();
 
@@ -178,7 +178,7 @@ export class ModelDetectionAPI {
    *
    * Get historical model detections
    */
-  async getDetectionHistory(req: Request, res: Response): Promise<void> {
+  async getDetectionHistory(req: express.Request, res: express.Response): Promise<void> {
     try {
       const { limit = 10 } = req.query;
 
@@ -212,7 +212,7 @@ export class ModelDetectionAPI {
    *
    * Force new model detection (clear cache)
    */
-  async forceDetection(req: Request, res: Response): Promise<void> {
+  async forceDetection(req: express.Request, res: express.Response): Promise<void> {
     try {
       logger.info('🔄 API: Forced model detection requested...');
 

@@ -442,7 +442,7 @@ export class ConfidenceCalibrationSystem {
   }
 
   async generateValidationCurve(
-    timeRange: 'month' | 'quarter' | 'year' = 'quarter'
+    timeRange: 'week' | 'month' | 'quarter' | 'year' = 'quarter'
   ): Promise<ValidationCurve> {
     const cutoffDate = this.getCutoffDate(timeRange);
     const data = this.calibrationData.filter(d => d.timestamp >= cutoffDate);
@@ -754,7 +754,7 @@ export class ConfidenceCalibrationSystem {
     const cutoffDate = this.getCutoffDate(timeRange);
     const data = this.calibrationData.filter(d => d.timestamp >= cutoffDate);
 
-    const categories = [...new Set(data.map(d => d.claimCategory))];
+    const categories = Array.from(new Set(data.map(d => d.claimCategory)));
     const breakdown = [];
 
     for (const category of categories) {

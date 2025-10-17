@@ -29,7 +29,7 @@ import { StatusAnalysisLoop } from './StatusAnalysisLoop.js';
 import { OpportunityScanningLoop } from './OpportunityScanningLoop.js';
 import { SpecGenerationLoop } from './SpecGenerationLoop.js';
 import { TaskAssignmentLoop } from './TaskAssignmentLoop.js';
-import { ModelDetectionSystem } from './ModelDetectionSystem.js';
+import { EnhancedModelDetectionSystem } from './ModelDetectionSystem';
 import { AgentRealityVerificationSystem } from './AgentRealityVerificationSystem.js';
 import { logger } from '../utils/logger.js';
 import IntegratedTaskStore from '../registry/JsonTaskStore.js';
@@ -98,7 +98,7 @@ export interface AutoProactiveConfig {
     taskGenerator?: any;
     specParser?: any;
     // 🚀 INTEGRATION: New Model Detection & Reality Systems
-    modelDetection?: ModelDetectionSystem;
+    modelDetection?: EnhancedModelDetectionSystem;
     agentReality?: AgentRealityVerificationSystem;
   };
 }
@@ -126,7 +126,7 @@ export class AutoProactiveEngine {
 
     // 🚀 INTEGRATION: Initialize Model Detection & Reality Systems
     if (!this.systems.modelDetection) {
-      this.systems.modelDetection = new ModelDetectionSystem(db);
+      this.systems.modelDetection = new EnhancedModelDetectionSystem(db);
       logger.info('🔍 Model Detection System initialized');
     }
 

@@ -8,7 +8,7 @@
  * - /api/runpod/control/:podId/:action - Start/stop/restart pods
  */
 
-import express from 'express';
+import * as express from 'express';
 import { getRunPodStatus, controlPod } from '../tools/runpod/runpodIntegration.js';
 import { RunPodMonitorLoop } from '../auto-proactive/RunPodMonitorLoop.js';
 import { logger } from '../utils/logger.js';

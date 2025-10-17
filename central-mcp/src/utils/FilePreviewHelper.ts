@@ -9,8 +9,8 @@
  * Purpose: Knowledge Space file preview and display utilities
  */
 
-import fs from 'fs/promises';
-import path from 'path';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { marked } from 'marked';
 import { createRequire } from 'module';
 

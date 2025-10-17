@@ -98,7 +98,8 @@ export class DatabaseFactory {
   private async runMigrations(): Promise<void> {
     await this.withConnection((db) => {
       // Run all migration files
-      const migrationsPath = new URL('../database/migrations', import.meta.url).pathname;
+      const path = require('path');
+      const migrationsPath = path.join(__dirname, '../database/migrations');
       const fs = require('fs');
 
       if (fs.existsSync(migrationsPath)) {

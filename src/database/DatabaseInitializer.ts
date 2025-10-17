@@ -6,7 +6,7 @@
  * monitoring, and performance optimization
  */
 
-import path from 'path';
+import * as path from 'path';
 import { logger } from '../utils/logger.js';
 import { initializeDatabase, DatabaseFactory } from './DatabaseFactory.js';
 import { initializeDatabaseMonitor } from './DatabaseMonitor.js';
@@ -283,6 +283,9 @@ export class DatabaseInitializer {
       initialized: this.isInitialized,
       healthy: false,
       config: this.config,
+      poolStats: undefined,
+      monitoringMetrics: undefined,
+      recommendations: undefined,
     };
 
     if (this.databaseFactory && this.isInitialized) {

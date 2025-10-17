@@ -258,7 +258,7 @@ export class DatabaseConnectionPool extends EventEmitter {
    * Find an available connection
    */
   private findAvailableConnection(): PoolConnection | null {
-    for (const connection of this.connections.values()) {
+    for (const connection of Array.from(this.connections.values())) {
       if (!connection.inUse && !connection.destroyed) {
         return connection;
       }
@@ -300,7 +300,7 @@ export class DatabaseConnectionPool extends EventEmitter {
     const now = Date.now();
     const connectionsToReap: PoolConnection[] = [];
 
-    for (const connection of this.connections.values()) {
+    for (const connection of Array.from(this.connections.values())) {
       if (!connection.inUse &&
           !connection.destroyed &&
           now - connection.lastUsed > this.config.idleTimeoutMillis &&

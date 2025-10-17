@@ -330,7 +330,7 @@ export class CounterfactualAnalysisSystem {
       resilienceScore,
       riskLevel,
       criticalFailurePoints,
-      recommendedMitigations: [...new Set(recommendedMitigations)], // Remove duplicates
+      recommendedMitigations: Array.from(new Set(recommendedMitigations)), // Remove duplicates
       sensitivityAnalysis,
       monteCarloResults
     };
@@ -655,7 +655,16 @@ export class CounterfactualAnalysisSystem {
       LIMIT 10
     `);
 
-    const rawAnalyses = analysesStmt.all(claim);
+    const rawAnalyses = analysesStmt.all(claim) as {
+      original_confidence: number;
+      scenario_confidence: number;
+      confidence_delta: number;
+      resilience_score: number;
+      risk_level: string;
+      sensitivity_analysis: string;
+      monte_carlo_results: string;
+    }[];
+
     const recentAnalyses = rawAnalyses.map(a => ({
       originalConfidence: a.original_confidence,
       scenarioConfidence: a.scenario_confidence,
@@ -679,7 +688,11 @@ export class CounterfactualAnalysisSystem {
       ORDER BY date DESC
     `);
 
-    const rawTrends = trendsStmt.all(claim);
+    const rawTrends = trendsStmt.all(claim) as {
+      date: string;
+      overall_risk: number;
+    }[];
+
     const riskTrends = rawTrends.map(t => ({
       date: new Date(t.date),
       overallRisk: t.overall_risk,
@@ -698,7 +711,12 @@ export class CounterfactualAnalysisSystem {
       ORDER BY frequency DESC
     `);
 
-    const rawEffectiveness = effectivenessStmt.all(claim);
+    const rawEffectiveness = effectivenessStmt.all(claim) as {
+      scenario_id: string;
+      frequency: number;
+      average_impact: number;
+    }[];
+
     const scenarioEffectiveness = rawEffectiveness.map(e => {
       const scenario = this.failureScenarios.get(e.scenario_id);
       return {

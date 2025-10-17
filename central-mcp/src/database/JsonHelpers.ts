@@ -503,6 +503,11 @@ export class JsonPerformanceMonitor {
   private operationCounts: Record<string, number> = {};
   private operationTimes: Record<string, number[]> = {};
 
+  cleanup(): void {
+    this.operationCounts = {};
+    this.operationTimes = {};
+  }
+
   recordOperation(operation: string, duration: number): void {
     this.operationCounts[operation] = (this.operationCounts[operation] || 0) + 1;
 

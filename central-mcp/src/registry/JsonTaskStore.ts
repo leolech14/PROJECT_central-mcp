@@ -380,7 +380,7 @@ export class JsonTaskStore {
           task.velocity || null,
           task.estimatedHours || null,
           task.actualMinutes || null,
-          task.projectId || 'localbrain'
+          'localbrain' // Default project ID since Task interface doesn't have projectId
         );
       });
 
@@ -631,7 +631,7 @@ export class JsonTaskStore {
     for (const task of dependentTasks) {
       const dependencies = db.prepare(`
         SELECT dependencies FROM tasks WHERE id = ?
-      `).get(task.id) as { dependencies: string };
+      `).get(task.id) as { dependencies: string } | undefined;
 
       const deps = safeJsonParse(dependencies, []);
       const updatedDeps = deps.filter((dep: string) => dep !== completedTaskId);
@@ -687,7 +687,7 @@ export class JsonTaskStore {
       velocity: row.velocity || undefined,
       estimatedHours: row.estimated_hours || undefined,
       actualMinutes: row.actual_minutes || undefined,
-      projectId: row.project_id || 'localbrain'
+      // projectId removed as Task interface doesn't have this property
     };
   }
 
@@ -710,6 +710,216 @@ export class JsonTaskStore {
    */
   getPerformanceRecommendations() {
     return this.monitor.getRecommendations();
+  }
+
+  /**
+   * Initialize the task store (placeholder for future initialization logic)
+   */
+  async initialize(): Promise<void> {
+    logger.info('📄 JsonTaskStore initialized');
+  }
+
+  /**
+   * Claim a task for an agent
+   */
+  async claimTask(taskId: string, agentId: AgentId): Promise<boolean> {
+    try {
+      return await this.dbFactory.withTransaction(async (db) => {
+        const task = this.getTaskSync(db, taskId);
+        if (!task) {
+          logger.warn(`⚠️ Task not found: ${taskId}`);
+          return false;
+        }
+
+        if (task.status !== 'AVAILABLE') {
+          logger.warn(`⚠️ Task ${taskId} is not available for claiming (status: ${task.status})`);
+          return false;
+        }
+
+        // Update task status and claim
+        const stmt = db.prepare(`
+          UPDATE tasks
+          SET status = 'IN_PROGRESS', claimed_by = ?, started_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `);
+        stmt.run(agentId, taskId);
+
+        logger.info(`✅ Task ${taskId} claimed by ${agentId}`);
+        return true;
+      });
+    } catch (error) {
+      logger.error(`❌ Failed to claim task ${taskId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Complete a task
+   */
+  async completeTask(
+    taskId: string,
+    agentId: AgentId,
+    files?: string[],
+    velocity?: number
+  ): Promise<boolean> {
+    try {
+      return await this.dbFactory.withTransaction(async (db) => {
+        const task = this.getTaskSync(db, taskId);
+        if (!task) {
+          logger.warn(`⚠️ Task not found: ${taskId}`);
+          return false;
+        }
+
+        if (task.claimedBy !== agentId) {
+          logger.warn(`⚠️ Task ${taskId} is not claimed by ${agentId}`);
+          return false;
+        }
+
+        // Update task completion
+        const stmt = db.prepare(`
+          UPDATE tasks
+          SET status = 'COMPLETE', completed_at = CURRENT_TIMESTAMP,
+               files_created = ?, velocity = ?, updated_at = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `);
+        stmt.run(
+          files ? JSON.stringify(files) : null,
+          velocity || null,
+          taskId
+        );
+
+        // Update dependent tasks
+        this.updateDependentTasks(db, taskId);
+
+        logger.info(`✅ Task ${taskId} completed by ${agentId}`);
+        return true;
+      });
+    } catch (error) {
+      logger.error(`❌ Failed to complete task ${taskId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get agent workload (number of active tasks)
+   */
+  async getAgentWorkload(agentId: AgentId): Promise<{
+    active: number;
+    completed: number;
+    totalClaimed: number;
+  }> {
+    try {
+      return await this.dbFactory.withConnection((db) => {
+        const activeStmt = db.prepare(`
+          SELECT COUNT(*) as count FROM tasks
+          WHERE claimed_by = ? AND status = 'IN_PROGRESS'
+        `);
+        const { count: active } = activeStmt.get(agentId) as { count: number };
+
+        const completedStmt = db.prepare(`
+          SELECT COUNT(*) as count FROM tasks
+          WHERE claimed_by = ? AND status = 'COMPLETE'
+        `);
+        const { count: completed } = completedStmt.get(agentId) as { count: number };
+
+        const totalStmt = db.prepare(`
+          SELECT COUNT(*) as count FROM tasks
+          WHERE claimed_by = ?
+        `);
+        const { count: totalClaimed } = totalStmt.get(agentId) as { count: number };
+
+        return { active, completed, totalClaimed };
+      });
+    } catch (error) {
+      logger.error(`❌ Failed to get agent workload for ${agentId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get sprint metrics
+   */
+  async getSprintMetrics(): Promise<{
+    totalTasks: number;
+    completedTasks: number;
+    averageVelocity: number;
+    completionRate: number;
+  }> {
+    try {
+      return await this.dbFactory.withConnection((db) => {
+        const totalStmt = db.prepare('SELECT COUNT(*) as count FROM tasks');
+        const { count: totalTasks } = totalStmt.get() as { count: number };
+
+        const completedStmt = db.prepare(`
+          SELECT COUNT(*) as count, AVG(velocity) as avg_velocity
+          FROM tasks WHERE status = 'COMPLETE'
+        `);
+        const completed = completedStmt.get() as { count: number; avg_velocity: number };
+
+        return {
+          totalTasks,
+          completedTasks: completed.count || 0,
+          averageVelocity: completed.avg_velocity || 0,
+          completionRate: totalTasks > 0 ? ((completed.count || 0) / totalTasks) * 100 : 0
+        };
+      });
+    } catch (error) {
+      logger.error('❌ Failed to get sprint metrics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get registry metrics
+   */
+  async getRegistryMetrics(): Promise<{
+    totalAgents: number;
+    activeAgents: number;
+    totalProjects: number;
+    healthySystems: number;
+  }> {
+    try {
+      return await this.dbFactory.withConnection((db) => {
+        // Agent metrics
+        const agentStmt = db.prepare('SELECT COUNT(DISTINCT claimed_by) as count FROM tasks WHERE claimed_by IS NOT NULL');
+        const { count: totalAgents } = agentStmt.get() as { count: number };
+
+        const activeAgentStmt = db.prepare(`
+          SELECT COUNT(DISTINCT claimed_by) as count FROM tasks
+          WHERE claimed_by IS NOT NULL AND status = 'IN_PROGRESS'
+        `);
+        const { count: activeAgents } = activeAgentStmt.get() as { count: number };
+
+        // Project metrics
+        const projectStmt = db.prepare('SELECT COUNT(DISTINCT project_id) as count FROM tasks');
+        const { count: totalProjects } = projectStmt.get() as { count: number };
+
+        return {
+          totalAgents,
+          activeAgents,
+          totalProjects,
+          healthySystems: 1 // Placeholder - would need actual health monitoring
+        };
+      });
+    } catch (error) {
+      logger.error('❌ Failed to get registry metrics:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Close the task store and cleanup resources
+   */
+  async close(): Promise<void> {
+    try {
+      logger.info('📄 JsonTaskStore closing...');
+      // Database cleanup is handled by DatabaseFactory
+      this.jsonMonitor.cleanup?.();
+      logger.info('✅ JsonTaskStore closed');
+    } catch (error) {
+      logger.error('❌ Failed to close JsonTaskStore:', error);
+      throw error;
+    }
   }
 }
 

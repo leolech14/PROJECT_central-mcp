@@ -15,11 +15,15 @@
  * - Advanced Visualization (3D infrastructure mapping)
  * - Intelligent Cost Optimization (Automated resource management)
  * - Enhanced Security Assessment (Threat detection and compliance)
+ * - SOPHISTICATED HTML REPORT GENERATION - AUTOMATIC
  */
 
 import { execSync } from 'child_process';
+import { writeFileSync } from 'fs';
+import path from 'path';
 import Database from 'better-sqlite3';
 import { getMachinesMap, MachinesMapData } from './getMachinesMap.js';
+import MachinesMapV2HTMLGenerator from './MachinesMapV2HTMLGenerator.js';
 
 // V2.0 Enhanced Interfaces
 export interface MachinesMapV2Data extends MachinesMapData {
@@ -282,6 +286,16 @@ export async function getMachinesMapV2(db: Database.Database): Promise<MachinesM
     // Save V2.0 analysis to database
     await saveMachinesMapV2ToDatabase(db, v2Data);
     console.log('   💾 V2.0 analysis saved to database');
+
+    // 🚨 AUTOMATIC SOPHISTICATED HTML REPORT GENERATION
+    console.log('   🌟 Generating sophisticated HTML report...');
+    const htmlGenerator = new MachinesMapV2HTMLGenerator(
+      v2Data,
+      path.join(process.cwd(), `MACHINES_MAP_V2_REPORT_${new Date().toISOString().replace(/[:.]/g, '-')}.html`)
+    );
+
+    const htmlReportPath = htmlGenerator.generateHTMLReport();
+    console.log(`   ✅ Sophisticated HTML report generated: ${htmlReportPath}`);
 
     console.log('🎯 Machines Map V2.0 Analysis Complete!');
     return v2Data;

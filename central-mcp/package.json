@@ -23,7 +23,9 @@
     "health": "curl -s http://localhost:8080/health | jq .",
     "dashboard": "open http://localhost:8080/api/v1/metrics/dashboard",
     "docs": "typedoc src --out docs",
-    "monitor": "curl -s http://localhost:8080/api/v1/events"
+    "monitor": "curl -s http://localhost:8080/api/v1/events",
+    "test:machines-map": "node src/tools/mcp/test-machines-map.js",
+    "machines-map": "node -e \"import('./src/tools/mcp/getMachinesMap.js').then(m => m.getMachinesMap(new Database('./data/registry.db')).then(console.log))\""
   },
   "keywords": [
     "ai",
@@ -35,7 +37,11 @@
     "automation",
     "photon",
     "central-mcp",
-    "revolutionary"
+    "revolutionary",
+    "machines-map",
+    "infrastructure",
+    "monitoring",
+    "ultrathink"
   ],
   "author": "PHOTON Development Team",
   "license": "MIT",

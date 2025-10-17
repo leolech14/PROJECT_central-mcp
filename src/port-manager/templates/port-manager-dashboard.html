@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Port Manager Dashboard {{VERSION}}</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; background:#0e0f13; color:#e1e5e9; }
+    .chip { display:inline-block; padding:.25rem .5rem; border-radius:.5rem; border:1px solid #1a1d25; margin-right:.5rem; }
+    .wrap { padding: 20px; max-width: 1024px; margin: 0 auto; }
+    .card { background:#11131a; border:1px solid #1a1d25; padding:16px; border-radius:12px; box-shadow: 0 4px 16px rgba(0,0,0,.25); margin-bottom: 16px; }
+    .row { display:flex; flex-wrap:wrap; gap:12px; align-items: center; }
+    .pill { padding:6px 10px; border-radius:999px; font-size: 0.875rem; }
+    .ok { background:#165e36; }
+    .warn { background:#6f4c10; }
+    .err { background:#6b1f1f; }
+    .btn { cursor:pointer; padding:8px 12px; border-radius:10px; border:1px solid #1a1d25; background:#171a22; color:#e1e5e9; transition: all 0.15s; }
+    .btn:hover { background:#1e222d; }
+    .btn:active { transform: translateY(1px); }
+    .grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px; }
+    .muted { color:#8a92a2; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .toast { position: fixed; top: 16px; right: 16px; background:#1b2130; color:#fff; padding:10px 14px; border-radius:10px; border:1px solid #2a3142; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+    h1, h2, h3 { margin: 0 0 12px 0; }
+    h1 { font-size: 2rem; font-weight: 700; }
+    h2 { font-size: 1.5rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Port Manager <span class="muted" style="font-size: 1.25rem;">— version {{VERSION}}</span></h1>
+
+    <div class="row" style="margin:12px 0 24px">
+      <button class="btn" id="btn-refresh">Refresh Services</button>
+      <button class="btn" id="btn-validate">Validate Configurations</button>
+      <button class="btn" id="btn-reload">Reload Discovery</button>
+      <button class="btn" id="btn-resolve">Resolve Conflicts</button>
+    </div>
+
+    <div class="card">
+      <h2>Active Services</h2>
+      <div id="svc-grid" class="grid"></div>
+    </div>
+
+    <div class="card">
+      <h2>System Status</h2>
+      <div id="stats"></div>
+    </div>
+  </div>
+
+  <script>
+    // Data injection from server (replaced server-side)
+    window.__SERVICES__ = {{SERVICES_JSON}};
+    window.__VERSION__ = '{{VERSION}}';
+
+    function toast(message, level) {
+      var el = document.createElement('div');
+      el.className = 'toast';
+      var colors = { success: '#165e36', error: '#6b1f1f', warning: '#6f4c10', info: '#1b2130' };
+      el.style.background = colors[level] || colors.info;
+      el.textContent = message;
+      document.body.appendChild(el);
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 3800);
+    }
+
+    function serviceCard(s) {
+      var status = (s.config && s.config.status) || 'unknown';
+      var level = status === 'running' ? 'ok' : (status === 'degraded' ? 'warn' : 'err');
+      var configFiles = (s.config && s.config.configFiles) || [];
+
+      return '' +
+        '<div class="card">' +
+          '<div class="row" style="justify-content:space-between;">' +
+            '<div><strong>' + s.serviceName + '</strong> <span class="muted">(' + s.projectId + ')</span></div>' +
+            '<div class="pill ' + level + '">' + status + '</div>' +
+          '</div>' +
+          '<div class="muted mono" style="margin:8px 0 6px">' +
+            s.externalIP + ':' + s.externalPort + ' (' + (s.protocol || 'tcp') + ')' +
+          '</div>' +
+          '<div class="row">' +
+            '<span class="chip mono">id: ' + (s.id || '-') + '</span>' +
+            '<span class="chip mono">configs: ' + configFiles.length + '</span>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function render() {
+      var grid = document.getElementById('svc-grid');
+      var stats = document.getElementById('stats');
+      var list = Array.isArray(window.__SERVICES__) ? window.__SERVICES__ : [];
+
+      grid.innerHTML = list.map(serviceCard).join('');
+      stats.innerHTML = '<div class="muted">Total services: ' + list.length + '</div>';
+    }
+
+    document.getElementById('btn-refresh').onclick = function(){
+      fetch('/api/services')
+        .then(function(r){ return r.json(); })
+        .then(function(d){ window.__SERVICES__ = d.data || []; render(); toast('Refreshed', 'success'); })
+        .catch(function(e){ toast('Refresh failed', 'error'); });
+    };
+
+    document.getElementById('btn-validate').onclick = function(){
+      fetch('/api/validate')
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if(d.success && d.data.valid) toast('All valid', 'success');
+          else toast('Validation issues found', 'warning');
+        })
+        .catch(function(e){ toast('Validation failed', 'error'); });
+    };
+
+    document.getElementById('btn-reload').onclick = function(){
+      toast('Service discovery reload requested', 'info');
+    };
+
+    document.getElementById('btn-resolve').onclick = function(){
+      fetch('/api/resolve-conflicts', { method: 'POST' })
+        .then(function(r){ return r.json(); })
+        .then(function(d){
+          if(d.success) { toast('Conflicts resolved', 'success'); render(); }
+          else toast('Resolution failed', 'error');
+        })
+        .catch(function(e){ toast('Resolve failed', 'error'); });
+    };
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>

@@ -18,7 +18,7 @@ interface QueryMetrics {
   error?: string;
 }
 
-interface PerformanceMetrics {
+export interface PerformanceMetrics {
   totalQueries: number;
   averageQueryTime: number;
   slowQueries: number;

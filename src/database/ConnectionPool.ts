@@ -28,7 +28,7 @@ interface PoolConnection {
   destroyed: boolean;
 }
 
-interface PoolStats {
+export interface PoolStats {
   totalConnections: number;
   activeConnections: number;
   idleConnections: number;

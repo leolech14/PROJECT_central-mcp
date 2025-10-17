@@ -17,7 +17,7 @@
  */
 
 import * as promClient from 'prom-client';
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AutoProactiveEngine } from '../auto-proactive/AutoProactiveEngine.js';
 import express from 'express';
 

@@ -279,7 +279,7 @@ export class KnowledgePackProcessor {
   ): Promise<ProcessedContent[]> {
     const contents: ProcessedContent[] = [];
 
-    async function processDirectory(currentPath: string, relativePath: string = ''): Promise<void> {
+    const processDirectory = async (currentPath: string, relativePath: string = ''): Promise<void> => {
       const entries = await fs.readdir(currentPath, { withFileTypes: true });
 
       for (const entry of entries) {

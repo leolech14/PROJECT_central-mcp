@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Track confidence patterns over time, detect trends, predict future confidence
 // Implements: Time series analysis, trend detection, confidence degradation alerts, performance analytics
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AdvancedSelfAuditSystem, ConfidenceResult } from './AdvancedSelfAuditSystem.js';
 
 export interface TemporalConfidenceData {

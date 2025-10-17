@@ -311,7 +311,17 @@ export class ActiveConfigurationDetector {
 
     if (configs.length === 0) {
       logger.info('      ❌ No valid configuration files found');
-      return undefined;
+      return {
+        activeConfig: {
+          model: 'claude-sonnet-4-5-20250929',
+          env: {},
+          baseUrl: 'https://api.anthropic.com'
+        },
+        activeConfigPath: '',
+        detectionMethod: 'default',
+        confidence: 0.1,
+        availableConfigs: []
+      };
     }
 
     // Sort by priority and recency
@@ -391,13 +401,13 @@ export class ActiveConfigurationDetector {
     }
 
     return {
-      activeConfig: winner.activeConfig,
-      activeConfigPath: winner.activeConfigPath,
-      detectionMethod: winner.detectionMethod,
-      confidence: winner.weightedConfidence,
-      actualModel: winner.actualModel,
-      verificationStatus: winner.verificationStatus,
-      allConfigs: winner.allConfigs,
+      activeConfig: winner.activeConfig || { model: 'claude-sonnet-4-5-20250929', env: {}, baseUrl: 'https://api.anthropic.com' },
+      activeConfigPath: winner.activeConfigPath || '',
+      detectionMethod: winner.detectionMethod || 'default',
+      confidence: winner.weightedConfidence || 0.1,
+      actualModel: winner.actualModel || 'claude-sonnet-4-5-20250929',
+      verificationStatus: winner.verificationStatus || 'unverified',
+      allConfigs: winner.allConfigs || [],
       metadata: {
         ...winner.metadata,
         allCandidates: scoredCandidates,

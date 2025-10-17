@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Master integration system combining all confidence methodologies
 // This is the main entry point for the complete confidence system
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AdvancedSelfAuditSystem } from './AdvancedSelfAuditSystem.js';
 import { TemporalConfidenceTracker } from './TemporalConfidenceTracker.js';
 import { CounterfactualAnalysisSystem } from './CounterfactualAnalysisSystem.js';

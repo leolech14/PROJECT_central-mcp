@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: State-of-the-art confidence verification with cutting-edge methodology
 // Implements: Bayesian updating, cognitive bias detection, temporal tracking, metacognitive awareness
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { performance } from 'perf_hooks';
 
 // =====================================================
@@ -86,12 +86,13 @@ export class DatabaseQueryTest {
       };
     } catch (error) {
       const endTime = performance.now();
+      const errorMessage = error instanceof Error ? error.message : String(error);
 
       return {
         type: EvidenceType.DATABASE_REALITY,
         claim,
         expectedResult,
-        actualResult: { error: error.message },
+        actualResult: { error: errorMessage },
         confidence: 0.0,
         timestamp: new Date(),
         executionTime: endTime - startTime,

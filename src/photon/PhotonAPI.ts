@@ -350,7 +350,7 @@ export class PhotonAPI {
   private async getAgents(req: any, res: express.Response): Promise<void> {
     try {
       // This would need to be implemented in PhotonCore
-      const agents = []; // await this.photonCore.getAllAgents();
+      const agents: any[] = []; // await this.photonCore.getAllAgents();
       res.json(this.createSuccessResponse(req.requestId, { agents }));
     } catch (error) {
       logger.error('Error getting agents:', error);
@@ -436,7 +436,7 @@ export class PhotonAPI {
 
       // Get operations from database
       // const operations = await this.photonCore.getOperations(status, limit, offset);
-      const operations = []; // Placeholder
+      const operations: any[] = []; // Placeholder
 
       res.json(this.createSuccessResponse(req.requestId, { operations, pagination: { limit, offset } }));
     } catch (error) {

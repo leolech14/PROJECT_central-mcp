@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: System that knows what it knows and doesn't know with explicit uncertainty boundaries
 // Implements: Knowledge state mapping, uncertainty quantification, introspection algorithms, adaptive learning boundaries
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { Evidence, ConfidenceResult } from './AdvancedSelfAuditSystem.js';
 
 export interface KnowledgeBoundary {

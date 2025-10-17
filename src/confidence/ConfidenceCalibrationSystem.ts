@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Ensure confidence scores match actual performance over time with statistical validation
 // Implements: Reliability curves, calibration metrics, Brier score analysis, statistical validation, adaptive learning
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { ConfidenceResult } from './AdvancedSelfAuditSystem.js';
 
 export interface CalibrationData {

@@ -6,7 +6,7 @@
  * Tracks IP addresses, ports, and configuration files
  */
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { logger } from '../utils/logger.js';
 
 export interface ServiceConfig {

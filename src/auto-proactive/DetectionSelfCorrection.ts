@@ -227,7 +227,12 @@ export class DetectionSelfCorrection {
         GROUP BY corrected_to
         HAVING count >= 2
         ORDER BY count DESC, avg_confidence_after DESC
-      `).all(detectedModel);
+      `).all(detectedModel) as Array<{
+        corrected_to: string;
+        count: number;
+        avg_confidence_after: number;
+        last_correction: string;
+      }>;
 
       if (corrections.length > 0) {
         const topCorrection = corrections[0];
@@ -293,7 +298,11 @@ export class DetectionSelfCorrection {
         GROUP BY corrected_to
         HAVING count >= 2
         ORDER BY count DESC
-      `).all(`${modelFamily}%`);
+      `).all(`${modelFamily}%`) as Array<{
+        corrected_to: string;
+        count: number;
+        avg_confidence: number;
+      }>;
 
       if (familyPatterns.length > 0) {
         const topPattern = familyPatterns[0];
@@ -446,53 +455,7 @@ export class DetectionSelfCorrection {
     );
   }
 
-  /**
-   * Update performance metrics
-   */
-  private async updatePerformanceMetrics(
-    model: string,
-    correct: boolean,
-    confidence: number
-  ): Promise<void> {
-    const existing = this.db.prepare(`
-      SELECT * FROM model_performance_metrics WHERE model = ?
-    `).get(model) as any;
-
-    if (existing) {
-      const newTotal = existing.total_detections + 1;
-      const newCorrect = existing.correct_detections + (correct ? 1 : 0);
-      const newAccuracy = newCorrect / newTotal;
-      const newAvgConfidence = (existing.avg_confidence * existing.total_detections + confidence) / newTotal;
-
-      this.db.prepare(`
-        UPDATE model_performance_metrics
-        SET total_detections = ?, correct_detections = ?, accuracy = ?,
-            avg_confidence = ?, last_updated = ?
-        WHERE model = ?
-      `).run(newTotal, newCorrect, newAccuracy, newAvgConfidence, new Date().toISOString(), model);
-
-    } else {
-      this.db.prepare(`
-        INSERT INTO model_performance_metrics (
-          id, model, total_detections, correct_detections, accuracy,
-          avg_confidence, last_updated
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
-      `).run(
-        randomUUID(),
-        model,
-        1,
-        correct ? 1 : 0,
-        correct ? 1.0 : 0.0,
-        confidence,
-        new Date().toISOString()
-      );
-    }
-
-    // Invalidate cache
-    const cacheKey = `metrics-${model}`;
-    this.cacheExpiry.delete(cacheKey);
-  }
-
+  
   /**
    * Extract model family from model name
    */
@@ -537,7 +500,7 @@ export class DetectionSelfCorrection {
     detectedModel: string,
     detectionResult: ModelDetectionResult
   ): Promise<Array<{ model: string; confidence: number }>> {
-    const alternatives = [];
+    const alternatives: Array<{ model: string; confidence: number }> = [];
 
     // Get current detected capabilities
     const currentCapabilities = this.capabilityVerifier.getModelInfo(detectedModel);

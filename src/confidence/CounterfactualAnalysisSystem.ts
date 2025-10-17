@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Model confidence under different failure scenarios, risk assessment, what-if analysis
 // Implements: Monte Carlo simulation, failure mode analysis, sensitivity testing, confidence resilience scoring
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { ConfidenceResult, EvidenceType } from './AdvancedSelfAuditSystem.js';
 
 export interface FailureScenario {

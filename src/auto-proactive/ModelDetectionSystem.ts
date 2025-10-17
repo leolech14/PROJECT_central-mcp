@@ -242,22 +242,22 @@ export class EnhancedModelDetectionSystem {
       // Step 4: Apply self-correction based on historical patterns
       const initialResult: ModelDetectionResult = {
         detectedModel: actualModel,
-        modelProvider: capabilities.provider,
+        modelProvider: 'provider' in capabilities ? capabilities.provider : 'unknown',
         actualEndpoint: activeConfig.activeConfig.env?.ANTHROPIC_BASE_URL || 'https://api.anthropic.com',
-        contextWindow: capabilities.contextWindow,
+        contextWindow: 'contextWindow' in capabilities ? capabilities.contextWindow : 200000,
         configSource: activeConfig.activeConfigPath.split('/').pop() || 'unknown',
         configPath: activeConfig.activeConfigPath,
         detectionMethod: `enhanced-${activeConfig.detectionMethod}`,
         confidence: Math.min(activeConfig.confidence, capabilities.agentMapping.confidence),
-        verified: capabilities.verified && activeConfig.confidence > 0.7,
+        verified: ('verified' in capabilities ? capabilities.verified : false) && activeConfig.confidence > 0.7,
         agentLetter: capabilities.agentMapping.letter,
         agentRole: capabilities.agentMapping.role,
         capabilities: {
-          reasoning: capabilities.capabilities.reasoning,
-          coding: capabilities.capabilities.coding,
-          context: this.formatContextSize(capabilities.contextWindow),
-          multimodal: capabilities.capabilities.multimodal,
-          toolUse: capabilities.capabilities.toolUse
+          reasoning: 'capabilities' in capabilities ? capabilities.capabilities.reasoning : 'basic',
+          coding: 'capabilities' in capabilities ? capabilities.capabilities.coding : 'basic',
+          context: `${('contextWindow' in capabilities ? capabilities.contextWindow : 200000).toLocaleString()} tokens`,
+          multimodal: 'capabilities' in capabilities ? capabilities.capabilities.multimodal : false,
+          toolUse: 'capabilities' in capabilities ? capabilities.capabilities.toolUse : false
         },
         timestamp: new Date().toISOString(),
         metadata: {

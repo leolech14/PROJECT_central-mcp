@@ -5,7 +5,7 @@
 
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AgentRole } from './TokenManager.js';
 import { logger } from '../utils/logger.js';
 

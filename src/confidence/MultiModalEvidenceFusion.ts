@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Unify all confidence systems with advanced ensemble methods and evidence fusion
 // Implements: Weighted evidence fusion, ensemble learning, cross-validation, meta-ensembles, adaptive weighting
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { Evidence, ConfidenceResult } from './AdvancedSelfAuditSystem.js';
 import { AdvancedSelfAuditSystem } from './AdvancedSelfAuditSystem.js';
 import { TemporalConfidenceTracker } from './TemporalConfidenceTracker.js';

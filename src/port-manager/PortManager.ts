@@ -6,7 +6,7 @@
  * Provides automatic detection, conflict resolution, and real-time synchronization
  */
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { ServiceRegistry } from './ServiceRegistry.js';
 import { ConfigurationUpdater } from './ConfigurationUpdater.js';
 import { ServiceDiscovery } from './ServiceDiscovery.js';

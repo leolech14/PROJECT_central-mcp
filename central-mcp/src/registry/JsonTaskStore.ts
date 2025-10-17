@@ -914,7 +914,7 @@ export class JsonTaskStore {
     try {
       logger.info('📄 JsonTaskStore closing...');
       // Database cleanup is handled by DatabaseFactory
-      this.jsonMonitor.cleanup?.();
+      this.jsonMonitor.cleanup();
       logger.info('✅ JsonTaskStore closed');
     } catch (error) {
       logger.error('❌ Failed to close JsonTaskStore:', error);

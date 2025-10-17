@@ -9,7 +9,7 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { AutoProactiveEngine } from '../auto-proactive/AutoProactiveEngine.js';
 import { MonitoringAPI } from '../api/MonitoringAPI.js';
 import { ModelDetectionAPI } from '../api/model-detection-api.js';

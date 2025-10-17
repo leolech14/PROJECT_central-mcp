@@ -2,7 +2,7 @@
 // Built: 2025-10-13 | Purpose: Advanced bias detection with real-time correction, pattern analysis, and adaptive learning
 // Implements: ML-based bias detection, pattern recognition, adaptive thresholds, behavioral analysis
 
-import { Database } from 'better-sqlite3';
+import Database from 'better-sqlite3';
 import { Evidence, ConfidenceResult } from './AdvancedSelfAuditSystem.js';
 
 export interface BiasPattern {

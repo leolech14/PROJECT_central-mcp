@@ -415,7 +415,7 @@ export class ModelCapabilityVerifier {
       }
 
       if (response.ok) {
-        const data = await response.json();
+        const data = await response.json() as any;
 
         return {
           testType: 'api-access',

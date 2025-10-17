@@ -25,7 +25,9 @@
     "docs": "typedoc src --out docs",
     "monitor": "curl -s http://localhost:8080/api/v1/events",
     "test:machines-map": "node src/tools/mcp/test-machines-map.js",
-    "machines-map": "node -e \"import('./src/tools/mcp/getMachinesMap.js').then(m => m.getMachinesMap(new Database('./data/registry.db')).then(console.log))\""
+    "test:machines-map-v2": "node src/tools/mcp/test-machines-map-v2.js",
+    "machines-map": "node -e \"import('./src/tools/mcp/getMachinesMap.js').then(m => m.getMachinesMap(new Database('./data/registry.db')).then(console.log))\"",
+    "machines-map-v2": "node -e \"import('./src/tools/mcp/getMachinesMapV2.js').then(m => m.getMachinesMapV2(new Database('./data/registry.db')).then(console.log))\""
   },
   "keywords": [
     "ai",
@@ -41,7 +43,11 @@
     "machines-map",
     "infrastructure",
     "monitoring",
-    "ultrathink"
+    "ultrathink",
+    "multi-cloud",
+    "predictive-analytics",
+    "automated-remediation",
+    "v2-evolution"
   ],
   "author": "PHOTON Development Team",
   "license": "MIT",
